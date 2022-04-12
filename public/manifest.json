@@ -1,6 +1,6 @@
 {
-  "short_name": "Your Orders",
-  "name": "Your Orders",
+  "short_name": "dbAppAdminSite",
+  "name": "DanceBlue App Admin Portal",
   "icons": [
     {
       "src": "favicon.ico",

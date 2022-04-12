@@ -13,8 +13,11 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/material": "latest",
+    "firebase": "^9.0.0",
     "react": "latest",
     "react-dom": "latest",
+    "react-firebase-hooks": "^5.0.3",
+    "react-router-dom": "^6.3.0",
     "react-scripts": "latest"
   },
   "browserslist": {

@@ -6,7 +6,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "start-emulators": "firebase emulators:start --import=./<dir-name> --export-on-exit",
+    "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
     "eject": "react-scripts eject"
   },
   "dependencies": {

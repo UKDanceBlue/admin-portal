@@ -28,3 +28,6 @@ yarn-error.log*
 
 #firebase logs
 *-debug.log
+
+#firebase emulator export
+/firebase_emulator_data/

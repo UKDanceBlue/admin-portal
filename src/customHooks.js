@@ -1,7 +1,7 @@
 import { useSignInWithMicrosoft } from "react-firebase-hooks/auth";
 
 export const useSignInWithUkMicrosoft = (auth) => {
-  const [signInWithMicrosoft, user, loading, error] =
+  const [signInWithMicrosoft, userCredential, loading, error] =
     useSignInWithMicrosoft(auth);
 
   const signInWithUkMicrosoft = () =>
@@ -13,5 +13,5 @@ export const useSignInWithUkMicrosoft = (auth) => {
       }
     );
 
-  return [signInWithUkMicrosoft, user, loading, error];
+  return [signInWithUkMicrosoft, userCredential, loading, error];
 };

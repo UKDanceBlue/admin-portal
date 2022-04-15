@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,13 +10,22 @@ import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase/firebaseApp";
+import { auth, functions } from "../firebase/firebaseApp";
 import { useSignInWithUkMicrosoft } from "../customHooks";
-import { signOut } from "firebase/auth";
+import { getAdditionalUserInfo, signOut } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 
 const navLinks = [
   { title: "Home", path: "/" },
-  { title: "Marathon Manager", path: "/marathon-console" },
+  {
+    title: "Marathon Manager",
+    path: "/marathon-console",
+    requiredClaims: [
+      //TODO expand use of claims, I like this system though
+      { claimKey: "dbRole", claimValues: ["committee"] },
+      { claimKey: "committee", claimValues: ["tech-committee"] },
+    ],
+  },
   { title: "Spirit Point Manager", path: "/spirit-console" },
   { title: "Morale Point Manager", path: "/morale-console" },
   {
@@ -26,18 +35,32 @@ const navLinks = [
 ];
 
 const MenuBar = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [authClaims, setAuthClaims] = useState({});
 
   const navigate = useNavigate();
 
   const [user] = useAuthState(auth);
-  const [triggerLogin] = useSignInWithUkMicrosoft(auth);
+  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft(auth);
+
+  useEffect(() => {
+    (async () => {
+      if (userCredential) {
+        // If there is a userCredential, then the user has just signed in and may need claims updated
+        await httpsCallable(functions, "updateUserClaims")("");
+        const idToken = await userCredential.user.getIdTokenResult(true);
+        setAuthClaims(idToken.claims);
+      }
+    })();
+  }, [userCredential]);
 
   useEffect(() => {
     (async () => {
       if (user) {
         const idToken = await user.getIdTokenResult();
-        console.log(idToken);
+        setAuthClaims(idToken.claims);
+      } else {
+        setAuthClaims({});
       }
     })();
   }, [user]);
@@ -80,11 +103,23 @@ const MenuBar = () => {
               display: { xs: "block", md: "none" },
             }}
           >
-            {navLinks.map((page) => (
-              <MenuItem key={page.path} onClick={() => navigate(page.path)}>
-                <Typography textAlign="center">{page.title}</Typography>
-              </MenuItem>
-            ))}
+            {navLinks
+              .filter((page) => {
+                if (page.requiredClaims) {
+                  return page.requiredClaims.every((claim) => {
+                    return authClaims[claim.claimKey]?.includes(
+                      claim.claimValues
+                    );
+                  });
+                } else {
+                  return true;
+                }
+              })
+              .map((page) => (
+                <MenuItem key={page.path} onClick={() => navigate(page.path)}>
+                  <Typography textAlign="center">{page.title}</Typography>
+                </MenuItem>
+              ))}
           </Menu>
         </Box>
         <Box
@@ -93,11 +128,21 @@ const MenuBar = () => {
             display: { xs: "none", md: "flex" },
           }}
         >
-          {navLinks.map((page) => (
-            <MenuItem key={page.path} onClick={() => navigate(page.path)}>
-              <Typography textAlign="center">{page.title}</Typography>
-            </MenuItem>
-          ))}
+          {navLinks
+            .filter((page) => {
+              if (page.requiredClaims) {
+                return page.requiredClaims.every((claim) =>
+                  claim.claimValues.includes(authClaims[claim.claimKey])
+                );
+              } else {
+                return true;
+              }
+            })
+            .map((page) => (
+              <MenuItem key={page.path} onClick={() => navigate(page.path)}>
+                <Typography textAlign="center">{page.title}</Typography>
+              </MenuItem>
+            ))}
         </Box>
         {(!user || user.isAnonymous) && (
           <Box>

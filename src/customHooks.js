@@ -1,3 +1,5 @@
+import { onIdTokenChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { useSignInWithMicrosoft } from "react-firebase-hooks/auth";
 
 export const useSignInWithUkMicrosoft = (auth) => {
@@ -14,4 +16,34 @@ export const useSignInWithUkMicrosoft = (auth) => {
     );
 
   return [signInWithUkMicrosoft, userCredential, loading, error];
+};
+
+/**
+ * A hook that returns the current user's claims.
+ * @param {Auth} auth - Firebase Auth instance
+ * @returns {?Object.<string,string>} - Returns null if no ID token has yet been checked, otherwise returns the user's auth claims object
+ */
+export const useAuthClaims = (auth) => {
+  const [authClaims, setAuthClaims] = useState(null);
+
+  useEffect(
+    () =>
+      onIdTokenChanged(
+        auth,
+        async (user) => {
+          if (!user) {
+            setAuthClaims({});
+          } else {
+            const idToken = await user.getIdTokenResult();
+            setAuthClaims(idToken.claims);
+          }
+        },
+        () => {
+          setAuthClaims({});
+        }
+      ),
+    [auth]
+  );
+
+  return authClaims;
 };

@@ -22,7 +22,10 @@ export default function App() {
               <SecuredParent
                 requiredClaims={[
                   { claimKey: "dbRole", claimValues: ["committee"] },
-                  { claimKey: "committee", claimValues: ["tech-committee"] },
+                  {
+                    claimKey: "committeeRank",
+                    claimValues: ["coordinator", "chair"],
+                  },
                 ]}
               >
                 <MarathonConsole />
@@ -35,7 +38,10 @@ export default function App() {
               <SecuredParent
                 requiredClaims={[
                   { claimKey: "dbRole", claimValues: ["committee"] },
-                  { claimKey: "committee", claimValues: ["tech-committee"] },
+                  {
+                    claimKey: "committeeRank",
+                    claimValues: ["coordinator", "chair"],
+                  },
                 ]}
               >
                 <MoraleConsole />
@@ -48,7 +54,10 @@ export default function App() {
               <SecuredParent
                 requiredClaims={[
                   { claimKey: "dbRole", claimValues: ["committee"] },
-                  { claimKey: "committee", claimValues: ["tech-committee"] },
+                  {
+                    claimKey: "committeeRank",
+                    claimValues: ["coordinator", "chair"],
+                  },
                 ]}
               >
                 <SpiritConsole />
@@ -61,7 +70,10 @@ export default function App() {
               <SecuredParent
                 requiredClaims={[
                   { claimKey: "dbRole", claimValues: ["committee"] },
-                  { claimKey: "committee", claimValues: ["tech-committee"] },
+                  {
+                    claimKey: "committeeRank",
+                    claimValues: ["coordinator", "chair"],
+                  },
                 ]}
               >
                 <NotificationConsole />

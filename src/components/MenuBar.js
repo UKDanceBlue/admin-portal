@@ -6,13 +6,12 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, functions } from "../firebase/firebaseApp";
-import { useSignInWithUkMicrosoft } from "../customHooks";
-import { getAdditionalUserInfo, signOut } from "firebase/auth";
+import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
+import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
 const navLinks = [
@@ -25,7 +24,7 @@ const navLinks = [
     path: "/marathon-console",
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committee", claimValues: ["tech-committee"] },
+      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
     ],
   },
   {
@@ -33,7 +32,7 @@ const navLinks = [
     path: "/spirit-console",
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committee", claimValues: ["tech-committee"] },
+      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
     ],
   },
   {
@@ -41,7 +40,7 @@ const navLinks = [
     path: "/morale-console",
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committee", claimValues: ["tech-committee"] },
+      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
     ],
   },
   {
@@ -49,14 +48,14 @@ const navLinks = [
     path: "/notification-console",
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committee", claimValues: ["tech-committee"] },
+      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
     ],
   },
 ];
 
 const MenuBar = () => {
   const [anchorElNav, setAnchorElNav] = useState(null);
-  const [authClaims, setAuthClaims] = useState({});
+  const authClaims = useAuthClaims(auth);
 
   const navigate = useNavigate();
 
@@ -69,21 +68,9 @@ const MenuBar = () => {
         // If there is a userCredential, then the user has just signed in and may need claims updated
         await httpsCallable(functions, "updateUserClaims")("");
         const idToken = await userCredential.user.getIdTokenResult(true);
-        setAuthClaims(idToken.claims);
       }
     })();
   }, [userCredential]);
-
-  useEffect(() => {
-    (async () => {
-      if (user) {
-        const idToken = await user.getIdTokenResult();
-        setAuthClaims(idToken.claims);
-      } else {
-        setAuthClaims({ dbRole: ["public"] });
-      }
-    })();
-  }, [user]);
 
   return (
     <AppBar position="sticky">
@@ -125,15 +112,15 @@ const MenuBar = () => {
           >
             {navLinks
               .filter((page) => {
-                if (page.requiredClaims) {
-                  return page.requiredClaims.every((claim) => {
-                    return authClaims[claim.claimKey]?.includes(
-                      claim.claimValues
-                    );
-                  });
-                } else {
+                if (!page.requiredClaims) {
                   return true;
                 }
+                if (!authClaims) {
+                  return false;
+                }
+                return page.requiredClaims.every((claim) =>
+                  claim.claimValues.includes(authClaims[claim.claimKey])
+                );
               })
               .map((page) => (
                 <MenuItem key={page.path} onClick={() => navigate(page.path)}>
@@ -150,13 +137,15 @@ const MenuBar = () => {
         >
           {navLinks
             .filter((page) => {
-              if (page.requiredClaims) {
-                return page.requiredClaims.every((claim) =>
-                  claim.claimValues.includes(authClaims[claim.claimKey])
-                );
-              } else {
+              if (!page.requiredClaims) {
                 return true;
               }
+              if (!authClaims) {
+                return false;
+              }
+              return page.requiredClaims.every((claim) =>
+                claim.claimValues.includes(authClaims[claim.claimKey])
+              );
             })
             .map((page) => (
               <MenuItem key={page.path} onClick={() => navigate(page.path)}>

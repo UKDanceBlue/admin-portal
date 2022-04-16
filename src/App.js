@@ -1,4 +1,3 @@
-import * as React from "react";
 import Home from "./routes/Home";
 import MarathonConsole from "./routes/MarathonConsole";
 import MoraleConsole from "./routes/MoraleConsole";

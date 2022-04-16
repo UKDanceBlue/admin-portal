@@ -1,11 +1,9 @@
-import React from 'react';
-    
-    const NotificationConsole = () => {
-        return (
-            <div>
-                <h1>NotificationConsole</h1>
-            </div>
-        );
-    };
-    
-    export default NotificationConsole;
+const NotificationConsole = () => {
+    return (
+        <div>
+            <h1>NotificationConsole</h1>
+        </div>
+    );
+};
+
+export default NotificationConsole;

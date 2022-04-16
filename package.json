@@ -7,7 +7,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@emotion/react": "latest",
@@ -17,6 +18,7 @@
     "@mui/x-data-grid": "^5.8.0",
     "@mui/x-date-pickers": "^5.0.0-alpha.0",
     "firebase": "^9.0.0",
+    "prop-types": "^15.8.1",
     "react": "latest",
     "react-dom": "latest",
     "react-firebase-hooks": "^5.0.3",
@@ -34,5 +36,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.13.0",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0"
   }
 }

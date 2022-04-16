@@ -1,4 +1,4 @@
-import * as React from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
@@ -11,7 +11,7 @@ const container = document.querySelector("#root");
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
@@ -19,5 +19,5 @@ root.render(
         <App />
       </ThemeProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>
 );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -63,13 +63,14 @@ const MenuBar = () => {
   const [triggerLogin, userCredential] = useSignInWithUkMicrosoft(auth);
 
   useEffect(() => {
-    (async () => {
-      if (userCredential) {
-        // If there is a userCredential, then the user has just signed in and may need claims updated
-        await httpsCallable(functions, "updateUserClaims")("");
-        const idToken = await userCredential.user.getIdTokenResult(true);
-      }
-    })();
+    if (userCredential) {
+      // If there is a userCredential, then the user has just signed in and may need claims updated
+      // Calling getIdTokenResult forces the client to get a new token, updating useAuthClaims
+      httpsCallable(
+        functions,
+        "updateUserClaims"
+      )("").then(userCredential.user.getIdTokenResult(true));
+    }
   }, [userCredential]);
 
   return (

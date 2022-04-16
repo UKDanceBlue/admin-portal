@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Error";
-import { Component } from "react";
 import { auth } from "../firebase/firebaseApp";
 import { useAuthClaims } from "../customHooks";
+import PropTypes from "prop-types";
 
 /**
  * Only shows a component if the user meets the required claims. If
@@ -52,6 +52,16 @@ const SecuredParent = ({ children, requiredClaims }) => {
   } else {
     return <div>Authenticating...</div>;
   }
+};
+
+SecuredParent.propTypes = {
+  children: PropTypes.element.isRequired,
+  requiredClaims: PropTypes.arrayOf(
+    PropTypes.shape({
+      claimKey: PropTypes.string.isRequired,
+      allowedClaimValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+    })
+  ),
 };
 
 export default SecuredParent;

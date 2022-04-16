@@ -16,21 +16,41 @@ import { getAdditionalUserInfo, signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 
 const navLinks = [
-  { title: "Home", path: "/" },
+  {
+    title: "Home",
+    path: "/",
+  },
   {
     title: "Marathon Manager",
     path: "/marathon-console",
     requiredClaims: [
-      //TODO expand use of claims, I like this system though
       { claimKey: "dbRole", claimValues: ["committee"] },
       { claimKey: "committee", claimValues: ["tech-committee"] },
     ],
   },
-  { title: "Spirit Point Manager", path: "/spirit-console" },
-  { title: "Morale Point Manager", path: "/morale-console" },
+  {
+    title: "Spirit Point Manager",
+    path: "/spirit-console",
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] },
+      { claimKey: "committee", claimValues: ["tech-committee"] },
+    ],
+  },
+  {
+    title: "Morale Point Manager",
+    path: "/morale-console",
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] },
+      { claimKey: "committee", claimValues: ["tech-committee"] },
+    ],
+  },
   {
     title: "Notification Manager",
     path: "/notification-console",
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] },
+      { claimKey: "committee", claimValues: ["tech-committee"] },
+    ],
   },
 ];
 
@@ -60,7 +80,7 @@ const MenuBar = () => {
         const idToken = await user.getIdTokenResult();
         setAuthClaims(idToken.claims);
       } else {
-        setAuthClaims({});
+        setAuthClaims({ dbRole: ["public"] });
       }
     })();
   }, [user]);

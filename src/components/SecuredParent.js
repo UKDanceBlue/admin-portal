@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
  * DO NOT RELY ON THIS FOR SECURITY, this HOC can be circumvented. Sensitive data/actions should be protected on the server-side.
  * @param {Component} Component The component to secure
  * @param {Object.<string, string>} userClaims The user's claims object
- * @param {{claimKey: string, allowedClaimValues: string[]}[]} requiredClaims - The claims that the user must have to access the component
+ * @param {{claimKey: string, claimValues: string[]}[]} requiredClaims - The claims that the user must have to access the component
  */
 const SecuredParent = ({ children, requiredClaims }) => {
   const authClaims = useAuthClaims(auth);
@@ -19,7 +19,6 @@ const SecuredParent = ({ children, requiredClaims }) => {
     // Make sure that the user supplied requiredClaims, if not then just return the component
     if (requiredClaims && Array.isArray(requiredClaims)) {
       // Iterate over the requiredClaims and make sure that the user has the required claim
-      console.log(authClaims);
       if (
         requiredClaims.every((claim) => {
           return claim.claimValues.includes(authClaims[claim.claimKey]);
@@ -59,7 +58,7 @@ SecuredParent.propTypes = {
   requiredClaims: PropTypes.arrayOf(
     PropTypes.shape({
       claimKey: PropTypes.string.isRequired,
-      allowedClaimValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+      claimValues: PropTypes.arrayOf(PropTypes.string).isRequired,
     })
   ),
 };

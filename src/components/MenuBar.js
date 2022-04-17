@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +12,7 @@ import { auth, functions } from "../firebase/firebaseApp";
 import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
+import { Drawer } from "@mui/material";
 
 const navLinks = [
   {
@@ -54,7 +54,7 @@ const navLinks = [
 ];
 
 const MenuBar = () => {
-  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const authClaims = useAuthClaims(auth);
 
   const navigate = useNavigate();
@@ -75,40 +75,35 @@ const MenuBar = () => {
 
   return (
     <AppBar position="sticky">
-      <Toolbar disableGutters variant="dense">
+      <Toolbar disableGutters variant="dense" sx={{ display: "flex" }}>
         <img
-          style={{ padding: "0.5em" }}
+          style={{
+            padding: "0.5em",
+            height: "5em",
+            width: "5em",
+          }}
           alt="DanceBlue Logo"
-          src="https://www.danceblue.org/wp-content/uploads/2018/04/DB-Web-Logo-Final-03.svg"
-          srcSet="https://www.danceblue.org/wp-content/uploads/2018/04/DB-Web-Logo-Final-03.svg 1x"
+          src="/db_app_portal_logo.png"
         />
-        <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+        <Box sx={{ flex: 9, display: { xs: "flex", md: "none" } }}>
           <IconButton
             size="large"
-            onClick={(event) => {
-              setAnchorElNav(event.currentTarget);
+            onClick={() => {
+              setMenuOpen(true);
             }}
             color="inherit"
           >
             <MenuIcon />
           </IconButton>
-          <Menu
-            anchorEl={anchorElNav}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left",
+          <Drawer
+            variant="temporary"
+            ModalProps={{
+              keepMounted: true,
             }}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "left",
-            }}
-            open={Boolean(anchorElNav)}
+            anchor="left"
+            open={Boolean(menuOpen)}
             onClose={() => {
-              setAnchorElNav(null);
-            }}
-            sx={{
-              display: { xs: "block", md: "none" },
+              setMenuOpen(false);
             }}
           >
             {navLinks
@@ -128,11 +123,11 @@ const MenuBar = () => {
                   <Typography textAlign="center">{page.title}</Typography>
                 </MenuItem>
               ))}
-          </Menu>
+          </Drawer>
         </Box>
         <Box
           sx={{
-            flexGrow: 1,
+            flex: 9,
             display: { xs: "none", md: "flex" },
           }}
         >

@@ -17,6 +17,7 @@
     "@mui/material": "latest",
     "@mui/x-data-grid": "^5.8.0",
     "@mui/x-date-pickers": "^5.0.0-alpha.0",
+    "deep-is": "^0.1.4",
     "firebase": "^9.0.0",
     "prop-types": "^15.8.1",
     "react": "latest",

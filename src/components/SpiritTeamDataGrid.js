@@ -19,6 +19,8 @@ import PropTypes from "prop-types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import deepEquals from "deep-is";
 
+// TODO convert this to a generic interface for editing a firestore collection
+
 const spiritTeamsCollectionRef = collection(firestore, "teams");
 
 const DataGridFirebaseErrorOverlay = ({ code, message }) => {

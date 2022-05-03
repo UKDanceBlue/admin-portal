@@ -1,8 +1,7 @@
 module.exports = {
-  root: true,
   env: {
-    browser: true,
     es2021: true,
+    node: true,
   },
   extends: [
     "eslint:recommended",
@@ -11,33 +10,24 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react/jsx-runtime",
-    "prettier"
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-    },
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    project: ["./tsconfig.json"],
     sourceType: "module",
+    extraFileExtensions: [".cjs"],
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-    "react"
-  ],
+  plugins: ["@typescript-eslint", "node", "import"],
   rules: {
-    "quotes": ["error", "double"],
-    "import/no-unresolved": 0,
-  },
-  settings: {
-    react: {
-      version: "detect",
-    },
+    "import/no-unresolved": [
+      "error",
+      {
+        ignore: ["firebase-*"],
+      },
+    ],
   },
 };

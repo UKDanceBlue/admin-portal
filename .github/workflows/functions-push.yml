@@ -1,9 +1,9 @@
+name: 'Push Actions for Functions'
+
 on:
   push:
     branches:    
       - 'main'
-    paths-ignore:
-      - "hosting"
 
 defaults:
   run:
@@ -23,12 +23,11 @@ jobs:
           cache-dependency-path: functions/yarn.lock
       - run: yarn install
         name: "Install dependencies"
-      - name: Create SA key
-        run: echo ‘${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_DANCEBLUE }}’ > $HOME/gcloud.json
       - name: Deploy Cloud Functions
-        run: export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json && yarn deploy --json
+        run: yarn deploy --token ${{ secrets.FIREBASE_CLI_TOKEN  }}
 
-  lint:
+  lint-functions:
+    name: "Lint Functions"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,8 +37,8 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: hosting/yarn.lock
+          cache-dependency-path: functions/yarn.lock
       - run: yarn install
         name: "Install dependencies"
       - run: yarn lint
-        name: "Lint"
+        name: "Run lint script"

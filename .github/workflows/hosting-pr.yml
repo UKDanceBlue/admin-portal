@@ -1,7 +1,7 @@
+name: 'Pull Request Actions for Hosting'
+
 on:
-  pull_request:
-    paths-ignore:
-      - "functions"
+  pull_request
 
 defaults:
   run:
@@ -10,6 +10,7 @@ defaults:
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
+    name: "Preview on Firebase Hosting"
     steps:
       - uses: actions/checkout@v3
         name: "Checkout"
@@ -22,12 +23,14 @@ jobs:
       - run: yarn install
         name: "Install dependencies"
       - uses: FirebaseExtended/action-hosting-deploy@v0
-        name: "Deploy to Firebase Hosting"
+        name: "Run deploy action"
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_DANCEBLUE }}'
           projectId: react-danceblue
-  lint:
+
+  lint-hosting:
+    name: "Lint Hosting"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -41,4 +44,4 @@ jobs:
       - run: yarn install
         name: "Install dependencies"
       - run: yarn lint
-        name: "Lint"
+        name: "Run lint script"

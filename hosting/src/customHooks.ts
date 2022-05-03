@@ -21,7 +21,7 @@ export const useSignInWithUkMicrosoft = (auth) => {
 /**
  * A hook that returns the current user's claims.
  * @param {Auth} auth - Firebase Auth instance
- * @returns {?Object.<string,string>} - Returns null if no ID token has yet been checked, otherwise returns the user's auth claims object
+ * @return {?Object.<string,string>} - Returns null if no ID token has yet been checked, otherwise returns the user's auth claims object
  */
 export const useAuthClaims = (auth) => {
   const [authClaims, setAuthClaims] = useState(null);

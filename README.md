@@ -1,44 +1,14 @@
-# Create React App example
+## DanceBlue Admin
 
-## How to use
+This repository hosts DanceBlue's admin portal and our Firebase Cloud Functions
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+# DanceBlue Admin Portal
 
-<!-- #default-branch-switch -->
+# DanceBlue Cloud Functions
 
-```sh
-curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/create-react-app
-cd create-react-app
-```
+A set of Firebase Cloud Functions that support the DanceBlue app
 
-Install it and run:
+This repository contains a selection of Firebase Cloud Functions
+used for the DanceBlue mobile app
 
-```sh
-npm install
-npm start
-```
-
-or:
-
-<!-- #default-branch-switch -->
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui/material-ui/tree/master/examples/create-react-app)
-
-<!-- #default-branch-switch -->
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/create-react-app)
-
-## The idea behind the example
-
-<!-- #default-branch-switch -->
-
-This example demonstrates how you can use [Create React App](https://github.com/facebookincubator/create-react-app).
-It includes `@mui/material` and its peer dependencies, including `emotion`, the default style engine in MUI v5.
-If you prefer, you can [use styled-components instead](https://mui.com/material-ui/guides/interoperability/#styled-components).
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation, continuing browsing it from the [templates](https://mui.com/material-ui/getting-started/templates/) section.
+Each function has a dedicated file and are added to Firebase in functions/index.js

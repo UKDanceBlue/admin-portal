@@ -5383,6 +5383,7 @@ __metadata:
     "@emotion/styled": latest
     "@mui/icons-material": ^5.6.1
     "@mui/material": latest
+    "@mui/types": ^7.1.3
     "@mui/x-data-grid": ^5.8.0
     "@mui/x-date-pickers": ^5.0.0-alpha.0
     "@types/jest": ^27.5.0
@@ -5391,6 +5392,7 @@ __metadata:
     "@types/react-dom": ^18.0.3
     deep-is: ^0.1.4
     eslint: ^8.13.0
+    eslint-config-google: ^0.14.0
     eslint-plugin-react: ^7.29.4
     eslint-plugin-react-hooks: ^4.4.0
     firebase: ^9.0.0
@@ -6296,6 +6298,15 @@ __metadata:
     escodegen: bin/escodegen.js
     esgenerate: bin/esgenerate.js
   checksum: 5aa6b2966fafe0545e4e77936300cc94ad57cfe4dc4ebff9950492eaba83eef634503f12d7e3cbd644ecc1bab388ad0e92b06fd32222c9281a75d1cf02ec6cef
+  languageName: node
+  linkType: hard
+
+"eslint-config-google@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "eslint-config-google@npm:0.14.0"
+  peerDependencies:
+    eslint: ">=5.16.0"
+  checksum: 52ad84c0df2d33703024e5b7fd73a9a1b2a87413d25cee1826c891b3f8fba89f9188f3c5ed6d57b4315851c6a3c82847cc9f6c747278bf4395341f9ad79ed0d0
   languageName: node
   linkType: hard
 

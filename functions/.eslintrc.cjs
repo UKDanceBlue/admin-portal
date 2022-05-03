@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     es2021: true,
     node: true,
@@ -10,6 +11,7 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
@@ -23,6 +25,7 @@ module.exports = {
   ],
   plugins: ["@typescript-eslint", "node", "import"],
   rules: {
+    "quotes": ["error", "double"],
     "import/no-unresolved": [
       "error",
       {

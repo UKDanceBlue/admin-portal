@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   env: {
     browser: true,
     es2021: true,
@@ -10,9 +11,10 @@ module.exports = {
     "plugin:import/typescript",
     "google",
     "plugin:@typescript-eslint/recommended",
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
-    "prettier"
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -21,6 +23,7 @@ module.exports = {
     },
     project: ["./tsconfig.json"],
     sourceType: "module",
+    extraFileExtensions: [".cjs"],
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
@@ -35,4 +38,7 @@ module.exports = {
       version: "detect",
     },
   },
+  rules: {
+    "import/no-unresolved": 0,
+  }
 };

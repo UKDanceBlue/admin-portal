@@ -1,9 +1,9 @@
 on:
   push:
-    branches:    
+    branches:
       - 'main'
     paths-ignore:
-      - "functions"
+      - "functions" # Only run if files outside of functions are changed
 
 defaults:
   run:
@@ -11,6 +11,7 @@ defaults:
 
 jobs:
   deploy-live:
+    name: "Deploy to Firebase Hosting"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,13 +25,15 @@ jobs:
       - run: yarn install
         name: "Install dependencies"
       - uses: FirebaseExtended/action-hosting-deploy@v0
-        name: "Deploy to Firebase Hosting"
+        name: "Run deploy action"
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_DANCEBLUE }}'
           channelId: live
           projectId: react-danceblue
-  lint:
+
+  lint-hosting:
+    name: "Lint Hosting"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -44,4 +47,4 @@ jobs:
       - run: yarn install
         name: "Install dependencies"
       - run: yarn lint
-        name: "Lint"
+        name: "Run lint script"

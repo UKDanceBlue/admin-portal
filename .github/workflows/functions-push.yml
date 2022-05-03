@@ -3,7 +3,7 @@ on:
     branches:    
       - 'main'
     paths-ignore:
-      - "hosting"
+      - "hosting" # Only run if files outside of hosting are changed
 
 defaults:
   run:
@@ -26,7 +26,8 @@ jobs:
       - name: Deploy Cloud Functions
         run: yarn deploy --token ${{ secrets.FIREBASE_CLI_TOKEN  }}
 
-  lint:
+  lint-functions:
+    name: "Lint Functions"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -36,8 +37,8 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: hosting/yarn.lock
+          cache-dependency-path: functions/yarn.lock
       - run: yarn install
         name: "Install dependencies"
       - run: yarn lint
-        name: "Lint"
+        name: "Run lint script"

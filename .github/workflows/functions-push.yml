@@ -1,11 +1,9 @@
-name: 'Functions Push'
+name: 'Push Actions for Functions'
 
 on:
   push:
     branches:    
       - 'main'
-    paths-ignore:
-      - "hosting" # Only run if files outside of hosting are changed
 
 defaults:
   run:

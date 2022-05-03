@@ -1,9 +1,7 @@
-name: 'Functions Pull Request'
+name: 'Pull Request Actions for Functions'
 
 on:
-  pull_request:
-    paths-ignore:
-      - "hosting" # Only run if files outside of hosting are changed
+  pull_request
 
 defaults:
   run:

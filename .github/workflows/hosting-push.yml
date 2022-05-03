@@ -1,0 +1,47 @@
+on:
+  push:
+    branches:    
+      - 'main'
+    paths-ignore:
+      - "functions"
+
+defaults:
+  run:
+    working-directory: './hosting'
+
+jobs:
+  deploy-live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: "Checkout"
+      - uses: actions/setup-node@v3
+        name: "Setup Node"
+        with:
+          node-version: "lts/*"
+          cache: 'yarn'
+          cache-dependency-path: hosting/yarn.lock
+      - run: yarn install
+        name: "Install dependencies"
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        name: "Deploy to Firebase Hosting"
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_REACT_DANCEBLUE }}'
+          channelId: live
+          projectId: react-danceblue
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: "Checkout"
+      - uses: actions/setup-node@v3
+        name: "Setup Node"
+        with:
+          node-version: "lts/*"
+          cache: 'yarn'
+          cache-dependency-path: hosting/yarn.lock
+      - run: yarn install
+        name: "Install dependencies"
+      - run: yarn lint
+        name: "Lint"

@@ -1,0 +1,25 @@
+on:
+  pull_request:
+    paths-ignore:
+      - "hosting"
+
+defaults:
+  run:
+    working-directory: './functions'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: "Checkout"
+      - uses: actions/setup-node@v3
+        name: "Setup Node"
+        with:
+          node-version: "lts/*"
+          cache: 'yarn'
+          cache-dependency-path: hosting/yarn.lock
+      - run: yarn install
+        name: "Install dependencies"
+      - run: yarn lint
+        name: "Lint"

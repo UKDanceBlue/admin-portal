@@ -1,15 +1,15 @@
 import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 
-import sendPushNotificationFunction from "./sendPushNotification";
-import processPushNotificationReceiptsFunction from "./processPushNotificationReceipts";
-import sweepOldAccountsFunction from "./sweepOldAccounts";
-import syncDBFundsFunction from "./syncDBFunds";
-import importSpiritPointsFunction from "./importSpiritPoints";
-import writeLogFunction from "./writeLog";
-import updateTeamFunction from "./updateTeam";
-import updateUserClaimsFunction from "./updateUserClaims";
-import handleDeviceDocumentWriteFunction from "./handleDeviceDocumentWrite";
+import sendPushNotificationFunction from "./src/sendPushNotification";
+import processPushNotificationReceiptsFunction from "./src/processPushNotificationReceipts";
+import sweepOldAccountsFunction from "./src/sweepOldAccounts";
+import syncDBFundsFunction from "./src/syncDBFunds";
+import importSpiritPointsFunction from "./src/importSpiritPoints";
+import writeLogFunction from "./src/writeLog";
+import updateTeamFunction from "./src/updateTeam";
+import updateUserClaimsFunction from "./src/updateUserClaims";
+import handleDeviceDocumentWriteFunction from "./src/handleDeviceDocumentWrite";
 
 initializeApp({ projectId: "react-danceblue" });
 

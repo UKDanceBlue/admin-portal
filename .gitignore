@@ -1,15 +1,30 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
-/.pnp
-.pnp.js
+hosting/node_modules
+hosting/.yarn/*
+hosting/.pnp/*
+!hosting/.yarn/patches
+!hosting/.yarn/plugins
+!hosting/.yarn/releases
+!hosting/.yarn/sdks
+!hosting/.yarn/versions
+
+functions/node_modules
+functions/.yarn/*
+fucntions/.pnp.*
+!functions/.yarn/patches
+!functions/.yarn/plugins
+!functions/.yarn/releases
+!functions/.yarn/sdks
+!functions/.yarn/versions
 
 # testing
-/coverage
+**/coverage
 
 # production
-/build
+**/build
+**/lib
 
 # misc
 .DS_Store

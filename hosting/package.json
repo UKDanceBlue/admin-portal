@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "eslint": "^8.13.0",
+    "eslint-plugin-google": "^7.29.4",
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.4.0"
   },

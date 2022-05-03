@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
  * @param {Component} Component The component to secure
  * @param {Object.<string, string>} userClaims The user's claims object
  * @param {{claimKey: string, claimValues: string[]}[]} requiredClaims - The claims that the user must have to access the component
+ * @return {Component} The now secured component
  */
 const SecuredParent = ({ children, requiredClaims }) => {
   const authClaims = useAuthClaims(auth);

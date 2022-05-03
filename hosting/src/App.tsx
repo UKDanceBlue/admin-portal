@@ -8,6 +8,11 @@ import MenuBar from "./components/MenuBar";
 import { Box, Paper } from "@mui/material";
 import SecuredParent from "./components/SecuredParent";
 
+/**
+ * Core application component, mounted by index.tsx to the root div.
+ *
+ * @return {JSX.Element} The main App component
+ */
 export default function App() {
   return (
     <Box sx={{ alignContent: "center" }}>

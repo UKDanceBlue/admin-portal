@@ -12,7 +12,7 @@
   "engines": {
     "node": "16"
   },
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "@types/node-fetch": "^2.6.1",
     "@types/uuid": "^8.3.4",

@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "composite": true
+  },
+  "compileOnSave": true,
+  "include": [
+    "./src/**/*", ".eslintrc.js"
+  ]
+}

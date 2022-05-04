@@ -14,7 +14,14 @@ import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { Drawer } from "@mui/material";
 
-const navLinks = [
+const navLinks: {
+  title: string;
+  path: string;
+  requiredClaims?: {
+    claimKey: string;
+    claimValues: string[];
+  }[];
+}[] = [
   {
     title: "Home",
     path: "/",
@@ -66,10 +73,11 @@ const MenuBar = () => {
     if (userCredential) {
       // If there is a userCredential, then the user has just signed in and may need claims updated
       // Calling getIdTokenResult forces the client to get a new token, updating useAuthClaims
-      httpsCallable(
-        functions,
-        "updateUserClaims"
-      )("").then(userCredential.user.getIdTokenResult(true));
+      const updateUserClaims = httpsCallable(functions, "updateUserClaims");
+
+      if (updateUserClaims) {
+        void updateUserClaims("").then(() => userCredential.user.getIdTokenResult(true));
+      }
     }
   }, [userCredential]);
 
@@ -114,9 +122,14 @@ const MenuBar = () => {
                 if (!authClaims) {
                   return false;
                 }
-                return page.requiredClaims.every((claim) =>
-                  claim.claimValues.includes(authClaims[claim.claimKey])
-                );
+                return page.requiredClaims.every((claim) => {
+                  const userClaimValue = authClaims[claim.claimKey];
+                  if (typeof userClaimValue === "string") {
+                    return claim.claimValues.includes(userClaimValue);
+                  } else {
+                    return false;
+                  }
+                });
               })
               .map((page) => (
                 <MenuItem key={page.path} onClick={() => navigate(page.path)}>
@@ -139,9 +152,14 @@ const MenuBar = () => {
               if (!authClaims) {
                 return false;
               }
-              return page.requiredClaims.every((claim) =>
-                claim.claimValues.includes(authClaims[claim.claimKey])
-              );
+              return page.requiredClaims.every((claim) => {
+                const userClaimValue = authClaims[claim.claimKey];
+                if (typeof userClaimValue === "string") {
+                  return claim.claimValues.includes(userClaimValue);
+                } else {
+                  return false;
+                }
+              });
             })
             .map((page) => (
               <MenuItem key={page.path} onClick={() => navigate(page.path)}>
@@ -151,14 +169,18 @@ const MenuBar = () => {
         </Box>
         {(!user || user.isAnonymous) && (
           <Box>
-            <MenuItem onClick={triggerLogin}>
+            <MenuItem onClick={() => triggerLogin}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>
         )}
         {user && !user.isAnonymous && (
           <Box>
-            <MenuItem onClick={() => signOut(auth)}>
+            <MenuItem
+              onClick={() => {
+                void signOut(auth);
+              }}
+            >
               <Typography textAlign="center">Log Out</Typography>
             </MenuItem>
           </Box>

@@ -1,8 +1,17 @@
-import { Auth, onIdTokenChanged, ParsedToken, User } from "firebase/auth";
+import {
+  Auth,
+  AuthError,
+  onIdTokenChanged,
+  ParsedToken,
+  User,
+  UserCredential,
+} from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useSignInWithMicrosoft } from "react-firebase-hooks/auth";
 
-export const useSignInWithUkMicrosoft = (auth: Auth) => {
+export const useSignInWithUkMicrosoft = (
+  auth: Auth
+): [() => Promise<void>, UserCredential | undefined, boolean, AuthError | undefined] => {
   const [signInWithMicrosoft, userCredential, loading, error] = useSignInWithMicrosoft(auth);
 
   const signInWithUkMicrosoft = () =>

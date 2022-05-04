@@ -1,6 +1,6 @@
 import { getFirestore } from "firebase-admin/firestore";
 
-export default async (data, context) => {
+export default functions.https.onCall(async (data, context) => {
   const { teamId, newTeamName, newSpreadsheetId, newNetworkForGoodId } = data;
 
   const updateTeamConfig = (await getFirestore().doc("configs/update-team").get()).data();
@@ -59,4 +59,4 @@ export default async (data, context) => {
         },
       };
     });
-};
+});

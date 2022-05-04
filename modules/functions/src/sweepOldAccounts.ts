@@ -1,6 +1,7 @@
+import * as functions from "firebase-functions";
 import { getAuth } from "firebase-admin/auth";
 
-export default async (req, res) => {
+export default functions.https.onRequest(async (req, res) => {
   const response = { status: undefined, usersDeleted: [], errors: [] };
 
   const annonCutoffDate = new Date();
@@ -44,4 +45,4 @@ export default async (req, res) => {
     response.status = "OK";
   }
   res.json(response);
-};
+});

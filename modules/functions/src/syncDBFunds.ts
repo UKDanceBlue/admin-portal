@@ -3,7 +3,7 @@ import { getFirestore } from "firebase-admin/firestore";
 
 import fetch from "node-fetch";
 
-export default async () => {
+export default functions.pubsub.schedule("every 24 hours").onRun(async () => {
   // Get config info from firebase
   const dbFundsSyncConfig = (await getFirestore().doc("configs/db-funds-sync").get()).data();
   const currentFiscalYears = dbFundsSyncConfig.currentFiscalYears;
@@ -103,4 +103,4 @@ export default async () => {
       );
     }
   }
-};
+});

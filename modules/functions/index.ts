@@ -1,4 +1,3 @@
-import * as functions from "firebase-functions";
 import { initializeApp } from "firebase-admin/app";
 
 import sendPushNotificationFunction from "./src/sendPushNotification";
@@ -11,24 +10,24 @@ import updateTeamFunction from "./src/updateTeam";
 import updateUserClaimsFunction from "./src/updateUserClaims";
 import handleDeviceDocumentWriteFunction from "./src/handleDeviceDocumentWrite";
 
+// TODO type all of these using CloudFunction and HttpsFunction by creating a with argument types for all of these functions
+
 initializeApp({ projectId: "react-danceblue" });
 
-export const sendPushNotification = functions
-  .runWith({ secrets: ["EXPO_ACCESS_TOKEN"] })
-  .https.onCall(sendPushNotificationFunction);
+export const sendPushNotification = sendPushNotificationFunction;
 
 export const processPushNotificationReceipts = processPushNotificationReceiptsFunction;
 
-export const sweepOldAccounts = functions.https.onRequest(sweepOldAccountsFunction);
+export const sweepOldAccounts = sweepOldAccountsFunction;
 
-export const syncDBFunds = functions.pubsub.schedule("every 24 hours").onRun(syncDBFundsFunction);
+export const syncDBFunds = syncDBFundsFunction;
 
-export const importSpiritPoints = functions.https.onRequest(importSpiritPointsFunction);
+export const importSpiritPoints = importSpiritPointsFunction;
 
-export const writeLog = functions.https.onRequest(writeLogFunction);
+export const writeLog = writeLogFunction;
 
-export const updateTeam = functions.https.onCall(updateTeamFunction);
+export const updateTeam = updateTeamFunction;
 
-export const updateUserClaims = functions.https.onCall(updateUserClaimsFunction);
+export const updateUserClaims = updateUserClaimsFunction;
 
 export const handleDeviceDocumentWrite = handleDeviceDocumentWriteFunction;

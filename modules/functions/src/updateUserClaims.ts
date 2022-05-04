@@ -3,7 +3,7 @@ import { HttpsError } from "firebase-functions/v1/https";
 import * as functions from "firebase-functions";
 import directoryLookup from "./common/directoryLookup";
 
-export default async (data, context) => {
+export default functions.https.onCall(async (data, context) => {
   // TODO validate context.app.token (Firebase App Check)
 
   if (!context?.auth?.uid) {
@@ -54,4 +54,4 @@ export default async (data, context) => {
 
   functions.logger.log(`Attempting to add custom claims to ${uid}.`, customClaims);
   await firebaseAuth.setCustomUserClaims(uid, customClaims);
-};
+});

@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 
-export default async (req, res) => {
+export default functions.https.onRequest(async (req, res) => {
   try {
     if (req.method === "POST") {
       if (req.body && typeof req.body === "string") {
@@ -33,4 +33,4 @@ export default async (req, res) => {
   } catch (error) {
     res.status(500).send(error).end();
   }
-};
+});

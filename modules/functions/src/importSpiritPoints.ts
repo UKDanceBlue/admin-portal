@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import { getFirestore } from "firebase-admin/firestore";
 
-export default async (req, res) => {
+export default functions.https.onRequest(async (req, res) => {
   /*
    * 'points' should be in the following form:
    * {
@@ -204,4 +204,4 @@ export default async (req, res) => {
   } finally {
     res.end();
   }
-};
+});

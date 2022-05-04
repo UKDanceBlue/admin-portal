@@ -3,80 +3,84 @@ import * as functions from "firebase-functions";
 import { getFirestore } from "firebase-admin/firestore";
 import Expo from "expo-server-sdk";
 
-export default async (data, context) => {
-  // Make sure the function is called while authenticated.
-  if (!context?.auth?.uid) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "This function must be used while authenticated."
-    );
-  }
+export default functions
+  .runWith({ secrets: ["EXPO_ACCESS_TOKEN"] })
+  .https.onCall(async (data, context) => {
+    // Make sure the function is called while authenticated.
+    if (!context?.auth?.uid) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "This function must be used while authenticated."
+      );
+    }
 
-  const {
-    token: { committee: senderCommittee, committeeRank: senderCommitteeRank },
-  } = context.auth;
+    const {
+      token: { committee: senderCommittee, committeeRank: senderCommitteeRank },
+    } = context.auth;
 
-  // Make sure the user has the committeeRank claim.
-  if (
-    !["advisor", "overall-chair", "chair"].includes(senderCommitteeRank) ||
-    senderCommittee === "tech-committee"
-  ) {
-    throw new functions.https.HttpsError(
-      "permission-denied",
-      "This function may only be used by a chair or a member of the tech committee."
-    );
-  }
+    // Make sure the user has the committeeRank claim.
+    if (
+      !["advisor", "overall-chair", "chair"].includes(senderCommitteeRank) ||
+      senderCommittee === "tech-committee"
+    ) {
+      throw new functions.https.HttpsError(
+        "permission-denied",
+        "This function may only be used by a chair or a member of the tech committee."
+      );
+    }
 
-  const {
-    notificationTitle,
-    notificationBody,
-    notificationPayload,
-    // If this is going to specific users we get *notificationRecipients*, if many we get *notificationAudiences*.
-    notificationAudiences,
-    notificationRecipients,
-  } = data;
+    const {
+      notificationTitle,
+      notificationBody,
+      notificationPayload,
+      // If this is going to specific users we get *notificationRecipients*, if many we get *notificationAudiences*.
+      notificationAudiences,
+      notificationRecipients,
+    } = data;
 
-  const firestore = getFirestore();
-  // Generate a notification ID and document.
-  const notificationId = generateUuid();
-  const notificationDocument = firestore.collection("past-notifications").doc(notificationId);
-  const notificationContent = {
-    title: notificationTitle,
-    body: notificationBody,
-    payload: notificationPayload,
-  };
-  const notificationDocumentCreation = notificationDocument.create(notificationContent);
+    const firestore = getFirestore();
+    // Generate a notification ID and document.
+    const notificationId = generateUuid();
+    const notificationDocument = firestore.collection("past-notifications").doc(notificationId);
+    const notificationContent = {
+      title: notificationTitle,
+      body: notificationBody,
+      payload: notificationPayload,
+    };
+    const notificationDocumentCreation = notificationDocument.create(notificationContent);
 
-  let userDocuments;
+    let userDocuments;
 
-  if (notificationAudiences) {
-    // Get the user documents for the notification.
-    userDocuments = await getUserDocumentsForNotification(notificationAudiences);
-  } else if (notificationRecipients && Array.isArray(notificationRecipients)) {
-    // Get the user documents for the notification.
-    userDocuments = await Promise.all(
-      notificationRecipients.map((recipient) => firestore.collection("users").doc(recipient).get())
-    );
-  }
+    if (notificationAudiences) {
+      // Get the user documents for the notification.
+      userDocuments = await getUserDocumentsForNotification(notificationAudiences);
+    } else if (notificationRecipients && Array.isArray(notificationRecipients)) {
+      // Get the user documents for the notification.
+      userDocuments = await Promise.all(
+        notificationRecipients.map((recipient) =>
+          firestore.collection("users").doc(recipient).get()
+        )
+      );
+    }
 
-  // Make sure the notification's document has been created before we add a reference to it.
-  await notificationDocumentCreation;
+    // Make sure the notification's document has been created before we add a reference to it.
+    await notificationDocumentCreation;
 
-  // Add the reference to the notification to the user documents.
-  userDocuments.forEach((userDocument) => {
-    // Update the user document.
-    firestore.collection(`users/${userDocument.id}/notifications`).doc(notificationId).set({
-      ref: notificationDocument,
+    // Add the reference to the notification to the user documents.
+    userDocuments.forEach((userDocument) => {
+      // Update the user document.
+      firestore.collection(`users/${userDocument.id}/notifications`).doc(notificationId).set({
+        ref: notificationDocument,
+      });
     });
+
+    // Create a new Expo SDK client
+    const expo = new Expo({ accessToken: process.env.EXPO_PUSH_TOKEN });
+
+    const chunks = chunkNotification(notificationContent, userDocuments, expo);
+
+    return sendChunks(chunks, expo);
   });
-
-  // Create a new Expo SDK client
-  const expo = new Expo({ accessToken: process.env.EXPO_PUSH_TOKEN });
-
-  const chunks = chunkNotification(notificationContent, userDocuments, expo);
-
-  return sendChunks(chunks, expo);
-};
 
 /**
  * Find users who should receive a notification.

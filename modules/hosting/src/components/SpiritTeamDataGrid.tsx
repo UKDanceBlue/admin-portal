@@ -47,8 +47,7 @@ const SpiritTeamDataGrid = (props) => {
   const membersDialogDescriptionElementRef = useRef(null);
   useEffect(() => {
     if (membersDialogOpen) {
-      const { current: descriptionElement } =
-        membersDialogDescriptionElementRef;
+      const { current: descriptionElement } = membersDialogDescriptionElementRef;
       if (descriptionElement !== null) {
         descriptionElement.focus();
       }
@@ -74,9 +73,7 @@ const SpiritTeamDataGrid = (props) => {
       if (newRow.id !== oldRow.id) {
         throw new Error("Row ID changed, database update aborted");
       } else {
-        return setDoc(doc(spiritTeamsCollectionRef, newRow.id), newRow).then(
-          () => newRow
-        );
+        return setDoc(doc(spiritTeamsCollectionRef, newRow.id), newRow).then(() => newRow);
       }
     }
   }, []);
@@ -86,11 +83,7 @@ const SpiritTeamDataGrid = (props) => {
       <DataGrid
         {...props}
         experimentalFeatures={{ newEditingApi: true }}
-        rows={
-          spiritTeams
-            ? spiritTeams.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-            : []
-        }
+        rows={spiritTeams ? spiritTeams.docs.map((doc) => ({ id: doc.id, ...doc.data() })) : []}
         columns={[
           {
             field: "id",
@@ -172,13 +165,11 @@ const SpiritTeamDataGrid = (props) => {
         <DialogTitle id="scroll-dialog-title">Team Members</DialogTitle>
         <DialogContent dividers={true}>
           <List>
-            {Object.entries(membersDialogContent).map(
-              ({ 0: key, 1: value }) => (
-                <ListItem key={key}>
-                  <ListItemText primary={value} />
-                </ListItem>
-              )
-            )}
+            {Object.entries(membersDialogContent).map(({ 0: key, 1: value }) => (
+              <ListItem key={key}>
+                <ListItemText primary={value} />
+              </ListItem>
+            ))}
           </List>
         </DialogContent>
         <DialogActions>

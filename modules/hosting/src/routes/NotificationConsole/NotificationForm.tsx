@@ -1,10 +1,4 @@
-import {
-  Autocomplete,
-  Checkbox,
-  CircularProgress,
-  FormControl,
-  TextField,
-} from "@mui/material";
+import { Autocomplete, Checkbox, CircularProgress, FormControl, TextField } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../../firebase/firebaseApp";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
@@ -19,12 +13,12 @@ const NotificationForm = () => {
   const [shouldTeamsLoad, setShouldTeamsLoad] = useState(false);
   const [teams, setTeams] = useState([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
-  const [teamsError, setTeamsError] = useState(null);
+  const [teamsError, setTeamsError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (shouldTeamsLoad) {
       const teamsCollectionRef = collection(firestore, "teams").withConverter({
-        toFirestore(data) {
+        toFirestore(data: { [key: string]: unknown; id?: string }) {
           const dataToUpload = { ...data };
           delete dataToUpload.id;
           return dataToUpload;
@@ -39,7 +33,7 @@ const NotificationForm = () => {
           setTeams(snapshot.docs.map((doc) => doc.data()));
           setTeamsLoading(false);
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           setTeamsError(error);
           setTeamsLoading(false);
         });
@@ -82,10 +76,7 @@ const NotificationForm = () => {
                 endAdornment: (
                   <>
                     {shouldTeamsLoad && (teamsLoading || teamsError) ? (
-                      <CircularProgress
-                        color={teamsError ? "error" : "primary"}
-                        size={20}
-                      />
+                      <CircularProgress color={teamsError ? "error" : "primary"} size={20} />
                     ) : null}
                     {params.InputProps.endAdornment}
                   </>

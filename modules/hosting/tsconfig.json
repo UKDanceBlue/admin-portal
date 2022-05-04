@@ -3,6 +3,7 @@
   "compilerOptions": {
     "lib": ["ESNext", "DOM"],
     "jsx": "react-jsx",
+    "outDir": "dist",
     "composite": true
   },
   "compileOnSave": true,

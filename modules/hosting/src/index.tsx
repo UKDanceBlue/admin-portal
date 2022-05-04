@@ -8,16 +8,20 @@ import { BrowserRouter } from "react-router-dom";
 
 const container = document.querySelector("#root");
 
-const root = createRoot(container);
+if (container) {
+  const root = createRoot(container);
 
-root.render(
-  <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </BrowserRouter>
-  </StrictMode>
-);
+  root.render(
+    <StrictMode>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+          <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </BrowserRouter>
+    </StrictMode>
+  );
+} else {
+  throw new Error("Root element not found");
+}

@@ -1,16 +1,31 @@
 import { getFirestore } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
 
-type QueryDataType = {
+type DirectoryEntry = {
   lastAssociatedUid: string;
   upn: string;
   email: string;
   firstName: string;
   lastName: string;
+  directoryDocumentId: string;
   spiritTeamId: string;
-  committee: string;
   committeeRank: "advisor" | "overall-chair" | "chair" | "coordinator" | "committee-member";
   dbRole: "public" | "team-member" | "committee";
+  committee: string;
+  marathonAccess: string;
+  spiritCaptain: boolean;
+};
+
+type QueryDataType = {
+  lastAssociatedUid?: string;
+  upn?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  spiritTeamId?: string;
+  committee?: string;
+  committeeRank?: "advisor" | "overall-chair" | "chair" | "coordinator" | "committee-member";
+  dbRole?: "public" | "team-member" | "committee";
 };
 
 // A list of keys to filter directory entires by (not actually used in the query, but used to determine if a match is found). Ordered by specificity.
@@ -36,7 +51,7 @@ const possibleQueryKeys: (keyof QueryDataType)[] = [
 export default async function directoryLookup(
   queryData: QueryDataType,
   returnAll = false
-): Promise<{ [key: string]: string } | { [key: string]: string }[] | null> {
+): Promise<DirectoryEntry | DirectoryEntry[] | null> {
   functions.logger.log("Attempting a firestore directory lookup", queryData);
 
   const firebaseFirestore = getFirestore();
@@ -116,13 +131,19 @@ export default async function directoryLookup(
         "Successfully found a single directory entry.",
         foundDocuments[0].data()
       );
-      return { directoryDocumentId: foundDocuments[0].id, ...foundDocuments[0].data() };
+      return {
+        directoryDocumentId: foundDocuments[0].id,
+        ...foundDocuments[0].data(),
+      } as DirectoryEntry;
     } else if (returnAll) {
       functions.logger.log("Successfully found multiple directory entries, returning all.");
-      return foundDocuments.map((doc) => ({
-        directoryDocumentId: doc.id,
-        ...doc.data(),
-      }));
+      return foundDocuments.map(
+        (doc) =>
+          ({
+            directoryDocumentId: doc.id,
+            ...doc.data(),
+          } as DirectoryEntry)
+      );
     } else {
       functions.logger.log("Failed to narrow query to a single directory entry.");
       return null;

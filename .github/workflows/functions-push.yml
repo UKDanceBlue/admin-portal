@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: functions/yarn.lock
+          cache-dependency-path: modules/functions/yarn.lock
       - run: yarn install
         name: "Install dependencies"
       - run: yarn lint

@@ -1,9 +1,11 @@
 import { initializeApp } from "firebase-admin/app";
 
 import sendPushNotificationFunction, {
-  SendPushNotificationFunctionArgument,
+  SendPushNotificationArgument,
 } from "./src/sendPushNotification";
-import processPushNotificationReceiptsFunction from "./src/processPushNotificationReceipts";
+import processPushNotificationReceiptsFunction, {
+  ProcessPushNotificationReceiptsArgument,
+} from "./src/processPushNotificationReceipts";
 import sweepOldAccountsFunction from "./src/sweepOldAccounts";
 import syncDBFundsFunction from "./src/syncDBFunds";
 import importSpiritPointsFunction from "./src/importSpiritPoints";
@@ -17,10 +19,11 @@ import { Runnable } from "firebase-functions/v1";
 
 initializeApp({ projectId: "react-danceblue" });
 
-export const sendPushNotification: Runnable<SendPushNotificationFunctionArgument> =
+export const sendPushNotification: Runnable<SendPushNotificationArgument> =
   sendPushNotificationFunction;
 
-export const processPushNotificationReceipts = processPushNotificationReceiptsFunction;
+export const processPushNotificationReceipts: Runnable<ProcessPushNotificationReceiptsArgument> =
+  processPushNotificationReceiptsFunction;
 
 export const sweepOldAccounts = sweepOldAccountsFunction;
 

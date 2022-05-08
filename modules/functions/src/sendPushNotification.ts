@@ -13,7 +13,7 @@ import Expo, {
   ExpoPushSuccessTicket,
 } from "expo-server-sdk";
 
-export type SendPushNotificationFunctionArgument = {
+export type SendPushNotificationArgument = {
   notificationTitle?: string;
   notificationBody?: string;
   notificationPayload?: unknown;
@@ -24,7 +24,7 @@ export type SendPushNotificationFunctionArgument = {
 
 export default functions
   .runWith({ secrets: ["EXPO_ACCESS_TOKEN"] })
-  .https.onCall(async (data: SendPushNotificationFunctionArgument, context) => {
+  .https.onCall(async (data: SendPushNotificationArgument, context) => {
     // Make sure the function is called while authenticated.
     if (!context?.auth?.uid) {
       throw new functions.https.HttpsError(

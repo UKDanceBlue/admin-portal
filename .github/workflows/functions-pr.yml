@@ -3,10 +3,6 @@ name: 'Pull Request Actions for Functions'
 on:
   pull_request
 
-defaults:
-  run:
-    working-directory: 'modules/functions'
-
 jobs:
   lint-functions:
     name: "Lint Functions"
@@ -19,8 +15,7 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: modules/functions/yarn.lock
-      - run: yarn install
+      - run: yarn workspaces focus -A
         name: "Install dependencies"
-      - run: yarn lint
+      - run: yarn workspace functions run lint
         name: "Run lint script"

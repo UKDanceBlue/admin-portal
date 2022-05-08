@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "tsc --build",
-    "lint": "eslint .",
+    "build": "yarn workspaces foreach run build",
+    "lint": "yarn workspaces foreach run lint",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
     "deploy-all": "firebase deploy"
   },

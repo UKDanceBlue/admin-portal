@@ -5,10 +5,6 @@ on:
     branches:    
       - 'main'
 
-defaults:
-  run:
-    working-directory: 'modules/functions'
-
 jobs:
   deploy-functions:
     name: "Deploy Functions"
@@ -21,11 +17,10 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: modules/functions/yarn.lock
-      - run: yarn install
+      - run: yarn workspaces focus -A
         name: "Install dependencies"
       - name: Deploy Cloud Functions
-        run: yarn deploy --token ${{ secrets.FIREBASE_CLI_TOKEN  }}
+        run: yarn workspace functions run deploy-functions --token ${{ secrets.FIREBASE_CLI_TOKEN  }}
 
   lint-functions:
     name: "Lint Functions"
@@ -39,7 +34,7 @@ jobs:
           node-version: "lts/*"
           cache: 'yarn'
           cache-dependency-path: modules/functions/yarn.lock
-      - run: yarn install
+      - run: yarn workspaces focus -A
         name: "Install dependencies"
-      - run: yarn lint
+      - run: yarn workspace functions run lint
         name: "Run lint script"

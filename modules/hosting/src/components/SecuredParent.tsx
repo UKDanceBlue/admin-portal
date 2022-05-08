@@ -3,17 +3,23 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { auth } from "../firebase/firebaseApp";
 import { useAuthClaims } from "../customHooks";
 import PropTypes from "prop-types";
+import { ReactNode } from "react";
 
 /**
  * Only shows a component if the user meets the required claims. If
  *
  * DO NOT RELY ON THIS FOR SECURITY, this HOC can be circumvented. Sensitive data/actions should be protected on the server-side.
- * @param {Component} Component The component to secure
- * @param {Object.<string, string>} userClaims The user's claims object
- * @param {{claimKey: string, claimValues: string[]}[]} requiredClaims - The claims that the user must have to access the component
- * @return {Component} The now secured component
  */
-const SecuredParent = ({ children, requiredClaims }) => {
+const SecuredParent = ({
+  children,
+  requiredClaims,
+}: {
+  children: ReactNode;
+  requiredClaims: {
+    claimKey: string;
+    claimValues: string[];
+  }[];
+}) => {
   const authClaims = useAuthClaims(auth);
 
   if (authClaims) {
@@ -22,7 +28,12 @@ const SecuredParent = ({ children, requiredClaims }) => {
       // Iterate over the requiredClaims and make sure that the user has the required claim
       if (
         requiredClaims.every((claim) => {
-          return claim.claimValues.includes(authClaims[claim.claimKey]);
+          const authClaim = authClaims[claim.claimKey];
+          if (typeof authClaim !== "string") {
+            console.warn("Auth claim is not a string");
+            return false;
+          }
+          return claim.claimValues.includes(authClaim);
         })
       ) {
         return <>{children}</>;
@@ -38,8 +49,8 @@ const SecuredParent = ({ children, requiredClaims }) => {
             >
               <ErrorIcon fontSize="large" color="error" />
               <p>
-                You do not have access to this component. If you believe this is
-                an error, please contact the DanceBlue technology committee.
+                You do not have access to this component. If you believe this is an error, please
+                contact the DanceBlue technology committee.
               </p>
               <ErrorIcon fontSize="large" color="error" />
             </Box>

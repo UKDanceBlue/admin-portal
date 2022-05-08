@@ -1,26 +1,39 @@
 import * as functions from "firebase-functions";
+import { LogSeverity } from "firebase-functions/logger";
 
-export default functions.https.onRequest(async (req, res) => {
+type WriteLogArgument = {
+  message: string;
+  severity: LogSeverity;
+};
+
+function isWriteLogArgument(arg: WriteLogArgument): arg is WriteLogArgument {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    typeof arg.message === "string" &&
+    typeof arg.severity === "string"
+  );
+}
+
+export default functions.https.onRequest((req, res) => {
+  const requestBody = req.body as WriteLogArgument | string;
+  if (typeof requestBody !== "string" && !isWriteLogArgument(requestBody)) {
+    res.status(400).send("Invalid request");
+    return;
+  }
+
   try {
     if (req.method === "POST") {
-      if (req.body && typeof req.body === "string") {
-        functions.logger.info(req.body.toString());
-        res.sendStatus(200).end();
-        return;
-      } else if (
-        req.body &&
-        typeof req.body === "object" &&
-        !Array.isArray(req.body) &&
-        typeof req.body.message === "string"
-      ) {
-        functions.logger.write({
-          message: req.body.message,
-          severity: req.body.severity ? req.body.severity : "INFO",
-        });
+      if (typeof requestBody === "string") {
+        functions.logger.info(requestBody.toString());
         res.sendStatus(200).end();
         return;
       } else {
-        res.sendStatus(400).end();
+        functions.logger.write({
+          message: requestBody.message,
+          severity: requestBody.severity ? requestBody.severity : "INFO",
+        });
+        res.sendStatus(200).end();
         return;
       }
     } else if (req.method === "GET") {

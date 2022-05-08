@@ -17,8 +17,10 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
+      - run: yarn install
+        name: "Install root"
       - run: yarn workspaces focus -A
-        name: "Install dependencies"
+        name: "Install workspace dependencies"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         name: "Run deploy action"
         with:
@@ -38,8 +40,9 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: modules/hosting/yarn.lock
+      - run: yarn install
+        name: "Install root"
       - run: yarn workspaces focus -A
-        name: "Install dependencies"
-      - run: yarn workspace hosting run  lint
+        name: "Install workspace dependencies"
+      - run: yarn workspace danceblue-admin-site run  lint
         name: "Run lint script"

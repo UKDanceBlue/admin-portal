@@ -17,8 +17,10 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
+      - run: yarn install
+        name: "Install root"
       - run: yarn workspaces focus -A
-        name: "Install dependencies"
+        name: "Install workspace dependencies"
       - name: Deploy Cloud Functions
         run: yarn workspace functions run deploy-functions --token ${{ secrets.FIREBASE_CLI_TOKEN  }}
 
@@ -33,8 +35,9 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'yarn'
-          cache-dependency-path: modules/functions/yarn.lock
+      - run: yarn install
+        name: "Install root"
       - run: yarn workspaces focus -A
-        name: "Install dependencies"
+        name: "Install workspace dependencies"
       - run: yarn workspace functions run lint
         name: "Run lint script"

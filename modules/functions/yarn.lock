@@ -955,7 +955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^10.1.0":
+"firebase-admin@npm:^10.2.0":
   version: 10.2.0
   resolution: "firebase-admin@npm:10.2.0"
   dependencies:
@@ -978,20 +978,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-functions-test@npm:^0.3.3":
-  version: 0.3.3
-  resolution: "firebase-functions-test@npm:0.3.3"
+"firebase-functions-test@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "firebase-functions-test@npm:2.0.1"
   dependencies:
     "@types/lodash": ^4.14.104
     lodash: ^4.17.5
+    ts-deepmerge: ^2.0.1
   peerDependencies:
     firebase-admin: ">=6.0.0"
-    firebase-functions: ">=2.0.0"
-  checksum: f08f4c8ac40c6bab51ef53a22138b8e974180da86884e52386affea64cfd7f73a8e8a795f52000b347ae129411cb2569a0087cf071c86c6ace54ab4d6d978ac9
+    firebase-functions: ">=3.20.1"
+  checksum: 6431afb83a0be85316b0c7167a2f467b68735c41fc175c2e3b93265a69c0c2d960ae34e6a64800eab65c3ccb5c95e4af19f9013a0867b08aebbd9a63a8b9d18c
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^3.20.1":
+"firebase-functions@npm:^3.21.0":
   version: 3.21.0
   resolution: "firebase-functions@npm:3.21.0"
   dependencies:
@@ -1064,9 +1065,9 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/uuid": ^8.3.4
     expo-server-sdk: ^3.6.0
-    firebase-admin: ^10.1.0
-    firebase-functions: ^3.20.1
-    firebase-functions-test: ^0.3.3
+    firebase-admin: ^10.2.0
+    firebase-functions: ^3.21.0
+    firebase-functions-test: ^2.0.1
     node-fetch: ^3.2.4
     uuid: ^8.3.2
   languageName: unknown
@@ -2050,6 +2051,13 @@ __metadata:
   version: 0.0.3
   resolution: "tr46@npm:0.0.3"
   checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
+  languageName: node
+  linkType: hard
+
+"ts-deepmerge@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "ts-deepmerge@npm:2.0.1"
+  checksum: 1d41981364192b521ce375740646ac2e00d7e3815c066624159309d3a2e43100449bc05c56d51938a1e5be444b0ca88ad9ce599fc489719805b9a2e9d4153194
   languageName: node
   linkType: hard
 

@@ -3,13 +3,10 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: [
-    "../../.eslintrc.js",
-    "plugin:react/recommended",
-    "plugin:react/jsx-runtime",
-  ],
+  extends: ["../../.eslintrc.json", "plugin:react/recommended", "plugin:react/jsx-runtime"],
   ignorePatterns: [
     "/dist/**/*", // Ignore built files.
+    "**/build/static/js/*",
   ],
   parserOptions: {
     ecmaFeatures: {
@@ -17,9 +14,7 @@ module.exports = {
     },
     sourceType: "module",
   },
-  plugins: [
-    "react"
-  ],
+  plugins: ["react"],
   settings: {
     react: {
       version: "detect",

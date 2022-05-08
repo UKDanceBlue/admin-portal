@@ -2,10 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "outDir": "dist",
+    "outDir": "dist"
   },
   "compileOnSave": true,
-  "include": [
-    "./index.ts", "./src/**/*", ".eslintrc.js"
-  ]
+  "include": ["./index.ts", "./src/**/*"]
 }

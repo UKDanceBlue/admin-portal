@@ -6,6 +6,7 @@
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
     "deploy-all": "firebase deploy"
   },
+  "type": "module",
   "workspaces": [
     "modules/*"
   ],

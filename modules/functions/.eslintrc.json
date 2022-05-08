@@ -1,0 +1,21 @@
+{
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": [
+    "/dist/**/*" // Ignore built files.
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": ["node"],
+  "rules": {
+    "quotes": ["error", "double"],
+    "import/no-unresolved": "off"
+  }
+}

@@ -5,20 +5,21 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 // import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
 import { useEffect, useState } from "react";
+import { GenericFirestoreDocument } from "../../firebase/types";
 
 const uncheckedIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const NotificationForm = () => {
   const [shouldTeamsLoad, setShouldTeamsLoad] = useState(false);
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState<GenericFirestoreDocument[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
   const [teamsError, setTeamsError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (shouldTeamsLoad) {
       const teamsCollectionRef = collection(firestore, "teams").withConverter({
-        toFirestore(data: { [key: string]: unknown; id?: string }) {
+        toFirestore(data: GenericFirestoreDocument) {
           const dataToUpload = { ...data };
           delete dataToUpload.id;
           return dataToUpload;
@@ -52,18 +53,20 @@ const NotificationForm = () => {
           options={teams ?? []}
           isOptionEqualToValue={(option, value) => option.id === value.id}
           noOptionsText="No teams found"
-          getOptionLabel={(option) => option.name}
+          getOptionLabel={(option) => option.name?.toString() ?? "**no name**"}
           loading={!!(teamsLoading || teamsError)}
           disableCloseOnSelect
           renderOption={(props, option, { selected }) => (
             <li {...props}>
-              <Checkbox
-                icon={uncheckedIcon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-              />
-              {option.name}
+              <>
+                <Checkbox
+                  icon={uncheckedIcon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.name}
+              </>
             </li>
           )}
           style={{ width: 500 }}

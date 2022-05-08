@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { firestore } from "../firebase/firebaseApp";
 import {
   Alert,
+  AlertColor,
   Button,
   Dialog,
   DialogActions,
@@ -16,14 +17,14 @@ import {
   Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import { useCallback, useEffect, useRef, useState } from "react";
-import deepEquals from "deep-is";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import deepEquals from "deep-equal";
 
 // TODO convert this to a generic interface for editing a firestore collection
 
 const spiritTeamsCollectionRef = collection(firestore, "teams");
 
-const DataGridFirebaseErrorOverlay = ({ code, message }) => {
+const DataGridFirebaseErrorOverlay = ({ code, message }: { code: string; message: string }) => {
   return (
     <div>
       <Typography variant="h4" component="h4">
@@ -40,43 +41,52 @@ DataGridFirebaseErrorOverlay.propTypes = {
   message: PropTypes.string,
 };
 
-const SpiritTeamDataGrid = (props) => {
+const SpiritTeamDataGrid = (props: unknown) => {
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   const [membersDialogContent, setMembersDialogContent] = useState({});
 
-  const membersDialogDescriptionElementRef = useRef(null);
+  // TODO: FIXME
+  // eslint-disable-next-line
+  const membersDialogDescriptionElementRef = useRef<any>(null);
   useEffect(() => {
     if (membersDialogOpen) {
+      // TODO: FIXME
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { current: descriptionElement } = membersDialogDescriptionElementRef;
       if (descriptionElement !== null) {
+        // TODO: FIXME
+        // eslint-disable-next-line
         descriptionElement.focus();
       }
     }
   }, [membersDialogOpen]);
 
-  const [snackbar, setSnackbar] = useState(null);
+  const [snackbar, setSnackbar] = useState<{ children: string; severity: AlertColor } | null>(null);
   const [spiritTeams, loading, error] = useCollection(spiritTeamsCollectionRef);
 
-  const handleProcessRowUpdateError = useCallback((error) => {
+  const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
   }, []);
 
-  const showTeamMembersDialog = useCallback((teamMembers) => {
+  const showTeamMembersDialog = useCallback((teamMembers: unknown[]) => {
     setMembersDialogContent(teamMembers);
     setMembersDialogOpen(true);
   }, []);
 
-  const processRowUpdate = useCallback(async (newRow, oldRow) => {
-    if (deepEquals(newRow, oldRow)) {
-      return oldRow;
-    } else {
-      if (newRow.id !== oldRow.id) {
-        throw new Error("Row ID changed, database update aborted");
+  const processRowUpdate = useCallback(
+    async (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
+      if (deepEquals(newRow, oldRow)) {
+        return oldRow;
       } else {
-        return setDoc(doc(spiritTeamsCollectionRef, newRow.id), newRow).then(() => newRow);
+        if (newRow.id !== oldRow.id) {
+          throw new Error("Row ID changed, database update aborted");
+        } else {
+          return setDoc(doc(spiritTeamsCollectionRef, newRow.id || ""), newRow).then(() => newRow);
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
     <>
@@ -111,7 +121,7 @@ const SpiritTeamDataGrid = (props) => {
             field: "members",
             headerName: "Members",
             width: 200,
-            selectable: false,
+            editable: false,
             renderCell: ({ value }) => {
               return (
                 <div
@@ -123,7 +133,11 @@ const SpiritTeamDataGrid = (props) => {
                 >
                   <Button
                     variant="contained"
+                    // TODO: FIXME
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     disabled={!value || Object.keys(value).length === 0}
+                    // TODO: FIXME
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     onClick={() => showTeamMembersDialog(value)}
                     sx={{
                       my: "5%",
@@ -167,7 +181,7 @@ const SpiritTeamDataGrid = (props) => {
           <List>
             {Object.entries(membersDialogContent).map(({ 0: key, 1: value }) => (
               <ListItem key={key}>
-                <ListItemText primary={value} />
+                <ListItemText primary={value as ReactNode} />
               </ListItem>
             ))}
           </List>

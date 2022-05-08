@@ -8,9 +8,7 @@ import processPushNotificationReceiptsFunction, {
 } from "./src/processPushNotificationReceipts";
 import sweepOldAccountsFunction from "./src/sweepOldAccounts";
 import syncDBFundsFunction from "./src/syncDBFunds";
-import importSpiritPointsFunction from "./src/importSpiritPoints";
 import writeLogFunction from "./src/writeLog";
-import updateTeamFunction from "./src/updateTeam";
 import updateUserClaimsFunction from "./src/updateUserClaims";
 import handleDeviceDocumentWriteFunction from "./src/handleDeviceDocumentWrite";
 import { Runnable } from "firebase-functions/v1";
@@ -29,11 +27,7 @@ export const sweepOldAccounts = sweepOldAccountsFunction;
 
 export const syncDBFunds = syncDBFundsFunction;
 
-export const importSpiritPoints = importSpiritPointsFunction;
-
 export const writeLog = writeLogFunction;
-
-export const updateTeam = updateTeamFunction;
 
 export const updateUserClaims = updateUserClaimsFunction;
 

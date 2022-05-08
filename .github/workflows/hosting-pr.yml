@@ -5,7 +5,7 @@ on:
 
 defaults:
   run:
-    working-directory: './hosting'
+    working-directory: 'modules/hosting'
 
 jobs:
   deploy-staging:

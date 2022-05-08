@@ -5,7 +5,7 @@ on:
 
 defaults:
   run:
-    working-directory: './functions'
+    working-directory: 'modules/functions'
 
 jobs:
   lint-functions:

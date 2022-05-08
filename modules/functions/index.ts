@@ -29,6 +29,6 @@ export const syncDBFunds = syncDBFundsFunction;
 
 export const writeLog = writeLogFunction;
 
-export const updateUserClaims = updateUserClaimsFunction;
+export const updateUserClaims: Runnable<void> = updateUserClaimsFunction;
 
 export const handleDeviceDocumentWrite = handleDeviceDocumentWriteFunction;

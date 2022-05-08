@@ -32,7 +32,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/database-compat@npm:^0.1.1":
+"@firebase/database-compat@npm:^0.1.8":
   version: 0.1.8
   resolution: "@firebase/database-compat@npm:0.1.8"
   dependencies:
@@ -48,13 +48,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@firebase/database-types@npm:0.9.7, @firebase/database-types@npm:^0.9.3":
+"@firebase/database-types@npm:0.9.7":
   version: 0.9.7
   resolution: "@firebase/database-types@npm:0.9.7"
   dependencies:
     "@firebase/app-types": 0.7.0
     "@firebase/util": 1.5.2
   checksum: bfc4e711c3f812b6255ee8f95d4c56fc26c738d3a5e92413e356f94dda5710c731f66ecde7813b09e2b10cec5f993287178c4ba09b9ca2b5ad41c434953aada5
+  languageName: node
+  linkType: hard
+
+"@firebase/database-types@npm:^0.9.7":
+  version: 0.9.8
+  resolution: "@firebase/database-types@npm:0.9.8"
+  dependencies:
+    "@firebase/app-types": 0.7.0
+    "@firebase/util": 1.6.0
+  checksum: 602bedde0baa4a04a07f24138a527a52eabdd56be9ddadcde634df995fb739b7166bfd19f25014472408a5d2ac0dee922eec89c47f24fb51d4399a8a0332ef20
   languageName: node
   linkType: hard
 
@@ -87,6 +97,15 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 68c68b470c65fdf6cbf5a98c6254d9f3284d77afce407499d80b04d783eafd60c1d54a6d848f4f5f280eaba498d55a8a0ab9115b2c637df527e97ec122d39766
+  languageName: node
+  linkType: hard
+
+"@firebase/util@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@firebase/util@npm:1.6.0"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: 9bdd4cc5b2964639bd5f519bbeba4ad101d86cde53f8fe16a285c8ffacd6266186b343674cef886d1949a5e1069b642380758886c81f53c5a9c0145ac4f38363
   languageName: node
   linkType: hard
 
@@ -936,12 +955,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase-admin@npm:^10.0.2":
-  version: 10.1.0
-  resolution: "firebase-admin@npm:10.1.0"
+"firebase-admin@npm:^10.1.0":
+  version: 10.2.0
+  resolution: "firebase-admin@npm:10.2.0"
   dependencies:
-    "@firebase/database-compat": ^0.1.1
-    "@firebase/database-types": ^0.9.3
+    "@firebase/database-compat": ^0.1.8
+    "@firebase/database-types": ^0.9.7
     "@google-cloud/firestore": ^4.15.1
     "@google-cloud/storage": ^5.18.3
     "@types/node": ">=12.12.47"
@@ -949,31 +968,32 @@ __metadata:
     jsonwebtoken: ^8.5.1
     jwks-rsa: ^2.0.2
     node-forge: ^1.3.1
+    uuid: ^8.3.2
   dependenciesMeta:
     "@google-cloud/firestore":
       optional: true
     "@google-cloud/storage":
       optional: true
-  checksum: 173a9852be7c00df5ec73aa6a373a337bb450ea2715f5b9fc430bdb5039bcb8a84bd877c66d9a2151b336d96c2ba5ef29d633f9e4c220118aedfae6e21ee39c3
+  checksum: 8737d4c49a74ae8af635b3f428722eb675d02b17cf371421485ed1d008e7714731a7e56b509d4179e094d6491b9a03374cbc5770f37e448c51aad2a9af38fa30
   languageName: node
   linkType: hard
 
-"firebase-functions-test@npm:^0.2.0":
-  version: 0.2.3
-  resolution: "firebase-functions-test@npm:0.2.3"
+"firebase-functions-test@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "firebase-functions-test@npm:0.3.3"
   dependencies:
     "@types/lodash": ^4.14.104
     lodash: ^4.17.5
   peerDependencies:
     firebase-admin: ">=6.0.0"
     firebase-functions: ">=2.0.0"
-  checksum: aee296f0267b1910ece693aa774176b41903683562d20d67c4b7e76d2da6b024044c759384376856eaf5a6068f952cd680546c4343d637dd345b94a9558c9992
+  checksum: f08f4c8ac40c6bab51ef53a22138b8e974180da86884e52386affea64cfd7f73a8e8a795f52000b347ae129411cb2569a0087cf071c86c6ace54ab4d6d978ac9
   languageName: node
   linkType: hard
 
-"firebase-functions@npm:^3.18.0":
-  version: 3.20.1
-  resolution: "firebase-functions@npm:3.20.1"
+"firebase-functions@npm:^3.20.1":
+  version: 3.21.0
+  resolution: "firebase-functions@npm:3.21.0"
   dependencies:
     "@types/cors": ^2.8.5
     "@types/express": 4.17.3
@@ -985,7 +1005,7 @@ __metadata:
     firebase-admin: ^8.0.0 || ^9.0.0 || ^10.0.0
   bin:
     firebase-functions: lib/bin/firebase-functions.js
-  checksum: 77da8f322d08f3d0d29944515daf5e974fba471ad64fcadd2d5be4cab1fb4e86416c7b546768e73b6332ca250955a0a295a055c6aef39e642537a4237a64266d
+  checksum: b2a15c9274531d030e96ee9a4c0126d2cd88f263dfb7fb4d80d1acf2f662864afc9c6cc511be1c50686fa9f116cb191b4644c93cbf41aa28311f163acb9212b7
   languageName: node
   linkType: hard
 
@@ -1044,10 +1064,10 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/uuid": ^8.3.4
     expo-server-sdk: ^3.6.0
-    firebase-admin: ^10.0.2
-    firebase-functions: ^3.18.0
-    firebase-functions-test: ^0.2.0
-    node-fetch: ^3.1.1
+    firebase-admin: ^10.1.0
+    firebase-functions: ^3.20.1
+    firebase-functions-test: ^0.3.3
+    node-fetch: ^3.2.4
     uuid: ^8.3.2
   languageName: unknown
   linkType: soft
@@ -1622,7 +1642,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^3.1.1":
+"node-fetch@npm:^3.2.4":
   version: 3.2.4
   resolution: "node-fetch@npm:3.2.4"
   dependencies:

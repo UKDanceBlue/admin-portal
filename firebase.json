@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "modules/hosting/build",
+    "public": "build",
     "rewrites": [
       {
         "source": "**",
@@ -8,16 +8,9 @@
       }
     ]
   },
-  "functions": {
-    "predeploy": ["yarn lint", "yarn build"],
-    "source": "modules/functions"
-  },
   "emulators": {
     "auth": {
       "port": 9099
-    },
-    "functions": {
-      "port": 5001
     },
     "firestore": {
       "port": 8080
@@ -30,9 +23,6 @@
     },
     "ui": {
       "enabled": true
-    },
-    "pubsub": {
-      "port": 8085
     }
   },
   "firestore": {

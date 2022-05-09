@@ -1,15 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-./node_modules
-./yarn/*
-./.pnp.*
-!./.yarn/patches
-!./.yarn/plugins
-!./.yarn/releases
-!./.yarn/sdks
-!./.yarn/versions
-
 **/node_modules
 **/.yarn/*
 **/.pnp.*
@@ -23,7 +14,7 @@
 **/coverage
 
 # production
-**/dist
+**/build
 
 #firebase emulator export
 /firebase_emulator_data/

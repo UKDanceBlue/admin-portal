@@ -1,10 +1,10 @@
 import {
   Auth,
   AuthError,
-  onIdTokenChanged,
   ParsedToken,
   User,
   UserCredential,
+  onIdTokenChanged,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { useSignInWithMicrosoft } from "react-firebase-hooks/auth";

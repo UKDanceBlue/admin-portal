@@ -1,10 +1,10 @@
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { Autocomplete, Checkbox, CircularProgress, FormControl, TextField } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
-import { firestore } from "../../firebase/firebaseApp";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-// import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
 import { useEffect, useState } from "react";
+
+import { firestore } from "../../firebase/firebaseApp";
 import { GenericFirestoreDocument } from "../../firebase/types";
 
 const uncheckedIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;

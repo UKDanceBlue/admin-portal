@@ -1,2 +1,2 @@
-import MarathonConsole from './MarathonConsole';
+import MarathonConsole from "./MarathonConsole";
 export default MarathonConsole;

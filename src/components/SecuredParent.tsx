@@ -1,9 +1,10 @@
-import { Box } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Error";
-import { auth } from "../firebase/firebaseApp";
-import { useAuthClaims } from "../customHooks";
+import { Box } from "@mui/material";
 import PropTypes from "prop-types";
 import { ReactNode } from "react";
+
+import { useAuthClaims } from "../customHooks";
+import { auth } from "../firebase/firebaseApp";
 
 /**
  * Only shows a component if the user meets the required claims. If

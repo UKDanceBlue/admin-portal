@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Drawer } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useNavigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, functions } from "../firebase/firebaseApp";
-import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
-import { Drawer } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
+
+import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
+import { auth, functions } from "../firebase/firebaseApp";
+
 
 const navLinks: {
   title: string;

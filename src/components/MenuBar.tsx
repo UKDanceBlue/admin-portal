@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
 import { auth, functions } from "../firebase/firebaseApp";
 
-
 const navLinks: {
   title: string;
   path: string;

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DanceBlue Login Relay</title>
+</head>
+
+<body>
+    <p>You will be redirected in a moment</p>
+
+    <!-- <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+    <script src="/__/firebase/8.10.1/firebase-auth.js"></script> -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <script>
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Strict";
+        }
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        };
+
+        var firebaseConfig = {
+            apiKey: "AIzaSyDxKegAvCRvnZR-FQxl2EKBQoZr04TfCyc",
+            authDomain: "react-danceblue.firebaseapp.com",
+            databaseURL: "https://react-danceblue.firebaseio.com",
+            projectId: "react-danceblue",
+            storageBucket: "react-danceblue.appspot.com",
+            messagingSenderId: "480114538491",
+            appId: "1:480114538491:web:62aac53817d2c43ba2bd5e",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        if (getCookie('danceblue-relay-redirecting')) {
+            document.cookie = "danceblue-relay-redirecting=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict";
+
+            let linkingUri = getUrlParameter('linkingUri');
+
+            firebase.auth().getRedirectResult()
+                .then((result) => {
+                    // IdP data available in result.additionalUserInfo.profile.
+                    // ...
+
+                    /** @type {firebase.auth.OAuthCredential} */
+                    var credential = result.credential;
+                    window.location.replace(`${linkingUri}?token=${encodeURI(JSON.stringify(credential.toJSON()))}`);
+                })
+                .catch((error) => {
+                    // Handle error.
+                });
+        } else {
+            var provider = new firebase.auth.OAuthProvider('microsoft.com');
+            provider.setCustomParameters({
+                tenant: "2b30530b-69b6-4457-b818-481cb53d42ae",
+                domain_hint: "uky.edu",
+            });
+            provider.addScope('openid');
+            provider.addScope('profile');
+            provider.addScope('email');
+            provider.addScope('offline_access');
+            provider.addScope('User.Read');
+
+            setCookie('danceblue-relay-redirecting', 'true', 0.042);
+
+            firebase.auth().signInWithRedirect(provider);
+        }
+
+    </script>
+</body>
+
+</html>

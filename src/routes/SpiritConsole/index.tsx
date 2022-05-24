@@ -1,2 +1,2 @@
-import SpiritConsole from './SpiritConsole';
+import SpiritConsole from "./SpiritConsole";
 export default SpiritConsole;

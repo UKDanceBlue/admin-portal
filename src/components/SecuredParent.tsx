@@ -4,6 +4,7 @@ import { auth } from "../firebase/firebaseApp";
 import { useAuthClaims } from "../customHooks";
 import PropTypes from "prop-types";
 import { ReactNode } from "react";
+import { AuthClaim } from "../routes";
 
 /**
  * Only shows a component if the user meets the required claims. If
@@ -15,10 +16,7 @@ const SecuredParent = ({
   requiredClaims,
 }: {
   children: ReactNode;
-  requiredClaims: {
-    claimKey: string;
-    claimValues: string[];
-  }[];
+  requiredClaims?: AuthClaim[];
 }) => {
   const authClaims = useAuthClaims(auth);
 

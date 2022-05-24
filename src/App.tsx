@@ -7,11 +7,12 @@ import { Route, Routes } from "react-router-dom";
 import MenuBar from "./components/MenuBar";
 import { Box, Paper } from "@mui/material";
 import SecuredParent from "./components/SecuredParent";
+import routeList from "./routes";
 
 /**
  * Core application component, mounted by index.tsx to the root div.
  *
- * @return {JSX.Element} The main App component
+ * @return The main App component
  */
 export default function App() {
   return (
@@ -19,71 +20,15 @@ export default function App() {
       <MenuBar />
       <Paper elevation={3} sx={{ px: "0.5em", mx: "auto", maxWidth: "lg" }}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="marathon-console"
-            element={
-              <SecuredParent
-                requiredClaims={[
-                  { claimKey: "dbRole", claimValues: ["committee"] },
-                  {
-                    claimKey: "committeeRank",
-                    claimValues: ["coordinator", "chair"],
-                  },
-                ]}
-              >
-                <MarathonConsole />
-              </SecuredParent>
-            }
-          />
-          <Route
-            path="morale-console"
-            element={
-              <SecuredParent
-                requiredClaims={[
-                  { claimKey: "dbRole", claimValues: ["committee"] },
-                  {
-                    claimKey: "committeeRank",
-                    claimValues: ["coordinator", "chair"],
-                  },
-                ]}
-              >
-                <MoraleConsole />
-              </SecuredParent>
-            }
-          />
-          <Route
-            path="spirit-console"
-            element={
-              <SecuredParent
-                requiredClaims={[
-                  { claimKey: "dbRole", claimValues: ["committee"] },
-                  {
-                    claimKey: "committeeRank",
-                    claimValues: ["coordinator", "chair"],
-                  },
-                ]}
-              >
-                <SpiritConsole />
-              </SecuredParent>
-            }
-          />
-          <Route
-            path="notification-console"
-            element={
-              <SecuredParent
-                requiredClaims={[
-                  { claimKey: "dbRole", claimValues: ["committee"] },
-                  {
-                    claimKey: "committeeRank",
-                    claimValues: ["coordinator", "chair"],
-                  },
-                ]}
-              >
-                <NotificationConsole />
-              </SecuredParent>
-            }
-          />
+          {routeList.map((route, index) => (
+            <Route
+              key={index}
+              path={route.pathFragment}
+              element={
+                <SecuredParent requiredClaims={route.requiredClaims}>{route.element}</SecuredParent>
+              }
+            />
+          ))}
         </Routes>
       </Paper>
     </Box>

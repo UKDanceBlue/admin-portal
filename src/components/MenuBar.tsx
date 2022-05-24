@@ -13,52 +13,7 @@ import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { Drawer } from "@mui/material";
-
-const navLinks: {
-  title: string;
-  path: string;
-  requiredClaims?: {
-    claimKey: string;
-    claimValues: string[];
-  }[];
-}[] = [
-  {
-    title: "Home",
-    path: "/",
-  },
-  {
-    title: "Marathon Manager",
-    path: "/marathon-console",
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
-    ],
-  },
-  {
-    title: "Spirit Point Manager",
-    path: "/spirit-console",
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
-    ],
-  },
-  {
-    title: "Morale Point Manager",
-    path: "/morale-console",
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
-    ],
-  },
-  {
-    title: "Notification Manager",
-    path: "/notification-console",
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
-    ],
-  },
-];
+import routeList from "../routes";
 
 const MenuBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -114,7 +69,7 @@ const MenuBar = () => {
               setMenuOpen(false);
             }}
           >
-            {navLinks
+            {routeList
               .filter((page) => {
                 if (!page.requiredClaims) {
                   return true;
@@ -144,7 +99,7 @@ const MenuBar = () => {
             display: { xs: "none", md: "flex" },
           }}
         >
-          {navLinks
+          {routeList
             .filter((page) => {
               if (!page.requiredClaims) {
                 return true;

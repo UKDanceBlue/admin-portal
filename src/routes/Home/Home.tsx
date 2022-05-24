@@ -15,8 +15,7 @@ const Home = () => {
       <a href="https://www.danceblue.org">DanceBlue website</a>
       <Typography variant="body1" component="b">
         {" "}
-        instead. This page is used for online access and entry to the DanceBlue
-        database.
+        instead. This page is used for online access and entry to the DanceBlue database.
       </Typography>
     </Box>
   );

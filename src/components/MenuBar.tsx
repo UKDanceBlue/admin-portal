@@ -6,13 +6,12 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { signOut } from "firebase/auth";
+import { OAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useFunctions, useUser } from "reactfire";
+import { useAuth, useFunctions, useIdTokenResult, useUser } from "reactfire";
 
-import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
 import routeList from "../routes";
 
 const MenuBar = () => {
@@ -22,23 +21,34 @@ const MenuBar = () => {
   const functions = useFunctions();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const authClaims = useAuthClaims(auth);
 
-  // const [user] = useAuthState(auth);
   const user = useUser();
-  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft();
+  const authClaims = useIdTokenResult(user.data);
 
-  useEffect(() => {
-    if (userCredential) {
-      // If there is a userCredential, then the user has just signed in and may need claims updated
-      // Calling getIdTokenResult forces the client to get a new token, updating useAuthClaims
-      const updateUserClaims = httpsCallable(functions, "updateUserClaims");
+  const triggerLogin = useCallback(async () => {
+    const linkblueAuthProvider = new OAuthProvider("microsoft.com");
 
-      if (updateUserClaims) {
-        void updateUserClaims("").then(() => userCredential.user.getIdTokenResult(true));
-      }
+    linkblueAuthProvider.setCustomParameters({
+      tenant: "2b30530b-69b6-4457-b818-481cb53d42ae",
+      domain_hint: "uky.edu",
+    });
+
+    linkblueAuthProvider.addScope("openid");
+    linkblueAuthProvider.addScope("profile");
+    linkblueAuthProvider.addScope("email");
+    linkblueAuthProvider.addScope("offline_access");
+    linkblueAuthProvider.addScope("User.Read");
+
+    const userCredential = await signInWithPopup(auth, linkblueAuthProvider);
+    // If there is a userCredential, then the user has just signed in and may need claims updated
+    // Calling getIdTokenResult forces the client to get a new token, updating useIdTokenResult
+    const updateUserClaims = httpsCallable(functions, "updateUserClaims");
+
+    if (updateUserClaims) {
+      await updateUserClaims("");
+      userCredential.user.getIdTokenResult(true);
     }
-  }, [userCredential, functions]);
+  }, []);
 
   return (
     <AppBar position="sticky">
@@ -78,11 +88,11 @@ const MenuBar = () => {
                 if (!page.requiredClaims) {
                   return true;
                 }
-                if (!authClaims) {
+                if (authClaims.status !== "success") {
                   return false;
                 }
                 return page.requiredClaims.every((claim) => {
-                  const userClaimValue = authClaims[claim.claimKey];
+                  const userClaimValue = authClaims.data.claims[claim.claimKey];
                   if (typeof userClaimValue === "string") {
                     return claim.claimValues.includes(userClaimValue);
                   } else {
@@ -108,11 +118,11 @@ const MenuBar = () => {
               if (!page.requiredClaims) {
                 return true;
               }
-              if (!authClaims) {
+              if (authClaims.status !== "success") {
                 return false;
               }
               return page.requiredClaims.every((claim) => {
-                const userClaimValue = authClaims[claim.claimKey];
+                const userClaimValue = authClaims.data.claims[claim.claimKey];
                 if (typeof userClaimValue === "string") {
                   return claim.claimValues.includes(userClaimValue);
                 } else {

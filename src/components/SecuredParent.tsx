@@ -1,11 +1,10 @@
 import ErrorIcon from "@mui/icons-material/Error";
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import PropTypes from "prop-types";
 import { ReactNode } from "react";
-import { AuthClaim } from "../routes";
+import { useSigninCheck } from "reactfire";
 
-import { useAuthClaims } from "../customHooks";
-import { auth } from "../firebase/firebaseApp";
+import { AuthClaim } from "../routes";
 
 /**
  * Only shows a component if the user meets the required claims. If
@@ -19,48 +18,64 @@ const SecuredParent = ({
   children: ReactNode;
   requiredClaims?: AuthClaim[];
 }) => {
-  const authClaims = useAuthClaims(auth);
-
-  if (authClaims) {
-    // Make sure that the user supplied requiredClaims, if not then just return the component
-    if (requiredClaims && Array.isArray(requiredClaims)) {
-      // Iterate over the requiredClaims and make sure that the user has the required claim
-      if (
-        requiredClaims.every((claim) => {
-          const authClaim = authClaims[claim.claimKey];
-          if (typeof authClaim !== "string") {
-            console.warn("Auth claim is not a string");
-            return false;
-          }
-          return claim.claimValues.includes(authClaim);
-        })
-      ) {
-        return <>{children}</>;
+  const { status, data: signInCheckResult } = useSigninCheck({
+    validateCustomClaims: (userClaims) => {
+      // Make sure that the user supplied requiredClaims, if not then just return the component
+      if (requiredClaims && Array.isArray(requiredClaims)) {
+        // Iterate over the requiredClaims and make sure that the user has the required claim
+        if (
+          requiredClaims.every((claim) => {
+            const authClaim = userClaims[claim.claimKey];
+            if (typeof authClaim !== "string") {
+              console.warn("Auth claim is not a string");
+              return false;
+            }
+            return claim.claimValues.includes(authClaim);
+          })
+        ) {
+          return { hasRequiredClaims: true, errors: {} };
+        } else {
+          return { hasRequiredClaims: false, errors: {} };
+        }
       } else {
-        return (
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <ErrorIcon fontSize="large" color="error" />
-              <p>
-                You do not have access to this component. If you believe this is an error, please
-                contact the DanceBlue technology committee.
-              </p>
-              <ErrorIcon fontSize="large" color="error" />
-            </Box>
-          </Box>
-        );
+        return { hasRequiredClaims: true, errors: {} };
       }
-    } else {
+    },
+  });
+
+  if (status === "loading") {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <CircularProgress size="3em" color="info" />
+        <p>Authenticating...</p>
+        <CircularProgress size="3em" color="info" />
+      </Box>
+    );
+  } else if (status === "error") {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <ErrorIcon sx={{ fontSize: "3em" }} color="error" />
+        <p>Authentication failed.</p>
+        <ErrorIcon sx={{ fontSize: "3em" }} color="error" />
+      </Box>
+    );
+  } else if (status === "success") {
+    if (signInCheckResult?.hasRequiredClaims) {
       return <>{children}</>;
+    } else {
+      return (
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <ErrorIcon sx={{ fontSize: "3em", justifySelf: "flex-start" }} color="error" />
+          <p>
+            You do not have access to this component. If you believe this is an error, please
+            contact the DanceBlue technology committee.
+          </p>
+          <ErrorIcon sx={{ fontSize: "3em", justifySelf: "flex-end" }} color="error" />
+        </Box>
+      );
     }
   } else {
-    return <div>Authenticating...</div>;
+    throw new Error("Unexpected status code from 'useSigninCheck'");
   }
 };
 

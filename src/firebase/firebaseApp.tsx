@@ -1,11 +1,21 @@
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getFunctions } from "firebase/functions";
-import { getStorage } from "firebase/storage";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
+import { getRemoteConfig } from "firebase/remote-config";
+import { connectStorageEmulator, getStorage } from "firebase/storage";
+import { ReactNode } from "react";
+import {
+  AuthProvider,
+  FirebaseAppProvider,
+  FirestoreProvider,
+  FunctionsProvider,
+  RemoteConfigProvider,
+  StorageProvider,
+  useFirebaseApp,
+} from "reactfire";
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDxKegAvCRvnZR-FQxl2EKBQoZr04TfCyc",
   authDomain: "react-danceblue.firebaseapp.com",
   databaseURL: "https://react-danceblue.firebaseio.com",
@@ -16,39 +26,51 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = getAuth();
-export const functions = getFunctions();
-export const firestore = getFirestore();
-export const storage = getStorage();
+export const ReactFireProvider = ({ children }: { children: ReactNode }) => {
+  const app = useFirebaseApp();
 
-// eslint-disable-next-line no-undef
-if (process.env.NODE_ENV === "development") {
-  const enabledEmulators = {
-    firestoreEmulator: false,
-    authEmulator: false,
-    functionsEmulator: false,
-    storageEmulator: false,
-  };
+  const firestore = getFirestore(app);
+  const functions = getFunctions(app);
+  const remoteConfig = getRemoteConfig(app);
+  const storage = getStorage(app);
+  const auth = getAuth(app);
 
-  // Dynamic import are used here to avoid importing unnecessary code in production
-  if (enabledEmulators.firestoreEmulator) {
-    const { connectFirestoreEmulator } = await import("firebase/firestore");
-    connectFirestoreEmulator(firestore, "localhost", 8080);
+  if (process.env.NODE_ENV === "development") {
+    const enabledEmulators = {
+      firestoreEmulator: false,
+      authEmulator: false,
+      functionsEmulator: false,
+      storageEmulator: false,
+      configEmulator: false,
+    };
+    if (enabledEmulators.firestoreEmulator) {
+      connectFirestoreEmulator(firestore, "localhost", 8080);
+    }
+
+    if (enabledEmulators.authEmulator) {
+      connectAuthEmulator(auth, "http://localhost:9099");
+    }
+
+    if (enabledEmulators.functionsEmulator) {
+      connectFunctionsEmulator(functions, "localhost", 5001);
+    }
+
+    if (enabledEmulators.storageEmulator) {
+      connectStorageEmulator(storage, "localhost", 9199);
+    }
   }
 
-  if (enabledEmulators.authEmulator) {
-    const { connectAuthEmulator } = await import("firebase/auth");
-    connectAuthEmulator(auth, "http://localhost:9099");
-  }
-
-  if (enabledEmulators.functionsEmulator) {
-    const { connectFunctionsEmulator } = await import("firebase/functions");
-    connectFunctionsEmulator(functions, "localhost", 5001);
-  }
-
-  if (enabledEmulators.storageEmulator) {
-    const { connectStorageEmulator } = await import("firebase/storage");
-    connectStorageEmulator(storage, "localhost", 9199);
-  }
-}
+  return (
+    <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+      <FirestoreProvider sdk={firestore}>
+        <FunctionsProvider sdk={functions}>
+          <RemoteConfigProvider sdk={remoteConfig}>
+            <StorageProvider sdk={storage}>
+              <AuthProvider sdk={auth}>{children}</AuthProvider>
+            </StorageProvider>
+          </RemoteConfigProvider>
+        </FunctionsProvider>
+      </FirestoreProvider>
+    </FirebaseAppProvider>
+  );
+};

@@ -1,5 +1,6 @@
 import { Box, Paper } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
+
 import MenuBar from "./components/MenuBar";
 import SecuredParent from "./components/SecuredParent";
 import routeList from "./routes";
@@ -20,7 +21,13 @@ export default function App() {
               key={index}
               path={route.pathFragment}
               element={
-                <SecuredParent requiredClaims={route.requiredClaims}>{route.element}</SecuredParent>
+                route.signInRequired ? (
+                  <SecuredParent requiredClaims={route.requiredClaims}>
+                    {route.element}
+                  </SecuredParent>
+                ) : (
+                  route.element
+                )
               }
             />
           ))}

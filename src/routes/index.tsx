@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 import Home from "./Home";
 import MarathonConsole from "./MarathonConsole";
 import MoraleConsole from "./MoraleConsole";
@@ -13,8 +15,9 @@ export interface RouteDefinition {
   title: string;
   path: string;
   pathFragment: string;
+  signInRequired?: boolean;
   requiredClaims?: AuthClaim[];
-  element?: React.ReactNode;
+  element?: ReactNode;
 }
 
 const routeList: RouteDefinition[] = [
@@ -28,6 +31,7 @@ const routeList: RouteDefinition[] = [
     title: "Marathon Manager",
     path: "/marathon-console",
     pathFragment: "marathon-console",
+    signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
       { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
@@ -38,6 +42,7 @@ const routeList: RouteDefinition[] = [
     title: "Spirit Point Manager",
     path: "/spirit-console",
     pathFragment: "spirit-console",
+    signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
       { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
@@ -48,6 +53,7 @@ const routeList: RouteDefinition[] = [
     title: "Morale Point Manager",
     path: "/morale-console",
     pathFragment: "morale-console",
+    signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
       { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
@@ -58,6 +64,7 @@ const routeList: RouteDefinition[] = [
     title: "Notification Manager",
     path: "/notification-console",
     pathFragment: "notification-console",
+    signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
       { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },

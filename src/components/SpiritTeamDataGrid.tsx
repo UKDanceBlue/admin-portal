@@ -18,13 +18,9 @@ import { collection, doc, setDoc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 // import { useCollection } from "react-firebase-hooks/firestore";
-import { useFirestoreCollection } from "reactfire";
-
-import { firestore } from "../firebase/firebaseApp";
+import { useFirestore, useFirestoreCollection } from "reactfire";
 
 // TODO convert this to a generic interface for editing a firestore collection
-
-const spiritTeamsCollectionRef = collection(firestore, "teams");
 
 const DataGridFirebaseErrorOverlay = ({ code, message }: { code: string; message: string }) => {
   return (
@@ -44,8 +40,12 @@ DataGridFirebaseErrorOverlay.propTypes = {
 };
 
 const SpiritTeamDataGrid = (props: unknown) => {
+  const firestore = useFirestore();
+
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
   const [membersDialogContent, setMembersDialogContent] = useState({});
+
+  const spiritTeamsCollectionRef = collection(firestore, "teams");
 
   // TODO: FIXME
   // eslint-disable-next-line
@@ -87,7 +87,7 @@ const SpiritTeamDataGrid = (props: unknown) => {
         }
       }
     },
-    []
+    [spiritTeamsCollectionRef]
   );
 
   return (

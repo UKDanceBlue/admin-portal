@@ -8,19 +8,21 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
-import routeList from "../routes";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "reactfire";
+import { useAuth, useFunctions, useUser } from "reactfire";
 
 import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
-import { auth, functions } from "../firebase/firebaseApp";
+import routeList from "../routes";
 
 const MenuBar = () => {
+  const navigate = useNavigate();
+
+  const auth = useAuth();
+  const functions = useFunctions();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const authClaims = useAuthClaims(auth);
-
-  const navigate = useNavigate();
 
   // const [user] = useAuthState(auth);
   const user = useUser();
@@ -36,7 +38,7 @@ const MenuBar = () => {
         void updateUserClaims("").then(() => userCredential.user.getIdTokenResult(true));
       }
     }
-  }, [userCredential]);
+  }, [userCredential, functions]);
 
   return (
     <AppBar position="sticky">

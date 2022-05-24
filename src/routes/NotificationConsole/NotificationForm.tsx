@@ -3,14 +3,16 @@ import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { Autocomplete, Checkbox, CircularProgress, FormControl, TextField } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { useFirestore } from "reactfire";
 
-import { firestore } from "../../firebase/firebaseApp";
 import { GenericFirestoreDocument } from "../../firebase/types";
 
 const uncheckedIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const NotificationForm = () => {
+  const firestore = useFirestore();
+
   const [shouldTeamsLoad, setShouldTeamsLoad] = useState(false);
   const [teams, setTeams] = useState<GenericFirestoreDocument[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
@@ -39,7 +41,7 @@ const NotificationForm = () => {
           setTeamsLoading(false);
         });
     }
-  }, [shouldTeamsLoad]);
+  }, [shouldTeamsLoad, firestore]);
 
   return (
     <>

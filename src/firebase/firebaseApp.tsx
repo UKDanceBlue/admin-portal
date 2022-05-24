@@ -22,6 +22,7 @@ export const functions = getFunctions();
 export const firestore = getFirestore();
 export const storage = getStorage();
 
+// eslint-disable-next-line no-undef
 if (process.env.NODE_ENV === "development") {
   const enabledEmulators = {
     firestoreEmulator: false,

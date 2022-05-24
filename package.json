@@ -6,7 +6,7 @@
     "test": "react-scripts test",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
     "deploy": "yarn build && firebase deploy",
-    "lint": "eslint .",
+    "lint": "eslint ./src/**/*",
     "eject": "react-scripts eject"
   },
   "private": true,
@@ -23,9 +23,9 @@
     "firebase": "^9.8.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
-    "react-firebase-hooks": "^5.0.3",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "reactfire": "^4.2.1"
   },
   "devDependencies": {
     "@mui/types": "^7.1.3",

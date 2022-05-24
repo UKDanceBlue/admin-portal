@@ -9,8 +9,9 @@ import Typography from "@mui/material/Typography";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
+// import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "reactfire";
 
 import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
 import { auth, functions } from "../firebase/firebaseApp";
@@ -67,8 +68,9 @@ const MenuBar = () => {
 
   const navigate = useNavigate();
 
-  const [user] = useAuthState(auth);
-  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft(auth);
+  // const [user] = useAuthState(auth);
+  const user = useUser();
+  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft();
 
   useEffect(() => {
     if (userCredential) {
@@ -168,14 +170,14 @@ const MenuBar = () => {
               </MenuItem>
             ))}
         </Box>
-        {(!user || user.isAnonymous) && (
+        {(!user.data || user.data.isAnonymous) && (
           <Box>
             <MenuItem onClick={() => triggerLogin}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>
         )}
-        {user && !user.isAnonymous && (
+        {user.data && !user.data.isAnonymous && (
           <Box>
             <MenuItem
               onClick={() => {

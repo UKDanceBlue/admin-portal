@@ -1,7 +1,3 @@
-import { collection, doc, setDoc } from "firebase/firestore";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { DataGrid } from "@mui/x-data-grid";
-import { firestore } from "../firebase/firebaseApp";
 import {
   Alert,
   AlertColor,
@@ -16,9 +12,15 @@ import {
   Snackbar,
   Typography,
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import deepEquals from "deep-equal";
+import { collection, doc, setDoc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import deepEquals from "deep-equal";
+// import { useCollection } from "react-firebase-hooks/firestore";
+import { useFirestoreCollection } from "reactfire";
+
+import { firestore } from "../firebase/firebaseApp";
 
 // TODO convert this to a generic interface for editing a firestore collection
 
@@ -62,7 +64,7 @@ const SpiritTeamDataGrid = (props: unknown) => {
   }, [membersDialogOpen]);
 
   const [snackbar, setSnackbar] = useState<{ children: string; severity: AlertColor } | null>(null);
-  const [spiritTeams, loading, error] = useCollection(spiritTeamsCollectionRef);
+  const spiritTeams = useFirestoreCollection(spiritTeamsCollectionRef);
 
   const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
@@ -93,7 +95,11 @@ const SpiritTeamDataGrid = (props: unknown) => {
       <DataGrid
         {...props}
         experimentalFeatures={{ newEditingApi: true }}
-        rows={spiritTeams ? spiritTeams.docs.map((doc) => ({ id: doc.id, ...doc.data() })) : []}
+        rows={
+          spiritTeams.data
+            ? spiritTeams.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+            : []
+        }
         columns={[
           {
             field: "id",
@@ -151,8 +157,8 @@ const SpiritTeamDataGrid = (props: unknown) => {
             },
           },
         ]}
-        loading={loading}
-        error={error}
+        loading={spiritTeams.status === "loading"}
+        error={spiritTeams.error}
         components={{
           ErrorOverlay: DataGridFirebaseErrorOverlay,
         }}

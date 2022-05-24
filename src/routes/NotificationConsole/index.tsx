@@ -1,2 +1,2 @@
-import NotificationConsole from './NotificationConsole';
+import NotificationConsole from "./NotificationConsole";
 export default NotificationConsole;

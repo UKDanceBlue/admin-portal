@@ -1,11 +1,6 @@
-import Home from "./routes/Home";
-import MarathonConsole from "./routes/MarathonConsole";
-import MoraleConsole from "./routes/MoraleConsole";
-import SpiritConsole from "./routes/SpiritConsole";
-import NotificationConsole from "./routes/NotificationConsole";
+import { Box, Paper } from "@mui/material";
 import { Route, Routes } from "react-router-dom";
 import MenuBar from "./components/MenuBar";
-import { Box, Paper } from "@mui/material";
 import SecuredParent from "./components/SecuredParent";
 import routeList from "./routes";
 

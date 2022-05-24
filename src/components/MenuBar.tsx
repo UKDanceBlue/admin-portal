@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Drawer } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useNavigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth, functions } from "../firebase/firebaseApp";
-import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
 import { signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
-import { Drawer } from "@mui/material";
 import routeList from "../routes";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "reactfire";
+
+import { useAuthClaims, useSignInWithUkMicrosoft } from "../customHooks";
+import { auth, functions } from "../firebase/firebaseApp";
 
 const MenuBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,8 +22,9 @@ const MenuBar = () => {
 
   const navigate = useNavigate();
 
-  const [user] = useAuthState(auth);
-  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft(auth);
+  // const [user] = useAuthState(auth);
+  const user = useUser();
+  const [triggerLogin, userCredential] = useSignInWithUkMicrosoft();
 
   useEffect(() => {
     if (userCredential) {
@@ -122,14 +124,14 @@ const MenuBar = () => {
               </MenuItem>
             ))}
         </Box>
-        {(!user || user.isAnonymous) && (
+        {(!user.data || user.data.isAnonymous) && (
           <Box>
             <MenuItem onClick={() => triggerLogin}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>
         )}
-        {user && !user.isAnonymous && (
+        {user.data && !user.data.isAnonymous && (
           <Box>
             <MenuItem
               onClick={() => {

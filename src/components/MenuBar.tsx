@@ -6,11 +6,11 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { OAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { IdTokenResult, OAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useFunctions, useIdTokenResult, useUser } from "reactfire";
+import { useAuth, useFunctions, useUser } from "reactfire";
 
 import routeList from "../routes";
 
@@ -23,7 +23,7 @@ const MenuBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const user = useUser();
-  const authClaims = useIdTokenResult(user.data);
+  const [authClaims, setAuthClaims] = useState<IdTokenResult | null>(null);
 
   const triggerLogin = useCallback(async () => {
     const linkblueAuthProvider = new OAuthProvider("microsoft.com");
@@ -40,15 +40,26 @@ const MenuBar = () => {
     linkblueAuthProvider.addScope("User.Read");
 
     const userCredential = await signInWithPopup(auth, linkblueAuthProvider);
-    // If there is a userCredential, then the user has just signed in and may need claims updated
-    // Calling getIdTokenResult forces the client to get a new token, updating useIdTokenResult
-    const updateUserClaims = httpsCallable(functions, "updateUserClaims");
 
+    const updateUserClaims = httpsCallable(functions, "updateUserClaims");
     if (updateUserClaims) {
       await updateUserClaims("");
+      // Calling getIdTokenResult(true) forces the client to get a new token, updating useIdTokenResult
       userCredential.user.getIdTokenResult(true);
     }
-  }, []);
+  }, [auth, functions]);
+
+  useEffect(
+    () =>
+      void (async () => {
+        if (user.data) {
+          setAuthClaims(await user.data.getIdTokenResult());
+        } else {
+          setAuthClaims(null);
+        }
+      })(),
+    [user]
+  );
 
   return (
     <AppBar position="sticky">
@@ -88,11 +99,11 @@ const MenuBar = () => {
                 if (!page.requiredClaims) {
                   return true;
                 }
-                if (authClaims.status !== "success") {
+                if (!authClaims) {
                   return false;
                 }
                 return page.requiredClaims.every((claim) => {
-                  const userClaimValue = authClaims.data.claims[claim.claimKey];
+                  const userClaimValue = authClaims.claims[claim.claimKey];
                   if (typeof userClaimValue === "string") {
                     return claim.claimValues.includes(userClaimValue);
                   } else {
@@ -118,11 +129,11 @@ const MenuBar = () => {
               if (!page.requiredClaims) {
                 return true;
               }
-              if (authClaims.status !== "success") {
+              if (!authClaims) {
                 return false;
               }
               return page.requiredClaims.every((claim) => {
-                const userClaimValue = authClaims.data.claims[claim.claimKey];
+                const userClaimValue = authClaims.claims[claim.claimKey];
                 if (typeof userClaimValue === "string") {
                   return claim.claimValues.includes(userClaimValue);
                 } else {
@@ -138,7 +149,7 @@ const MenuBar = () => {
         </Box>
         {(!user.data || user.data.isAnonymous) && (
           <Box>
-            <MenuItem onClick={() => triggerLogin}>
+            <MenuItem onClick={triggerLogin}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>

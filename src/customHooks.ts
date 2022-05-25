@@ -1,11 +1,4 @@
-import {
-  Auth,
-  AuthError,
-  ParsedToken,
-  User,
-  UserCredential,
-  onIdTokenChanged,
-} from "firebase/auth";
+import { Auth, ParsedToken, User, onIdTokenChanged } from "firebase/auth";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const updateAuthClaims = async (

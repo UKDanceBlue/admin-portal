@@ -6,7 +6,7 @@
     "test": "react-scripts test",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
     "deploy": "yarn build && firebase deploy",
-    "lint": "eslint ./src/**/*",
+    "lint": "eslint \"./src/**/*\"",
     "eject": "react-scripts eject"
   },
   "private": true,
@@ -59,5 +59,99 @@
   },
   "resolutions": {
     "es-abstract": "1.19.5"
+  },
+  "eslintConfig": {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "env": {
+      "es2021": true,
+      "browser": true
+    },
+    "ignorePatterns": [
+      "**/build/**/*"
+    ],
+    "rules": {
+      "import/named": "off",
+      "import/namespace": "off",
+      "import/default": "off",
+      "import/no-named-as-default-member": "off",
+      "import/no-named-as-default": "off",
+      "import/no-cycle": "off",
+      "import/no-unused-modules": "off",
+      "import/no-deprecated": "off",
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
+      "import/order": [
+        "error",
+        {
+          "groups": [
+            "builtin",
+            "external",
+            "parent",
+            "sibling",
+            "index"
+          ],
+          "pathGroups": [
+            {
+              "pattern": "@custom-lib/**",
+              "group": "external",
+              "position": "after"
+            }
+          ],
+          "pathGroupsExcludedImportTypes": [
+            "builtin"
+          ],
+          "alphabetize": {
+            "order": "asc"
+          },
+          "newlines-between": "always"
+        }
+      ],
+      "sort-imports": [
+        "error",
+        {
+          "allowSeparatedGroups": true,
+          "ignoreDeclarationSort": true
+        }
+      ],
+      "quotes": [
+        "error",
+        "double"
+      ],
+      "import/no-unresolved": "off",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error"
+      ]
+    },
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "project": [
+        "./tsconfig.json"
+      ],
+      "sourceType": "module",
+      "tsconfigRootDir": "."
+    },
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/recommended",
+      "plugin:import/typescript",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime",
+      "plugin:react-hooks/recommended",
+      "react-app",
+      "plugin:@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
   }
 }

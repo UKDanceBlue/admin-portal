@@ -1,6 +1,5 @@
+import { TableRows } from "@mui/icons-material";
 import {
-  Alert,
-  AlertColor,
   Button,
   Dialog,
   DialogActions,
@@ -9,16 +8,15 @@ import {
   List,
   ListItem,
   ListItemText,
-  Snackbar,
   Typography,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import deepEquals from "deep-equal";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
+import { collection } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-// import { useCollection } from "react-firebase-hooks/firestore";
-import { useFirestore, useFirestoreCollection } from "reactfire";
+import { useFirestore } from "reactfire";
+
+import FirestoreCollectionDataGrid from "./FirestoreCollectionDataGrid";
 
 // TODO convert this to a generic interface for editing a firestore collection
 
@@ -39,7 +37,7 @@ DataGridFirebaseErrorOverlay.propTypes = {
   message: PropTypes.string,
 };
 
-const SpiritTeamDataGrid = (props: unknown) => {
+const SpiritTeamDataGrid = () => {
   const firestore = useFirestore();
 
   const [membersDialogOpen, setMembersDialogOpen] = useState(false);
@@ -47,134 +45,68 @@ const SpiritTeamDataGrid = (props: unknown) => {
 
   const spiritTeamsCollectionRef = collection(firestore, "teams");
 
-  // TODO: FIXME
-  // eslint-disable-next-line
   const membersDialogDescriptionElementRef = useRef<any>(null);
   useEffect(() => {
     if (membersDialogOpen) {
-      // TODO: FIXME
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { current: descriptionElement } = membersDialogDescriptionElementRef;
       if (descriptionElement !== null) {
-        // TODO: FIXME
-        // eslint-disable-next-line
         descriptionElement.focus();
       }
     }
   }, [membersDialogOpen]);
-
-  const [snackbar, setSnackbar] = useState<{ children: string; severity: AlertColor } | null>(null);
-  const spiritTeams = useFirestoreCollection(spiritTeamsCollectionRef);
-
-  const handleProcessRowUpdateError = useCallback((error: Error) => {
-    setSnackbar({ children: error.message, severity: "error" });
-  }, []);
 
   const showTeamMembersDialog = useCallback((teamMembers: unknown[]) => {
     setMembersDialogContent(teamMembers);
     setMembersDialogOpen(true);
   }, []);
 
-  const processRowUpdate = useCallback(
-    async (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
-      if (deepEquals(newRow, oldRow)) {
-        return oldRow;
-      } else {
-        if (newRow.id !== oldRow.id) {
-          throw new Error("Row ID changed, database update aborted");
-        } else {
-          return setDoc(doc(spiritTeamsCollectionRef, newRow.id || ""), newRow).then(() => newRow);
-        }
-      }
-    },
-    [spiritTeamsCollectionRef]
-  );
-
   return (
     <>
-      <DataGrid
-        {...props}
-        experimentalFeatures={{ newEditingApi: true }}
-        rows={
-          spiritTeams.data
-            ? spiritTeams.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-            : []
-        }
+      <FirestoreCollectionDataGrid
         columns={[
           {
             field: "id",
             headerName: "Team ID",
-            width: 200,
+            flex: 2,
           },
           {
             field: "name",
             headerName: "Name",
-            width: 300,
+            flex: 2.5,
             editable: true,
           },
           {
             field: "networkForGoodId",
             headerName: "Network For Good ID",
-            width: 200,
+            flex: 1.75,
             editable: true,
+            type: "number",
           },
           {
             field: "totalSpiritPoints",
             headerName: "Total Spirit Points",
-            width: 200,
+            flex: 1.75,
+            type: "number",
           },
           {
             field: "members",
             headerName: "Members",
-            width: 200,
+            flex: 0.75,
             editable: false,
-            renderCell: ({ value }) => {
-              return (
-                <div
-                  style={{
-                    display: "flex",
-                    width: "100%",
-                    height: "100%",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    // TODO: FIXME
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    disabled={!value || Object.keys(value).length === 0}
-                    // TODO: FIXME
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    onClick={() => showTeamMembersDialog(value)}
-                    sx={{
-                      my: "5%",
-                      justifyContent: "left",
-                    }}
-                  >
-                    Show
-                  </Button>
-                </div>
-              );
-            },
+            type: "actions",
+            getActions: (params: GridRowParams) => [
+              <GridActionsCellItem
+                key={0}
+                icon={<TableRows />}
+                disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
+                onClick={() => showTeamMembersDialog(params.row["members"])}
+                label="List Members"
+              />,
+            ],
           },
         ]}
-        loading={spiritTeams.status === "loading"}
-        error={spiritTeams.error}
-        components={{
-          ErrorOverlay: DataGridFirebaseErrorOverlay,
-        }}
-        processRowUpdate={processRowUpdate}
-        onProcessRowUpdateError={handleProcessRowUpdateError}
+        firestoreCollectionRef={spiritTeamsCollectionRef}
       />
-      {!!snackbar && (
-        <Snackbar
-          open
-          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          onClose={() => setSnackbar(null)}
-          autoHideDuration={6000}
-        >
-          <Alert {...snackbar} onClose={() => setSnackbar(null)} />
-        </Snackbar>
-      )}
       <Dialog
         open={membersDialogOpen}
         onClose={() => setMembersDialogOpen(false)}

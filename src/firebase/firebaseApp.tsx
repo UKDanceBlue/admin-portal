@@ -35,6 +35,7 @@ export const ReactFireProvider = ({ children }: { children: ReactNode }) => {
   const storage = getStorage(app);
   const auth = getAuth(app);
 
+  // eslint-disable-next-line no-undef
   if (process.env.NODE_ENV === "development") {
     const enabledEmulators = {
       firestoreEmulator: false,

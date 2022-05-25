@@ -6,12 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { IdTokenResult, OAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { IdTokenResult, signOut } from "firebase/auth";
 import { httpsCallable } from "firebase/functions";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth, useFunctions, useUser } from "reactfire";
 
+import { signInWithLinkblue } from "../firebase/linkblue";
 import routeList from "../routes";
 
 const MenuBar = () => {
@@ -26,20 +27,7 @@ const MenuBar = () => {
   const [authClaims, setAuthClaims] = useState<IdTokenResult | null>(null);
 
   const triggerLogin = useCallback(async () => {
-    const linkblueAuthProvider = new OAuthProvider("microsoft.com");
-
-    linkblueAuthProvider.setCustomParameters({
-      tenant: "2b30530b-69b6-4457-b818-481cb53d42ae",
-      domain_hint: "uky.edu",
-    });
-
-    linkblueAuthProvider.addScope("openid");
-    linkblueAuthProvider.addScope("profile");
-    linkblueAuthProvider.addScope("email");
-    linkblueAuthProvider.addScope("offline_access");
-    linkblueAuthProvider.addScope("User.Read");
-
-    const userCredential = await signInWithPopup(auth, linkblueAuthProvider);
+    const userCredential = await signInWithLinkblue(auth);
 
     const updateUserClaims = httpsCallable(functions, "updateUserClaims");
     if (updateUserClaims) {

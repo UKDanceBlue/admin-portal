@@ -7,11 +7,13 @@ import {
   Checkbox,
   CircularProgress,
   TextField,
+  Theme,
 } from "@mui/material";
+import { SxProps } from "@mui/system";
 import { CollectionReference, getDocs } from "firebase/firestore";
 import { SyntheticEvent, useEffect, useState } from "react";
 
-import { GenericFirestoreDocument } from "../firebase/types";
+import { GenericFirestoreDocument, GenericFirestoreDocumentWithId } from "../firebase/types";
 
 const uncheckedIcon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -37,29 +39,43 @@ const getOptionNameFromUnknown = (option: unknown) => {
 };
 
 const FirestoreCollectionDropdown = ({
+  sx,
   collectionRef,
   label,
   getLabel,
   onChange,
 }: {
+  sx?: SxProps<Theme>;
   collectionRef: CollectionReference;
   label: string;
-  getLabel: (doc: GenericFirestoreDocument) => unknown;
+  getLabel: (doc: GenericFirestoreDocumentWithId) => unknown;
   onChange: (
     event: SyntheticEvent,
-    value: Array<GenericFirestoreDocument>,
+    value: Array<GenericFirestoreDocumentWithId>,
     reason: AutocompleteChangeReason,
-    details?: AutocompleteChangeDetails<GenericFirestoreDocument>
+    details?: AutocompleteChangeDetails<GenericFirestoreDocumentWithId>
   ) => void;
 }) => {
   const [shouldOptionsLoad, setShouldOptionsLoad] = useState(false);
-  const [options, setOptions] = useState<GenericFirestoreDocument[]>([]);
+  const [options, setOptions] = useState<GenericFirestoreDocumentWithId[]>([]);
   const [optionsLoading, setOptionsLoading] = useState(true);
   const [optionsError, setOptionsError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (shouldOptionsLoad) {
-      getDocs(collectionRef)
+      getDocs(
+        collectionRef.withConverter({
+          toFirestore(data: GenericFirestoreDocumentWithId) {
+            const dataToUpload: GenericFirestoreDocument = { ...data };
+            delete dataToUpload.id;
+            return dataToUpload;
+          },
+          fromFirestore(snapshot, options) {
+            const data: GenericFirestoreDocument = snapshot.data(options);
+            return { ...data, id: snapshot.id };
+          },
+        })
+      )
         .then((snapshot) => {
           setOptions(snapshot.docs.map((doc) => doc.data()));
           setOptionsLoading(false);
@@ -87,7 +103,7 @@ const FirestoreCollectionDropdown = ({
       loading={!!(optionsLoading || optionsError)}
       disableCloseOnSelect
       renderOption={(props, option, { selected }) => (
-        <li {...props}>
+        <li {...props} key={option.id}>
           <>
             <Checkbox
               icon={uncheckedIcon}
@@ -99,7 +115,7 @@ const FirestoreCollectionDropdown = ({
           </>
         </li>
       )}
-      style={{ width: 500 }}
+      sx={sx}
       renderInput={(params) => (
         <TextField
           {...params}

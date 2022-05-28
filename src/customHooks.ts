@@ -1,5 +1,6 @@
 import { Auth, ParsedToken, User, onIdTokenChanged } from "firebase/auth";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRemoteConfigString } from "reactfire";
 
 const updateAuthClaims = async (
   user: User,
@@ -40,4 +41,31 @@ export const useAuthClaims = (auth: Auth): ParsedToken | null => {
   );
 
   return authClaims;
+};
+
+export const useRemoteConfigParsedJson = <T = unknown>(field: string) => {
+  const encodedJson = useRemoteConfigString(field);
+
+  let data;
+  let error = encodedJson.error;
+
+  try {
+    data = JSON.parse(encodedJson.data) as T;
+  } catch (e) {
+    if (error) {
+      console.error(e);
+    } else {
+      error = e as SyntaxError;
+    }
+    data = undefined;
+  }
+
+  return {
+    data,
+    error,
+    firstValuePromise: encodedJson.firstValuePromise,
+    hasEmitted: encodedJson.hasEmitted,
+    isComplete: encodedJson.isComplete,
+    status: encodedJson.status,
+  };
 };

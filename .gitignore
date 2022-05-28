@@ -173,3 +173,5 @@ build-ts/
 
 # firebase emulator data (probably safe, but there may be sensitive information in there)
 firebase_emulator_data/
+
+.firebase

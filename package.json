@@ -5,6 +5,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit",
+    "pull-remoteconfig": "firebase remoteconfig:get -o remoteconfig.template.json",
     "deploy": "yarn build && firebase deploy",
     "lint": "eslint \"./src/**/*\"",
     "eject": "react-scripts eject"

@@ -5,7 +5,7 @@ import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
 import { httpsCallable } from "firebase/functions";
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useFunctions } from "reactfire";
 
 import { GenericFirestoreDocument } from "../../../firebase/types";
@@ -20,6 +20,7 @@ export type NotificationFormPendingState = {
   notificationBody?: string;
   notificationPayload?: unknown;
   selectedTeams?: GenericFirestoreDocument[];
+  notificationAudiences?: { [audience: string]: string[] };
 };
 
 const steps: string[] = ["Compose", "Audience", "Confirm"];
@@ -68,6 +69,15 @@ const NotificationForm = () => {
     }
   }, [activeStep, handlePageUpdated, notification, pendingState]);
 
+  const nextButtonDisabled = useMemo(() => {
+    if (activeStep === 0) {
+      if (!pendingState.notificationTitle || !pendingState.notificationBody) {
+        return true;
+      }
+    }
+    return false;
+  }, [activeStep, pendingState.notificationBody, pendingState.notificationTitle]);
+
   const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }, []);
@@ -81,7 +91,7 @@ const NotificationForm = () => {
   }, [setActiveStep]);
 
   return (
-    <Box>
+    <Box component="form" autoComplete="off">
       <Stepper activeStep={activeStep}>
         {steps.map((label) => {
           const stepProps: { completed?: boolean } = {};
@@ -111,7 +121,11 @@ const NotificationForm = () => {
               Back
             </Button>
             <Box sx={{ flex: "1 1 auto" }} />
-            <Button onClick={activeStep === steps.length - 1 ? sendPushNotification : handleNext}>
+            <Button
+              disabled={nextButtonDisabled}
+              variant="contained"
+              onClick={activeStep === steps.length - 1 ? sendPushNotification : handleNext}
+            >
               {activeStep === steps.length - 1 ? "Send" : "Next"}
             </Button>
           </Box>

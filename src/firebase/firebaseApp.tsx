@@ -1,7 +1,7 @@
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
-import { getRemoteConfig } from "firebase/remote-config";
+import { fetchAndActivate, getRemoteConfig } from "firebase/remote-config";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 import { ReactNode } from "react";
 import {
@@ -32,11 +32,13 @@ export const ReactFireProvider = ({ children }: { children: ReactNode }) => {
   const firestore = getFirestore(app);
   const functions = getFunctions(app);
   const remoteConfig = getRemoteConfig(app);
+  fetchAndActivate(remoteConfig);
   const storage = getStorage(app);
   const auth = getAuth(app);
 
   // eslint-disable-next-line no-undef
   if (process.env.NODE_ENV === "development") {
+    const enableAll = true;
     const enabledEmulators = {
       firestoreEmulator: false,
       authEmulator: false,
@@ -44,19 +46,19 @@ export const ReactFireProvider = ({ children }: { children: ReactNode }) => {
       storageEmulator: false,
       configEmulator: false,
     };
-    if (enabledEmulators.firestoreEmulator) {
+    if (enabledEmulators.firestoreEmulator || enableAll) {
       connectFirestoreEmulator(firestore, "localhost", 8080);
     }
 
-    if (enabledEmulators.authEmulator) {
+    if (enabledEmulators.authEmulator || enableAll) {
       connectAuthEmulator(auth, "http://localhost:9099");
     }
 
-    if (enabledEmulators.functionsEmulator) {
+    if (enabledEmulators.functionsEmulator || enableAll) {
       connectFunctionsEmulator(functions, "localhost", 5001);
     }
 
-    if (enabledEmulators.storageEmulator) {
+    if (enabledEmulators.storageEmulator || enableAll) {
       connectStorageEmulator(storage, "localhost", 9199);
     }
   }

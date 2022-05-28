@@ -17,17 +17,14 @@ const ConfirmPage = ({
     setNotification({
       notificationTitle: pendingState.notificationTitle ?? "",
       notificationBody: pendingState.notificationBody ?? "",
-      notificationAudiences: {
-        team:
-          pendingState.selectedTeams?.map((document) =>
-            typeof document.id === "string" ? document.id : new String(document.id).toString()
-          ) ?? [],
-      },
+      notificationPayload: pendingState.notificationPayload ?? {},
+      notificationAudiences: pendingState.notificationAudiences,
     });
   }, [
     pendingState.notificationBody,
+    pendingState.notificationPayload,
     pendingState.notificationTitle,
-    pendingState.selectedTeams,
+    pendingState.notificationAudiences,
     setNotification,
   ]);
 

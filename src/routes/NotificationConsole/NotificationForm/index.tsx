@@ -97,7 +97,7 @@ const NotificationForm = ({
 
   return (
     <Box component="form" autoComplete="off">
-      <Stepper activeStep={activeStep}>
+      <Stepper activeStep={activeStep} sx={{ my: "1em" }}>
         {steps.map((label) => {
           const stepProps: { completed?: boolean } = {};
           const labelProps: {

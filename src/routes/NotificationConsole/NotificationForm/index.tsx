@@ -8,6 +8,7 @@ import { httpsCallable } from "firebase/functions";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useFunctions } from "reactfire";
 
+import { SendPushNotificationReturnType } from "..";
 import { GenericFirestoreDocument } from "../../../firebase/types";
 import { Notification } from "../types";
 
@@ -25,7 +26,11 @@ export type NotificationFormPendingState = {
 
 const steps: string[] = ["Compose", "Audience", "Confirm"];
 
-const NotificationForm = () => {
+const NotificationForm = ({
+  handlePushSent,
+}: {
+  handlePushSent: (tickets: SendPushNotificationReturnType[]) => void;
+}) => {
   const [activeStep, setActiveStep] = useState(0);
   const [notification, setNotification] = useState<Notification>({
     notificationTitle: "",
@@ -47,8 +52,8 @@ const NotificationForm = () => {
   const sendPushNotification = useCallback(async () => {
     const sendPushNotificationCloudFunc = httpsCallable(functions, "sendPushNotification");
     const result = await sendPushNotificationCloudFunc(notification);
-    console.table(result);
-  }, [functions, notification]);
+    handlePushSent(result.data as SendPushNotificationReturnType[]);
+  }, [functions, handlePushSent, notification]);
 
   const getCurrentPage = useCallback(() => {
     switch (activeStep) {

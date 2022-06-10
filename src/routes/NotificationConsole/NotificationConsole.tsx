@@ -1,9 +1,15 @@
 import { Box, Typography } from "@mui/material";
+import { useState } from "react";
 
 import NotificationForm from "./NotificationForm";
 import NotificationStatus from "./NotificationStatus";
 
+import { SendPushNotificationReturnType } from ".";
+
 const NotificationConsole = () => {
+  const [notificationTickets, setNotificationTickets] =
+    useState<SendPushNotificationReturnType[]>();
+
   return (
     <Box>
       <Typography variant="h4" component="h4">
@@ -14,8 +20,8 @@ const NotificationConsole = () => {
         un-send, so be sure you have selected the right audience. If you want more info about how to
         use this form send an email to the <a href="mailto:app@danceblue.org">app coordinator</a>.
       </Typography>
-      <NotificationForm />
-      <NotificationStatus />
+      <NotificationForm handlePushSent={setNotificationTickets} />
+      <NotificationStatus notificationTickets={notificationTickets} />
     </Box>
   );
 };

@@ -14,7 +14,7 @@ export default function App() {
   return (
     <Box sx={{ alignContent: "center" }}>
       <MenuBar />
-      <Paper elevation={3} sx={{ px: "0.5em", mx: "auto", maxWidth: "lg" }}>
+      <Paper elevation={3} sx={{ px: "0.5em", py: "5vh", mx: "auto", maxWidth: "lg" }}>
         <Routes>
           {routeList.map((route, index) => (
             <Route

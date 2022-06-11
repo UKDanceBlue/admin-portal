@@ -35,12 +35,6 @@
         "value": "{\"rn\":{\"sso\":\"false\",\"anon\":\"true\"},\"web\":{\"sso\":true}}"
       },
       "valueType": "JSON"
-    },
-    "notifications_debug_mode": {
-      "defaultValue": {
-        "value": "false"
-      },
-      "valueType": "BOOLEAN"
     }
   }
 }

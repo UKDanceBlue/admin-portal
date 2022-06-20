@@ -1,14 +1,12 @@
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import {
-  Autocomplete,
+import { Autocomplete,
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   Checkbox,
   CircularProgress,
   TextField,
-  Theme,
-} from "@mui/material";
+  Theme } from "@mui/material";
 import { SxProps } from "@mui/system";
 import { CollectionReference, getDocs } from "firebase/firestore";
 import { SyntheticEvent, useEffect, useState } from "react";
@@ -56,10 +54,10 @@ const FirestoreCollectionDropdown = ({
     details?: AutocompleteChangeDetails<GenericFirestoreDocumentWithId>
   ) => void;
 }) => {
-  const [shouldOptionsLoad, setShouldOptionsLoad] = useState(false);
-  const [options, setOptions] = useState<GenericFirestoreDocumentWithId[]>([]);
-  const [optionsLoading, setOptionsLoading] = useState(true);
-  const [optionsError, setOptionsError] = useState<Error | null>(null);
+  const [ shouldOptionsLoad, setShouldOptionsLoad ] = useState(false);
+  const [ options, setOptions ] = useState<GenericFirestoreDocumentWithId[]>([]);
+  const [ optionsLoading, setOptionsLoading ] = useState(true);
+  const [ optionsError, setOptionsError ] = useState<Error | null>(null);
 
   useEffect(() => {
     if (shouldOptionsLoad) {
@@ -85,7 +83,7 @@ const FirestoreCollectionDropdown = ({
           setOptionsLoading(false);
         });
     }
-  }, [shouldOptionsLoad, collectionRef]);
+  }, [ shouldOptionsLoad, collectionRef ]);
 
   return (
     <Autocomplete
@@ -133,9 +131,7 @@ const FirestoreCollectionDropdown = ({
           }}
           error={!!optionsError}
           helperText={optionsError?.message}
-          FormHelperTextProps={{
-            error: !!optionsError,
-          }}
+          FormHelperTextProps={{ error: !!optionsError }}
         />
       )}
     />

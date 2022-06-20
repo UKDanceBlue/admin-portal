@@ -5,7 +5,9 @@ import { CollectionReference, doc, setDoc } from "firebase/firestore";
 import { useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
-const DataGridFirebaseErrorOverlay = ({ code, message }: { code: string; message?: string }) => {
+const DataGridFirebaseErrorOverlay = ({
+  code, message
+}: { code: string; message?: string }) => {
   return (
     <div>
       <Typography variant="h4" component="h4">
@@ -26,7 +28,7 @@ const FirestoreCollectionDataGrid = ({
   }>;
   firestoreCollectionRef: CollectionReference;
 }) => {
-  const [snackbar, setSnackbar] = useState<{ children: string; severity: AlertColor } | null>(null);
+  const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
   const firestoreCollection = useFirestoreCollection(firestoreCollectionRef);
 
   const handleProcessRowUpdateError = useCallback((error: Error) => {
@@ -34,15 +36,13 @@ const FirestoreCollectionDataGrid = ({
   }, []);
 
   const processRowUpdate = useCallback(
-    async (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
+    (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
       if (deepEquals(newRow, oldRow)) {
         return oldRow;
+      } else if (newRow.id !== oldRow.id) {
+        throw new Error("Row ID changed, database update aborted");
       } else {
-        if (newRow.id !== oldRow.id) {
-          throw new Error("Row ID changed, database update aborted");
-        } else {
-          return setDoc(doc(firestoreCollectionRef, newRow.id || ""), newRow).then(() => newRow);
-        }
+        return setDoc(doc(firestoreCollectionRef, newRow.id || ""), newRow).then(() => newRow);
       }
     },
     [firestoreCollectionRef]
@@ -60,9 +60,7 @@ const FirestoreCollectionDataGrid = ({
         columns={columns}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
-        components={{
-          ErrorOverlay: DataGridFirebaseErrorOverlay,
-        }}
+        components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
       />

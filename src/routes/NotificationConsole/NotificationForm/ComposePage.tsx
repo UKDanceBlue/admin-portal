@@ -10,9 +10,9 @@ const ComposePage = ({
   pendingState: NotificationFormPendingState;
   handlePageUpdated: (changedContent: NotificationFormPendingState) => void;
 }) => {
-  const [notificationTitle, setNotificationTitle] = useState(pendingState.notificationTitle ?? "");
-  const [notificationBody, setNotificationBody] = useState(pendingState.notificationBody ?? "");
-  const [notificationPayload, setNotificationPayload] = useState<unknown>(
+  const [ notificationTitle, setNotificationTitle ] = useState(pendingState.notificationTitle ?? "");
+  const [ notificationBody, setNotificationBody ] = useState(pendingState.notificationBody ?? "");
+  const [ notificationPayload, setNotificationPayload ] = useState<unknown>(
     pendingState.notificationPayload ?? {}
   );
 
@@ -22,7 +22,9 @@ const ComposePage = ({
       notificationBody,
       notificationPayload,
     });
-  }, [handlePageUpdated, notificationTitle, notificationBody, notificationPayload]);
+  }, [
+    handlePageUpdated, notificationTitle, notificationBody, notificationPayload
+  ]);
 
   // TODO validate length of title and body
 

@@ -20,18 +20,16 @@ type PushReceiptFunctionReturn = {
 };
 
 const NotificationStatus = (
-  {
-    notificationTickets,
-  }: {
+  { notificationTickets }: {
     notificationTickets?: SendPushNotificationReturnType[];
   } = { notificationTickets: [{ id: "3", status: "ok" }] }
 ) => {
   const functions = useFunctions();
 
-  const [pushReceiptResponse, setPushReceiptResponse] = useState<PushReceiptFunctionReturn>();
+  const [ pushReceiptResponse, setPushReceiptResponse ] = useState<PushReceiptFunctionReturn>();
 
-  const [resolvedReceipts, setResolvedReceipts] = useState<PushReceipt[]>([]);
-  const [erroredTickets, setErroredTickets] = useState<PushReceipt[]>([]);
+  const [ resolvedReceipts, setResolvedReceipts ] = useState<PushReceipt[]>([]);
+  const [ erroredTickets, setErroredTickets ] = useState<PushReceipt[]>([]);
 
   useEffect(() => {
     if (notificationTickets !== undefined) {
@@ -52,23 +50,21 @@ const NotificationStatus = (
         "processPushNotificationReceipts"
       );
       (
-        processPushNotificationReceiptsFunc({
-          receiptIds: pushTicketsToCheck.map((t) => t.id),
-        }) as Promise<HttpsCallableResult<PushReceiptFunctionReturn>>
+        processPushNotificationReceiptsFunc({ receiptIds: pushTicketsToCheck.map((t) => t.id) }) as Promise<HttpsCallableResult<PushReceiptFunctionReturn>>
       ).then((response) => {
         setPushReceiptResponse(response.data);
       });
     } else {
       setPushReceiptResponse(undefined);
     }
-  }, [functions, notificationTickets]);
+  }, [ functions, notificationTickets ]);
 
   useEffect(() => {
     if (pushReceiptResponse !== undefined) {
       const resolvedReceipts: PushReceipt[] = [];
       const erroredTickets: PushReceipt[] = [];
 
-      Object.entries(pushReceiptResponse.receipts).forEach(([id, receipt]) => {
+      Object.entries(pushReceiptResponse.receipts).forEach(([ id, receipt ]) => {
         if (receipt !== null) {
           if (receipt.status === "ok") {
             resolvedReceipts.push({ id, status: "ok" });

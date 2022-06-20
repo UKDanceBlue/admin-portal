@@ -58,9 +58,7 @@ const ConfirmPage = ({
               <img
                 src="/db_watermark.svg"
                 alt="icon"
-                style={{
-                  height: "1.1em",
-                }}
+                style={{ height: "1.1em" }}
               />
             </Paper>
             {notification.notificationTitle}
@@ -77,11 +75,11 @@ const ConfirmPage = ({
       <Typography variant="body2">To be sent to:</Typography>
       {notification.notificationAudiences &&
       Object.keys(notification.notificationAudiences).length > 0
-        ? Object.entries(notification.notificationAudiences).map(([audience, audienceIds]) => (
-            <Typography key={audience} variant="body2" sx={{ ml: "1em" }}>
-              {` ${audience}: ${audienceIds.join(", ")}\n`}
-            </Typography>
-          ))
+        ? Object.entries(notification.notificationAudiences).map(([ audience, audienceIds ]) => (
+          <Typography key={audience} variant="body2" sx={{ ml: "1em" }}>
+            {` ${audience}: ${audienceIds.join(", ")}\n`}
+          </Typography>
+        ))
         : "NOBODY"}
     </div>
   );

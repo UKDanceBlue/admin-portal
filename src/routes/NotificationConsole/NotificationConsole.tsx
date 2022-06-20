@@ -7,8 +7,7 @@ import NotificationStatus from "./NotificationStatus";
 import { SendPushNotificationReturnType } from ".";
 
 const NotificationConsole = () => {
-  const [notificationTickets, setNotificationTickets] =
-    useState<SendPushNotificationReturnType[]>();
+  const [ notificationTickets, setNotificationTickets ] = useState<SendPushNotificationReturnType[]>();
 
   return (
     <Box>

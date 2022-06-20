@@ -34,7 +34,7 @@ const routeList: RouteDefinition[] = [
     signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
     ],
     element: <MarathonConsole />,
   },
@@ -45,7 +45,7 @@ const routeList: RouteDefinition[] = [
     signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
     ],
     element: <SpiritConsole />,
   },
@@ -56,7 +56,7 @@ const routeList: RouteDefinition[] = [
     signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
     ],
     element: <MoraleConsole />,
   },
@@ -67,7 +67,7 @@ const routeList: RouteDefinition[] = [
     signInRequired: true,
     requiredClaims: [
       { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: ["coordinator", "chair"] },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
     ],
     element: <NotificationConsole />,
   },

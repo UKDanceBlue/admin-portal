@@ -18,7 +18,9 @@ const SecuredParent = ({
   children: ReactNode;
   requiredClaims?: AuthClaim[];
 }) => {
-  const { status, data: signInCheckResult } = useSigninCheck({
+  const {
+    status, data: signInCheckResult
+  } = useSigninCheck({
     validateCustomClaims: (userClaims) => {
       // Make sure that the user supplied requiredClaims, if not then just return the component
       if (requiredClaims && Array.isArray(requiredClaims)) {

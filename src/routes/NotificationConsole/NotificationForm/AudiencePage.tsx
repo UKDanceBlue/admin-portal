@@ -62,15 +62,13 @@ const AudiencePage = ({
     [key: string]: { value: string }[] | { type: "string" | "number" | "boolean" };
   }>("valid_attributes");
 
-  const [notificationAudiences, setNotificationAudiences] = useState<
+  const [ notificationAudiences, setNotificationAudiences ] = useState<
     NotificationFormPendingState["notificationAudiences"]
   >(pendingState.notificationAudiences ?? {});
 
   useEffect(() => {
-    handlePageUpdated({
-      notificationAudiences,
-    });
-  }, [handlePageUpdated, notificationAudiences]);
+    handlePageUpdated({ notificationAudiences });
+  }, [ handlePageUpdated, notificationAudiences ]);
 
   return (
     <Box
@@ -108,7 +106,7 @@ const AudiencePage = ({
         collectionRef={collection(firestore, "teams")}
       />
       {validAttributes.data &&
-        Object.entries(validAttributes.data)?.map(([attributeName, attributeValues]) => {
+        Object.entries(validAttributes.data)?.map(([ attributeName, attributeValues ]) => {
           if (Array.isArray(attributeValues)) {
             return (
               <FormControl key={attributeName} sx={{ width: "90%", mt: "1rem" }}>
@@ -126,12 +124,10 @@ const AudiencePage = ({
                     const currentNotificationAudiences = { ...notificationAudiences };
                     if (Array.isArray(event.target.value)) {
                       currentNotificationAudiences[attributeName] = event.target.value;
+                    } else if (event.target.value === "") {
+                      delete currentNotificationAudiences[attributeName];
                     } else {
-                      if (event.target.value === "") {
-                        delete currentNotificationAudiences[attributeName];
-                      } else {
-                        currentNotificationAudiences[attributeName] = [event.target.value];
-                      }
+                      currentNotificationAudiences[attributeName] = [event.target.value];
                     }
                     setNotificationAudiences(currentNotificationAudiences);
                   }}

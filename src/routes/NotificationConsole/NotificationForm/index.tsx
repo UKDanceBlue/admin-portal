@@ -24,28 +24,27 @@ export type NotificationFormPendingState = {
   notificationAudiences?: { [audience: string]: string[] };
 };
 
-const steps: string[] = ["Compose", "Audience", "Confirm"];
+const steps: string[] = [
+  "Compose", "Audience", "Confirm"
+];
 
-const NotificationForm = ({
-  handlePushSent,
-}: {
+const NotificationForm = ({ handlePushSent }: {
   handlePushSent: (tickets: SendPushNotificationReturnType[]) => void;
 }) => {
-  const [activeStep, setActiveStep] = useState(0);
-  const [notification, setNotification] = useState<Notification>({
+  const [ activeStep, setActiveStep ] = useState(0);
+  const [ notification, setNotification ] = useState<Notification>({
     notificationTitle: "",
     notificationBody: "",
   });
   const functions = useFunctions();
 
-  const [pendingState, setPendingState] = useState<NotificationFormPendingState>({});
+  const [ pendingState, setPendingState ] = useState<NotificationFormPendingState>({});
 
   const handlePageUpdated = useCallback(
-    (changedContent: object) =>
-      setPendingState((prevState) => ({
-        ...prevState,
-        ...changedContent,
-      })),
+    (changedContent: object) => setPendingState((prevState) => ({
+      ...prevState,
+      ...changedContent,
+    })),
     []
   );
 
@@ -53,26 +52,30 @@ const NotificationForm = ({
     const sendPushNotificationCloudFunc = httpsCallable(functions, "sendPushNotification");
     const result = await sendPushNotificationCloudFunc(notification);
     handlePushSent(result.data as SendPushNotificationReturnType[]);
-  }, [functions, handlePushSent, notification]);
+  }, [
+    functions, handlePushSent, notification
+  ]);
 
   const getCurrentPage = useCallback(() => {
     switch (activeStep) {
-      case 0:
-        return <ComposePage pendingState={pendingState} handlePageUpdated={handlePageUpdated} />;
-      case 1:
-        return <AudiencePage pendingState={pendingState} handlePageUpdated={handlePageUpdated} />;
-      case 2:
-        return (
-          <ConfirmPage
-            pendingState={pendingState}
-            notification={notification}
-            setNotification={setNotification}
-          />
-        );
-      default:
-        return null;
+    case 0:
+      return <ComposePage pendingState={pendingState} handlePageUpdated={handlePageUpdated} />;
+    case 1:
+      return <AudiencePage pendingState={pendingState} handlePageUpdated={handlePageUpdated} />;
+    case 2:
+      return (
+        <ConfirmPage
+          pendingState={pendingState}
+          notification={notification}
+          setNotification={setNotification}
+        />
+      );
+    default:
+      return null;
     }
-  }, [activeStep, handlePageUpdated, notification, pendingState]);
+  }, [
+    activeStep, handlePageUpdated, notification, pendingState
+  ]);
 
   const nextButtonDisabled = useMemo(() => {
     if (activeStep === 0) {
@@ -81,7 +84,9 @@ const NotificationForm = ({
       }
     }
     return false;
-  }, [activeStep, pendingState.notificationBody, pendingState.notificationTitle]);
+  }, [
+    activeStep, pendingState.notificationBody, pendingState.notificationTitle
+  ]);
 
   const handleNext = useCallback(() => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

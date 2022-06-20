@@ -1,6 +1,5 @@
 import { TableRows } from "@mui/icons-material";
-import {
-  Button,
+import { Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -8,8 +7,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  Typography,
-} from "@mui/material";
+  Typography } from "@mui/material";
 import { GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
 import { collection } from "firebase/firestore";
 import PropTypes from "prop-types";
@@ -20,7 +18,9 @@ import FirestoreCollectionDataGrid from "./FirestoreCollectionDataGrid";
 
 // TODO convert this to a generic interface for editing a firestore collection
 
-const DataGridFirebaseErrorOverlay = ({ code, message }: { code: string; message: string }) => {
+const DataGridFirebaseErrorOverlay = ({
+  code, message
+}: { code: string; message: string }) => {
   return (
     <div>
       <Typography variant="h4" component="h4">
@@ -40,8 +40,8 @@ DataGridFirebaseErrorOverlay.propTypes = {
 const SpiritTeamDataGrid = () => {
   const firestore = useFirestore();
 
-  const [membersDialogOpen, setMembersDialogOpen] = useState(false);
-  const [membersDialogContent, setMembersDialogContent] = useState({});
+  const [ membersDialogOpen, setMembersDialogOpen ] = useState(false);
+  const [ membersDialogContent, setMembersDialogContent ] = useState({});
 
   const spiritTeamsCollectionRef = collection(firestore, "teams");
 
@@ -117,7 +117,9 @@ const SpiritTeamDataGrid = () => {
         <DialogTitle id="scroll-dialog-title">Team Members</DialogTitle>
         <DialogContent dividers={true}>
           <List>
-            {Object.entries(membersDialogContent).map(({ 0: key, 1: value }) => (
+            {Object.entries(membersDialogContent).map(({
+              0: key, 1: value
+            }) => (
               <ListItem key={key}>
                 <ListItemText primary={value as ReactNode} />
               </ListItem>

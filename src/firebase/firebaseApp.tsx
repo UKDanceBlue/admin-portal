@@ -4,15 +4,13 @@ import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { fetchAndActivate, getRemoteConfig } from "firebase/remote-config";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 import { ReactNode } from "react";
-import {
-  AuthProvider,
+import { AuthProvider,
   FirebaseAppProvider,
   FirestoreProvider,
   FunctionsProvider,
   RemoteConfigProvider,
   StorageProvider,
-  useFirebaseApp,
-} from "reactfire";
+  useFirebaseApp } from "reactfire";
 
 // Your web app's Firebase configuration
 export const firebaseConfig = {

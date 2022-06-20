@@ -20,23 +20,22 @@ const updateAuthClaims = async (
  * @return Returns null if no ID token has yet been checked, otherwise returns the user's auth claims object
  */
 export const useAuthClaims = (auth: Auth): ParsedToken | null => {
-  const [authClaims, setAuthClaims] = useState<ParsedToken | null>(null);
+  const [ authClaims, setAuthClaims ] = useState<ParsedToken | null>(null);
 
   useEffect(
-    () =>
-      onIdTokenChanged(
-        auth,
-        (user) => {
-          if (user) {
-            void updateAuthClaims(user, setAuthClaims);
-          } else {
-            setAuthClaims(null);
-          }
-        },
-        () => {
-          setAuthClaims({});
+    () => onIdTokenChanged(
+      auth,
+      (user) => {
+        if (user) {
+          void updateAuthClaims(user, setAuthClaims);
+        } else {
+          setAuthClaims(null);
         }
-      ),
+      },
+      () => {
+        setAuthClaims({});
+      }
+    ),
     [auth]
   );
 
@@ -47,7 +46,7 @@ export const useRemoteConfigParsedJson = <T = unknown>(field: string) => {
   const encodedJson = useRemoteConfigString(field);
 
   let data;
-  let error = encodedJson.error;
+  let { error } = encodedJson;
 
   try {
     data = JSON.parse(encodedJson.data) as T;

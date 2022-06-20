@@ -7,10 +7,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { IdTokenResult, signOut } from "firebase/auth";
-import { httpsCallable } from "firebase/functions";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useFunctions, useUser } from "reactfire";
+import { useAuth, useFunctions } from "reactfire";
 
 import { signInWithLinkblue } from "../firebase/linkblue";
 import routeList from "../routes";
@@ -21,33 +20,25 @@ const MenuBar = () => {
   const auth = useAuth();
   const functions = useFunctions();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [ menuOpen, setMenuOpen ] = useState(false);
 
-  const user = useUser();
-  const [authClaims, setAuthClaims] = useState<IdTokenResult | null>(null);
+  const [ authClaims, setAuthClaims ] = useState<IdTokenResult | null>(null);
+  const [ user, setUser ] = useState<typeof auth["currentUser"] | null>(null);
 
   const triggerLogin = useCallback(async () => {
-    const userCredential = await signInWithLinkblue(auth);
+    await signInWithLinkblue(auth, functions);
+  }, [ auth, functions ]);
 
-    const updateUserClaims = httpsCallable(functions, "updateUserClaims");
-    if (updateUserClaims) {
-      await updateUserClaims("");
-      // Calling getIdTokenResult(true) forces the client to get a new token, updating useIdTokenResult
-      userCredential.user.getIdTokenResult(true);
+  useEffect(() => auth.onAuthStateChanged((user) => {
+    if (user) {
+      user.getIdTokenResult().then(setAuthClaims);
+      setUser(user);
+    } else {
+      setAuthClaims(null);
+      setUser(null);
     }
-  }, [auth, functions]);
-
-  useEffect(
-    () =>
-      void (async () => {
-        if (user.data) {
-          setAuthClaims(await user.data.getIdTokenResult());
-        } else {
-          setAuthClaims(null);
-        }
-      })(),
-    [user]
-  );
+  }
+  ), [auth]);
 
   return (
     <AppBar position="sticky">
@@ -73,9 +64,7 @@ const MenuBar = () => {
           </IconButton>
           <Drawer
             variant="temporary"
-            ModalProps={{
-              keepMounted: true,
-            }}
+            ModalProps={{ keepMounted: true }}
             anchor="left"
             open={Boolean(menuOpen)}
             onClose={() => {
@@ -135,14 +124,14 @@ const MenuBar = () => {
               </MenuItem>
             ))}
         </Box>
-        {(!user.data || user.data.isAnonymous) && (
+        {(!user || user.isAnonymous) && (
           <Box>
             <MenuItem onClick={triggerLogin}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>
         )}
-        {user.data && !user.data.isAnonymous && (
+        {user && !user.isAnonymous && (
           <Box>
             <MenuItem
               onClick={() => {

@@ -13,6 +13,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@azure/msal-browser": "^2.26.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",
@@ -38,12 +39,12 @@
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^8.18.0",
     "eslint-plugin-import": "^2.26.0",
-    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-jsdoc": "^39.3.2",
     "eslint-plugin-react": "^7.29.4",
-    "eslint-plugin-react-hooks": "^4.5.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-native": "^4.0.0",
     "prettier": "^2.6.2",
     "typescript": "^4.6.4"
   },
@@ -59,9 +60,6 @@
       "last 1 safari version"
     ]
   },
-  "resolutions": {
-    "es-abstract": "1.19.5"
-  },
   "eslintConfig": {
     "root": true,
     "parser": "@typescript-eslint/parser",
@@ -69,10 +67,259 @@
       "es2021": true,
       "browser": true
     },
-    "ignorePatterns": [
-      "**/build/**/*"
+    "plugins": [
+      "@typescript-eslint",
+      "jsdoc"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/recommended",
+      "plugin:import/typescript",
+      "plugin:react/recommended",
+      "plugin:react/jsx-runtime",
+      "plugin:react-hooks/recommended"
     ],
     "rules": {
+      "spaced-comment": [
+        "error",
+        "always"
+      ],
+      "require-await": "error",
+      "radix": "error",
+      "yoda": "error",
+      "prefer-template": "warn",
+      "curly": "error",
+      "guard-for-in": "error",
+      "grouped-accessor-pairs": "error",
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "no-implicit-coercion": [
+        "error",
+        {
+          "allow": [
+            "!!"
+          ]
+        }
+      ],
+      "no-implicit-globals": "error",
+      "no-lonely-if": "error",
+      "no-return-await": "error",
+      "no-var": "error",
+      "prefer-const": "error",
+      "object-shorthand": "error",
+      "prefer-arrow-callback": "error",
+      "prefer-destructuring": "error",
+      "no-useless-concat": "error",
+      "prefer-numeric-literals": "error",
+      "prefer-object-spread": "error",
+      "array-callback-return": "error",
+      "no-await-in-loop": "error",
+      "no-constant-binary-expression": "error",
+      "no-promise-executor-return": "error",
+      "no-self-compare": "error",
+      "require-atomic-updates": "error",
+      "capitalized-comments": [
+        "error",
+        "always",
+        {
+          "ignoreInlineComments": true
+        }
+      ],
+      "class-methods-use-this": "error",
+      "eqeqeq": [
+        "error",
+        "smart"
+      ],
+      "quotes": [
+        "error",
+        "double"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "arrow-parens": [
+        "error",
+        "always"
+      ],
+      "brace-style": [
+        "error",
+        "1tbs",
+        {
+          "allowSingleLine": true
+        }
+      ],
+      "lines-between-class-members": [
+        "error",
+        "always",
+        {
+          "exceptAfterSingleLine": true
+        }
+      ],
+      "no-multi-spaces": "error",
+      "newline-per-chained-call": [
+        "error",
+        {
+          "ignoreChainWithDepth": 3
+        }
+      ],
+      "no-trailing-spaces": [
+        "error",
+        {
+          "skipBlankLines": true
+        }
+      ],
+      "no-whitespace-before-property": "error",
+      "object-curly-newline": [
+        "error",
+        {
+          "ObjectExpression": {
+            "multiline": true
+          },
+          "ObjectPattern": {
+            "multiline": true,
+            "minProperties": 2
+          },
+          "ImportDeclaration": "never",
+          "ExportDeclaration": {
+            "multiline": true,
+            "minProperties": 3
+          }
+        }
+      ],
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ],
+      "operator-linebreak": [
+        "error",
+        "after",
+        {
+          "overrides": {
+            "=": "none",
+            "?": "before",
+            ":": "before"
+          }
+        }
+      ],
+      "padded-blocks": [
+        "error",
+        "never"
+      ],
+      "rest-spread-spacing": [
+        "error",
+        "never"
+      ],
+      "semi-spacing": [
+        "error",
+        {
+          "before": false,
+          "after": true
+        }
+      ],
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "always",
+          "named": "never",
+          "asyncArrow": "always"
+        }
+      ],
+      "unicode-bom": [
+        "error",
+        "never"
+      ],
+      "array-bracket-newline": [
+        "error",
+        {
+          "multiline": true,
+          "minItems": 3
+        }
+      ],
+      "array-bracket-spacing": [
+        "error",
+        "always",
+        {
+          "singleValue": false
+        }
+      ],
+      "array-element-newline": [
+        "error",
+        {
+          "ArrayExpression": "consistent",
+          "ArrayPattern": {
+            "minItems": 3
+          }
+        }
+      ],
+      "arrow-spacing": [
+        "error",
+        {
+          "before": true,
+          "after": true
+        }
+      ],
+      "comma-dangle": [
+        "error",
+        {
+          "arrays": "only-multiline",
+          "objects": "only-multiline",
+          "imports": "never",
+          "exports": "never",
+          "functions": "never"
+        }
+      ],
+      "comma-style": [
+        "error",
+        "last"
+      ],
+      "comma-spacing": [
+        "error",
+        {
+          "before": false,
+          "after": true
+        }
+      ],
+      "dot-location": [
+        "error",
+        "property"
+      ],
+      "eol-last": [
+        "error",
+        "always"
+      ],
+      "jsx-quotes": [
+        "error",
+        "prefer-double"
+      ],
+      "function-call-argument-newline": [
+        "error",
+        "consistent"
+      ],
+      "indent": [
+        "error",
+        2
+      ],
+      "implicit-arrow-linebreak": [
+        "error",
+        "beside"
+      ],
+      "key-spacing": [
+        "error",
+        {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      ],
+      "keyword-spacing": "error",
+      "jsdoc/no-types": "error",
       "import/named": "off",
       "import/namespace": "off",
       "import/default": "off",
@@ -81,8 +328,6 @@
       "import/no-cycle": "off",
       "import/no-unused-modules": "off",
       "import/no-deprecated": "off",
-      "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off",
       "import/order": [
         "error",
         {
@@ -116,15 +361,23 @@
           "ignoreDeclarationSort": true
         }
       ],
-      "quotes": [
-        "error",
-        "double"
-      ],
       "import/no-unresolved": "off",
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error"
       ]
+    },
+    "settings": {
+      "jsdoc": {
+        "tagNamePreference": {
+          "returns": "return"
+        }
+      },
+      "react": {
+        "version": "detect"
+      }
     },
     "parserOptions": {
       "ecmaFeatures": {
@@ -135,25 +388,6 @@
       ],
       "sourceType": "module",
       "tsconfigRootDir": "."
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:import/recommended",
-      "plugin:import/typescript",
-      "plugin:react/recommended",
-      "plugin:react/jsx-runtime",
-      "plugin:react-hooks/recommended",
-      "react-app",
-      "plugin:@typescript-eslint/recommended",
-      "prettier"
-    ],
-    "settings": {
-      "react": {
-        "version": "detect"
-      }
     }
   }
 }

@@ -1,8 +1,26 @@
 {
   "parameters": {
-    "valid_attributes": {
+    "login_mode": {
       "defaultValue": {
-        "value": "{\"spiritTeamId\":{\"type\":\"string\"},\"spiritCaptain\":[{\"value\":true},{\"value\":false}],\"marathonAccess\":[{\"value\":true},{\"value\":false}],\"committeeRank\":[{\"value\":\"advisor\"},{\"value\":\"overall-chair\"},{\"value\":\"chair\"},{\"value\":\"coordinator\"},{\"value\":\"committee-member\"}],\"dbRole\":[{\"value\":\"public\"},{\"value\":\"team-member\"},{\"value\":\"committee\"}],\"committee\":[{\"value\":\"tech-committee\"},{\"value\":\"corporate-committee\"},{\"value\":\"community-relations-committee\"},{\"value\":\"dancer-relations-committee\"},{\"value\":\"family-relations-committee\"},{\"value\":\"fundraising-committee\"},{\"value\":\"marketing-committee\"},{\"value\":\"mini-marathons-committee\"},{\"value\":\"morale-committee\"},{\"value\":\"operations-committee\"},{\"value\":\"overall-committee\"},{\"value\":\"programming-committee\"}]}"
+        "value": "{\"rn\":[\"ms-oath-linkblue\",\"anonymous\"],\"web\":[\"ms-oath-linkblue\"]}"
+      },
+      "valueType": "JSON"
+    },
+    "rn_scoreboard_mode": {
+      "defaultValue": {
+        "value": "{\"pointType\":\"spirit\",\"showIcons\":false,\"showTrophies\":true}"
+      },
+      "valueType": "JSON"
+    },
+    "notifications_debug_mode": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN"
+    },
+    "rn_shown_tabs": {
+      "defaultValue": {
+        "value": "[\"Events\"]"
       },
       "valueType": "JSON"
     },
@@ -12,9 +30,9 @@
       },
       "valueType": "JSON"
     },
-    "rn_shown_tabs": {
+    "valid_attributes": {
       "defaultValue": {
-        "value": "[\"Events\"]"
+        "value": "{\"spiritTeamId\":{\"type\":\"string\"},\"spiritCaptain\":[{\"value\":true},{\"value\":false}],\"marathonAccess\":[{\"value\":true},{\"value\":false}],\"committeeRank\":[{\"value\":\"advisor\"},{\"value\":\"overall-chair\"},{\"value\":\"chair\"},{\"value\":\"coordinator\"},{\"value\":\"committee-member\"}],\"dbRole\":[{\"value\":\"public\"},{\"value\":\"team-member\"},{\"value\":\"committee\"}],\"committee\":[{\"value\":\"tech-committee\"},{\"value\":\"corporate-committee\"},{\"value\":\"community-relations-committee\"},{\"value\":\"dancer-relations-committee\"},{\"value\":\"family-relations-committee\"},{\"value\":\"fundraising-committee\"},{\"value\":\"marketing-committee\"},{\"value\":\"mini-marathons-committee\"},{\"value\":\"morale-committee\"},{\"value\":\"operations-committee\"},{\"value\":\"overall-committee\"},{\"value\":\"programming-committee\"}]}"
       },
       "valueType": "JSON"
     },
@@ -23,18 +41,6 @@
         "value": "Test Key 8748"
       },
       "valueType": "STRING"
-    },
-    "rn_scoreboard_mode": {
-      "defaultValue": {
-        "value": "{\"pointType\":\"spirit\",\"showIcons\":false,\"showTrophies\":true}"
-      },
-      "valueType": "JSON"
-    },
-    "login_mode": {
-      "defaultValue": {
-        "value": "{\"rn\":{\"sso\":\"false\",\"anon\":\"true\"},\"web\":{\"sso\":true}}"
-      },
-      "valueType": "JSON"
     }
   }
 }

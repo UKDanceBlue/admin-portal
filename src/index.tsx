@@ -18,10 +18,10 @@ if (container) {
     <StrictMode>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
-          {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-          <CssBaseline />
           <FirebaseAppProvider firebaseConfig={firebaseConfig}>
             <ReactFireProvider>
+              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+              <CssBaseline />
               <App />
             </ReactFireProvider>
           </FirebaseAppProvider>

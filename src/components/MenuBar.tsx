@@ -14,6 +14,8 @@ import { useAuth, useFunctions } from "reactfire";
 import { signInWithLinkblue } from "../firebase/linkblue";
 import routeList from "../routes";
 
+import { useLoading } from "./LoadingWrapper";
+
 const MenuBar = () => {
   const navigate = useNavigate();
 
@@ -25,9 +27,15 @@ const MenuBar = () => {
   const [ authClaims, setAuthClaims ] = useState<IdTokenResult | null>(null);
   const [ user, setUser ] = useState<typeof auth["currentUser"] | null>(null);
 
+  const [ loading, setLoading ] = useLoading();
+
   const triggerLogin = useCallback(async () => {
+    setLoading(true);
     await signInWithLinkblue(auth, functions);
-  }, [ auth, functions ]);
+    setLoading(false);
+  }, [
+    auth, functions, setLoading
+  ]);
 
   useEffect(() => auth.onAuthStateChanged((user) => {
     if (user) {
@@ -126,7 +134,7 @@ const MenuBar = () => {
         </Box>
         {(!user || user.isAnonymous) && (
           <Box>
-            <MenuItem onClick={triggerLogin}>
+            <MenuItem onClick={triggerLogin} disabled={loading}>
               <Typography textAlign="center">Login</Typography>
             </MenuItem>
           </Box>

@@ -1,4 +1,4 @@
-import { AuthenticationResult, InteractionRequiredAuthError, PublicClientApplication } from "@azure/msal-browser";
+import { AuthenticationResult, PublicClientApplication } from "@azure/msal-browser";
 import { Auth, UserCredential, signInWithCustomToken } from "firebase/auth";
 import { Functions, httpsCallable } from "firebase/functions";
 
@@ -18,17 +18,7 @@ export async function signInWithLinkblue(auth: Auth, functions: Functions): Prom
     ]
   };
 
-  let tokenResponse: AuthenticationResult;
-  try {
-    tokenResponse = await msalInstance.acquireTokenSilent(request);
-  } catch (e) {
-    if (e instanceof InteractionRequiredAuthError) {
-      // Fallback to interaction when silent call fails
-      tokenResponse = await msalInstance.acquireTokenPopup(request);
-    } else {
-      throw e;
-    }
-  }
+  const tokenResponse: AuthenticationResult = await msalInstance.acquireTokenPopup(request);
 
   if (tokenResponse?.accessToken == null) {
     throw new Error("Linkblue authentication failed: no access token");

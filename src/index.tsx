@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import { FirebaseAppProvider } from "reactfire";
 
 import App from "./App";
+import { LoadingWrapper } from "./components/LoadingWrapper";
 import { ReactFireProvider, firebaseConfig } from "./firebase/firebaseApp";
 import theme from "./theme";
 
@@ -20,9 +21,10 @@ if (container) {
         <ThemeProvider theme={theme}>
           <FirebaseAppProvider firebaseConfig={firebaseConfig}>
             <ReactFireProvider>
-              {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-              <CssBaseline />
-              <App />
+              <LoadingWrapper>
+                <CssBaseline />
+                <App />
+              </LoadingWrapper>
             </ReactFireProvider>
           </FirebaseAppProvider>
         </ThemeProvider>

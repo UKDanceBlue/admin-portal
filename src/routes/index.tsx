@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import EventConsole from "./EventConsole";
 import Home from "./Home";
 import MarathonConsole from "./MarathonConsole";
 import MoraleConsole from "./MoraleConsole";
@@ -26,6 +27,17 @@ const routeList: RouteDefinition[] = [
     path: "/",
     pathFragment: "/",
     element: <Home />,
+  },
+  {
+    title: "Event Manager",
+    path: "/event-manager",
+    pathFragment: "event-manager",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
+    ],
+    element: <EventConsole />,
   },
   {
     title: "Marathon Manager",

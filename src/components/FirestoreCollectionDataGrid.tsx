@@ -1,8 +1,8 @@
-import { Alert, AlertColor, Snackbar, Typography } from "@mui/material";
+import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
-import { CollectionReference, doc, setDoc } from "firebase/firestore";
-import { useCallback, useState } from "react";
+import { CollectionReference, GeoPoint, Timestamp, doc, setDoc } from "firebase/firestore";
+import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
 const DataGridFirebaseErrorOverlay = ({
@@ -22,18 +22,61 @@ const DataGridFirebaseErrorOverlay = ({
 const FirestoreCollectionDataGrid = ({
   columns,
   firestoreCollectionRef,
+  dataGridProps,
+  enablePopover = false
 }: {
   columns: GridColumns<{
     [key: string]: string;
   }>;
   firestoreCollectionRef: CollectionReference;
+  dataGridProps?: Partial<Parameters<typeof DataGrid>[0]>;
+  enablePopover?: boolean;
 }) => {
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
   const firestoreCollection = useFirestoreCollection(firestoreCollectionRef);
 
+  const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
+  const [ popoverText, setPopoverText ] = useState<string | null>(null);
+
+  const data = firestoreCollection.data
+    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    : [];
+
   const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
   }, []);
+
+  const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
+    const field = event.currentTarget.dataset.field!;
+    const id = event.currentTarget.parentElement!.dataset.id!;
+    const row = data.find((r) => r.id === id)!;
+    const value = (row as Record <string, unknown>)[field];
+    if (value != null) {
+      if (value instanceof Timestamp) {
+        setPopoverAnchorEl(event.currentTarget);
+        setPopoverText(value.toDate().toLocaleString());
+      } else if (value instanceof GeoPoint) {
+        setPopoverAnchorEl(event.currentTarget);
+        setPopoverText(`(${value.latitude}, ${value.longitude})`);
+      } else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        setPopoverAnchorEl(event.currentTarget);
+        setPopoverText(String(value));
+      } else if (typeof value === "object") {
+        setPopoverAnchorEl(event.currentTarget);
+        setPopoverText(JSON.stringify(value, undefined, 2));
+      } else {
+        setPopoverAnchorEl(null);
+        setPopoverText(null);
+      }
+    } else {
+      setPopoverAnchorEl(null);
+      setPopoverText(null);
+    }
+  };
+
+  const handlePopoverClose = () => {
+    setPopoverAnchorEl(null);
+  };
 
   const processRowUpdate = useCallback(
     (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
@@ -53,9 +96,7 @@ const FirestoreCollectionDataGrid = ({
       <DataGrid
         experimentalFeatures={{ newEditingApi: true }}
         rows={
-          firestoreCollection.data
-            ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-            : []
+          data
         }
         columns={columns}
         loading={firestoreCollection.status === "loading"}
@@ -63,6 +104,13 @@ const FirestoreCollectionDataGrid = ({
         components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
+        componentsProps={{
+          cell: enablePopover ? {
+            onMouseEnter: handlePopoverOpen,
+            onMouseLeave: handlePopoverClose,
+          } : undefined,
+        }}
+        {...dataGridProps}
       />
       {!!snackbar && (
         <Snackbar
@@ -74,6 +122,24 @@ const FirestoreCollectionDataGrid = ({
           <Alert {...snackbar} onClose={() => setSnackbar(null)} />
         </Snackbar>
       )}
+      <Popover
+        id="cell-popover"
+        sx={{ pointerEvents: "none" }}
+        open={enablePopover && Boolean(popoverAnchorEl)}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        onClose={() => setPopoverAnchorEl(null)}
+        disableRestoreFocus
+      >
+        <Typography sx={{ p: 1 }}>{popoverText}</Typography>
+      </Popover>
     </>
   );
 };

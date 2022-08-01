@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useFirestore } from "reactfire";
 
-import FirestoreCollectionDataGrid from "./FirestoreCollectionDataGrid";
+import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 
 // TODO convert this to a generic interface for editing a firestore collection
 

@@ -1,4 +1,4 @@
-import SpiritTeamDataGrid from "../../components/SpiritTeamDataGrid";
+import SpiritTeamDataGrid from "./SpiritTeamDataGrid";
 
 const SpiritConsole = () => {
   return (

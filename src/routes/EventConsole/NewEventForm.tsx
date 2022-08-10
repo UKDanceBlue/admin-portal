@@ -1,10 +1,13 @@
 import AdapterLuxon from "@date-io/luxon";
 import { Box, Button, CircularProgress, TextField } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { GeoPoint, Timestamp, addDoc, collection } from "firebase/firestore";
+import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { uploadBytes } from "firebase/storage";
 import { DateTime } from "luxon";
 import { useReducer, useState } from "react";
 import { useFirestore } from "reactfire";
+
+import ImageUpload from "../../components/ImageUpload";
 
 type EventType = {
   title: string,
@@ -12,9 +15,8 @@ type EventType = {
   startTime: Timestamp,
   endTime: Timestamp
   address?: string,
-  position?: GeoPoint,
   image?: {
-    uri: string,
+    file: File,
     width: number,
     height: number
   }
@@ -25,12 +27,16 @@ const defaultEvent: EventType = { title: "", description: "", startTime: new Tim
 const NewEventForm = () => {
   const [ isLoading, setIsLoading ] = useState(false);
 
-  const [ event, updateEvent ] = useReducer((prev: EventType, action: [keyof EventType, EventType[keyof EventType]]) => {
+  const [ event, updateEvent ] = useReducer<(prev: EventType, action: [keyof EventType, EventType[keyof EventType]]) => EventType>((prev: EventType, action: [keyof EventType, EventType[keyof EventType]]) => {
+    if (action[0] === "address" && (action[1] == null || typeof action[1] === "string")) {
+      return { ...prev, address: action[1] };
+    }
     return {
       ...prev,
       [action[0]]: action[1]
     };
   }, defaultEvent);
+
 
   const firestore = useFirestore();
 
@@ -40,7 +46,12 @@ const NewEventForm = () => {
       const eventsCollection = collection(firestore, "events");
       try {
         setIsLoading(true);
-        await addDoc(eventsCollection, event);
+        const eventDocData: any = { ...event };
+        delete eventDocData.image;
+        if (event.image != null) {
+          uploadBytes;
+        }
+        await addDoc(eventsCollection, eventDocData);
         Object.entries(defaultEvent).forEach((entry) => {
           updateEvent(entry as [keyof EventType, EventType[keyof EventType]]);
         });
@@ -93,11 +104,19 @@ const NewEventForm = () => {
           </LocalizationProvider>
         </Box>
         <TextField
-          disabled
+          disabled={isLoading}
           label="Address"
           value={event.address ?? ""}
-          fullWidth onChange={({ target: { value } }) => updateEvent([ "address", value ?? undefined ])}
+          fullWidth
+          onChange={({ target: { value } }) => updateEvent([ "address", value ?? undefined ])}
         />
+        <ImageUpload onUploaded={(file, {
+          width, height
+        }) => {
+          if (file != null) {
+            updateEvent([ "image", { file, width, height } ]);
+          }
+        }} />
         <Button
           disabled={isLoading}
           variant="contained"

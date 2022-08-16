@@ -1,14 +1,20 @@
 {
   "parameters": {
-    "login_mode": {
+    "countdowns": {
       "defaultValue": {
-        "value": "{\"rn\":[\"ms-oath-linkblue\",\"anonymous\"],\"web\":[\"ms-oath-linkblue\"]}"
+        "value": "[{\"title\":\"Test Countdown\",\"endTime\":1661153698}]"
       },
       "valueType": "JSON"
     },
     "rn_scoreboard_mode": {
       "defaultValue": {
         "value": "{\"pointType\":\"spirit\",\"showIcons\":false,\"showTrophies\":true}"
+      },
+      "valueType": "JSON"
+    },
+    "login_mode": {
+      "defaultValue": {
+        "value": "{\"rn\":[\"ms-oath-linkblue\",\"anonymous\"],\"web\":[\"ms-oath-linkblue\"]}"
       },
       "valueType": "JSON"
     },

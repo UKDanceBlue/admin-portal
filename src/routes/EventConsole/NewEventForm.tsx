@@ -19,6 +19,10 @@ type EventType = {
     file: File,
     width: number,
     height: number
+  },
+  link?: {
+    url: string,
+    text: string
   }
 }
 
@@ -109,6 +113,22 @@ const NewEventForm = () => {
           value={event.address ?? ""}
           fullWidth
           onChange={({ target: { value } }) => updateEvent([ "address", value ?? undefined ])}
+        />
+        <TextField
+          disabled={isLoading}
+          label="Link Text"
+          value={event.link?.text ?? ""}
+          fullWidth
+          // eslint-disable-next-line no-constant-binary-expression
+          onChange={({ target: { value } }) => updateEvent([ "link", { text: value, url: event.link?.url ?? "" } ?? undefined ])}
+        />
+        <TextField
+          disabled={isLoading || event.link == null}
+          label="Link URL"
+          value={event.link?.url ?? ""}
+          fullWidth
+          // eslint-disable-next-line no-constant-binary-expression
+          onChange={({ target: { value } }) => updateEvent([ "link", { text: event.link?.text ?? "", url: value } ?? undefined ])}
         />
         <ImageUpload onUploaded={(file, {
           width, height

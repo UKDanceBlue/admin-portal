@@ -1,15 +1,8 @@
-import { Button } from "@mui/material";
-import { GeoPoint, collection, doc, updateDoc } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { useFirestore } from "reactfire";
 
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 import LoadableImage from "../../components/LoadableImage";
-
-async function geocodeAddress(address: string) {
-  const response = await fetch(`https://api.geoapify.com/v1/geocode/search?text=${address}&lang=en&limit=1&bias=proximity:-84.503,38.04|countrycode:none&format=geojson&apiKey=${"d38fe150b0e0446cb01e8b47720ed296"}`);
-  const json = await response.json();
-  return JSON.stringify(json);
-}
 
 const EventsDataGrid = () => {
   const firestore = useFirestore();
@@ -47,44 +40,11 @@ const EventsDataGrid = () => {
               flex: 2
             },
             {
-              field: "addressGeoJson",
-              headerName: "Position Info",
-              renderCell: ({
-                value, row
-              }) => (
-                <Button
-                  disabled={!(value == null || value === "") || row.address == null}
-                  variant="contained"
-                  color="secondary"
-                  type="button"
-                  onClick={() => {
-                    if (row.address != null) {
-                      geocodeAddress(row.address).then((geoJson) => {
-                        updateDoc(
-                          doc(firestore, `events/${row.id}`),
-                          { addressGeoJson: geoJson }
-                        )
-                          .catch((error) => {
-                            console.error(error);
-                          });
-                      }).catch((e) => {
-                        alert(`Error geocoding address: ${e}`);
-                      });
-                    }
-                  }}
-                >
-                  {
-                    value == null || value === ""
-                      ? (
-                        row.address == null
-                          ? "No address"
-                          : "Calculate"
-                      )
-                      : "Already calculated"
-                  }
-                </Button>
+              field: "link",
+              headerName: "Link",
+              renderCell: ({ value }) => (
+                <a href={value.url} target="_blank" rel="noopener noreferrer">{value.text}</a>
               ),
-              valueFormatter: ({ value }) => value == null ? undefined : `(${(value as GeoPoint)?.latitude}, ${(value as GeoPoint)?.longitude})`,
               flex: 1.8
             },
             {

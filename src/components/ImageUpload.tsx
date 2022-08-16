@@ -6,11 +6,12 @@ const ImageUpload = ({ onUploaded }: {onUploaded?: (file: File | null, imageData
   const [ previewedImage, setPreviewedImage ] = useState<any>(null);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", px: "5em" }}>
+    <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
       <Box sx={{ flexDirection: "column", justifyContent: "space-around" }}>
         <Button
           variant="contained"
           component="label"
+          fullWidth
         >
           Upload Image
           <input
@@ -28,9 +29,9 @@ const ImageUpload = ({ onUploaded }: {onUploaded?: (file: File | null, imageData
           />
         </Button>
       </Box>
-      
+
       {previewedImage && (
-        <div>
+        <div style={{ paddingLeft: "5em", paddingRight: "5em" }}>
           <div dangerouslySetInnerHTML={{ __html: previewedImage.outerHTML }}/>
           <br />
           <button onClick={() => setPreviewedImage(null)}>Remove</button>

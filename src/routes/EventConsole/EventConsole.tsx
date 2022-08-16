@@ -15,6 +15,9 @@ const EventConsole = () => {
       </Typography>
       <NewEventForm />
       <EventsDataGrid />
+      <p style={{ marginTop: "1em" }}>
+        If you need to edit something you cannot change here, send an email to <a href="mailto:app@danceblue.org">the App Coordinator</a>
+      </p>
     </Box>
   );
 };

@@ -43,7 +43,7 @@ const EventsDataGrid = () => {
               field: "link",
               headerName: "Link",
               renderCell: ({ value }) => (
-                <a href={value.url} target="_blank" rel="noopener noreferrer">{value.text}</a>
+                value == null ? null : <a href={value.url} target="_blank" rel="noreferrer">{value.text}</a>
               ),
               flex: 1.8
             },
@@ -59,7 +59,7 @@ const EventsDataGrid = () => {
               renderCell: (rowData) => rowData.value == null ? undefined : <LoadableImage
                 src={rowData.value?.uri}
                 alt={rowData.row.title}
-                isStorageUri
+                isStorageUri={rowData.value?.uri.startsWith("gs://")}
                 height={160}
               />,
               flex: 3

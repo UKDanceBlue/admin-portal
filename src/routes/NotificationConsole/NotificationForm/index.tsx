@@ -4,13 +4,13 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
-import { httpsCallable } from "firebase/functions";
+import { HttpsCallable, httpsCallable } from "firebase/functions";
 import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useFunctions } from "reactfire";
 
 import { SendPushNotificationReturnType } from "..";
 import { GenericFirestoreDocument } from "../../../firebase/types";
-import { Notification } from "../types";
+import { Notification, NotificationPayload } from "../types";
 
 import AudiencePage from "./AudiencePage";
 import ComposePage from "./ComposePage";
@@ -19,9 +19,14 @@ import ConfirmPage from "./ConfirmPage";
 export type NotificationFormPendingState = {
   notificationTitle?: string;
   notificationBody?: string;
-  notificationPayload?: unknown;
+  notificationPayload?: {
+    url?: NotificationPayload["url"];
+    message?: Partial<NotificationPayload["message"]>;
+    webviewSource?: NotificationPayload["webviewSource"];
+  };
   selectedTeams?: GenericFirestoreDocument[];
   notificationAudiences?: { [audience: string]: string[] };
+  sendToAll?: boolean;
 };
 
 const steps: string[] = [
@@ -50,8 +55,8 @@ const NotificationForm = ({ handlePushSent }: {
 
   const sendPushNotification = useCallback(async () => {
     const sendPushNotificationCloudFunc = httpsCallable(functions, "sendPushNotification");
-    const result = await sendPushNotificationCloudFunc(notification);
-    handlePushSent(result.data as SendPushNotificationReturnType[]);
+    const result = await (sendPushNotificationCloudFunc as HttpsCallable<Notification, SendPushNotificationReturnType[]>)(notification);
+    handlePushSent(result.data);
   }, [
     functions, handlePushSent, notification
   ]);

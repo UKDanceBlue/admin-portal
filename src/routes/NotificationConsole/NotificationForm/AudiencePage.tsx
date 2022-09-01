@@ -1,4 +1,4 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Typography } from "@mui/material";
 import { collection } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useFirestore } from "reactfire";
@@ -65,10 +65,17 @@ const AudiencePage = ({
   const [ notificationAudiences, setNotificationAudiences ] = useState<
     NotificationFormPendingState["notificationAudiences"]
   >(pendingState.notificationAudiences ?? {});
+  const [ sendToAll, setSendToAll ] = useState(false);
 
   useEffect(() => {
-    handlePageUpdated({ notificationAudiences });
-  }, [ handlePageUpdated, notificationAudiences ]);
+    if (sendToAll) {
+      handlePageUpdated({ sendToAll, notificationAudiences: undefined });
+    } else {
+      handlePageUpdated({ notificationAudiences, sendToAll: undefined });
+    }
+  }, [
+    handlePageUpdated, notificationAudiences, sendToAll
+  ]);
 
   return (
     <Box
@@ -93,6 +100,12 @@ const AudiencePage = ({
           tech committee.
         </Typography>
       </Box>
+      <FormControlLabel control={<Checkbox
+        checked={sendToAll}
+        onChange={(val) => setSendToAll(val.target.checked)}
+        inputProps={{ "aria-label": "controlled" }}
+      />}
+      label="Send to All" />
       <FirestoreCollectionDropdown
         sx={{ width: "90%", mt: "1rem" }}
         label="Team Selection"

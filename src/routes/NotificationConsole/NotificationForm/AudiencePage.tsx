@@ -109,6 +109,7 @@ const AudiencePage = ({
       <FirestoreCollectionDropdown
         sx={{ width: "90%", mt: "1rem" }}
         label="Team Selection"
+        disabled={sendToAll}
         getLabel={(doc) => doc.name}
         onChange={(__, value) => {
           setNotificationAudiences({
@@ -122,13 +123,14 @@ const AudiencePage = ({
         Object.entries(validAttributes.data)?.map(([ attributeName, attributeValues ]) => {
           if (Array.isArray(attributeValues)) {
             return (
-              <FormControl key={attributeName} sx={{ width: "90%", mt: "1rem" }}>
+              <FormControl key={attributeName} sx={{ width: "90%", mt: "1rem" }} disabled={sendToAll}>
                 <InputLabel id={`select-${attributeName}-label`}>{attributeName}</InputLabel>
                 <Select
                   labelId={`select-${attributeName}-label`}
                   id={`select-${attributeName}`}
                   value={notificationAudiences?.[attributeName] ?? []}
                   label={attributeName}
+                  disabled={sendToAll}
                   multiple
                   onClick={(event) => {
                     event.preventDefault();

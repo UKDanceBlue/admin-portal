@@ -2,7 +2,9 @@ import { Button } from "@mui/material";
 import { Box } from "@mui/system";
 import { ChangeEvent, useState } from "react";
 
-const ImageUpload = ({ onUploaded }: {onUploaded?: (file: File | null, imageData: {width: number, height: number}) => void}) => {
+const ImageUpload = ({
+  onUploaded, disabled = false,
+}: {onUploaded?: (file: File | null, imageData: {width: number, height: number}) => void, disabled?: boolean}) => {
   const [ previewedImage, setPreviewedImage ] = useState<any>(null);
 
   return (
@@ -11,12 +13,14 @@ const ImageUpload = ({ onUploaded }: {onUploaded?: (file: File | null, imageData
         <Button
           variant="contained"
           component="label"
+          disabled={disabled}
           fullWidth
         >
           Upload Image
           <input
             accept="image/*"
             type="file"
+            disabled={disabled}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               const image = new Image();
               image.onload = () => {

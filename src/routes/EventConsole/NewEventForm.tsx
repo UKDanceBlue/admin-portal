@@ -1,13 +1,13 @@
 import AdapterLuxon from "@date-io/luxon";
-import { Box, Button, CircularProgress, Paper, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { DateTime } from "luxon";
-import { useReducer, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import { useFirestore, useStorage } from "reactfire";
 
-import ImageUpload from "../../components/ImageUpload";
+import ImageSelect, { ImageSelectRef } from "../../components/ImageSelect";
 
 type EventType = {
   title: string,
@@ -43,7 +43,7 @@ function findSizeOfLinkedImage(url: string): Promise<{ width: number; height: nu
 
 const NewEventForm = () => {
   const [ isLoading, setIsLoading ] = useState(false);
-  const [ imageMode, setImageMode ] = useState<null | "url" | "upload">(null);
+  const imageSelectRef = useRef<ImageSelectRef>();
 
   const [ event, updateEvent ] = useReducer<(prev: EventType, action: [keyof EventType, EventType[keyof EventType]] | "reset") => EventType>((prev, action) => {
     if (action === "reset") {
@@ -90,7 +90,7 @@ const NewEventForm = () => {
         }
         await addDoc(eventsCollection, eventDocData);
         updateEvent("reset");
-        setImageMode(null);
+        imageSelectRef.current?.setImageMode(null);
       } catch (e) {
         alert(`Error adding event to Firestore:\n${JSON.stringify((e as any).message, undefined, 2)}`);
       } finally {
@@ -169,48 +169,13 @@ const NewEventForm = () => {
             onChange={({ target: { value } }) => updateEvent([ "link", { text: event.link?.text ?? "", url: value } ])}
           />
         </Paper>
-        <Paper sx={{ display: "flex", flexDirection: "column", gap: "1em", padding: "1em" }} elevation={4}>
-          <Box sx={{ display: "flex", gap: "1em", padding: "1em" }}>
-            <ToggleButtonGroup
-              value={imageMode}
-              exclusive
-              onChange={(_, val) => {
-                updateEvent([ "image", undefined ]);
-                setImageMode(val);
-              }}
-              aria-label="text alignment"
-            >
-              <ToggleButton value="upload">
-              Upload
-              </ToggleButton>
-              <ToggleButton value="url">
-              Link
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <Typography>
-              When possible, prefer the link option as it saves us a few cents of storage (basically, avoid downloading an image from a website and re-uploading here, just put the image&apos;s URL in the link field).
-            </Typography>
-          </Box>
-
-          {
-            imageMode === "upload" && <ImageUpload onUploaded={(file, {
-              width, height
-            }) => {
-              if (file != null) {
-                updateEvent([ "image", { file, width, height } ]);
-              }
-            }} />
-          }
-          {
-            imageMode === "url" && <TextField
-              disabled={isLoading}
-              label="Image URL"
-              value={event.image ?? ""}
-              fullWidth
-              onChange={({ target: { value } }) => updateEvent([ "image", value.length > 0 ? value : undefined ])}
-            />
-          }
-        </Paper>
+        <ImageSelect
+          isLoading={isLoading}
+          ref={imageSelectRef}
+          onChange={(image) => updateEvent([ "image", image ])}
+          disabled={isLoading}
+          value={event.image}
+        />
         <Button
           disabled={isLoading}
           variant="contained"

@@ -39,12 +39,14 @@ const getOptionNameFromUnknown = (option: unknown) => {
 const FirestoreCollectionDropdown = ({
   sx,
   collectionRef,
+  disabled = false,
   label,
   getLabel,
   onChange,
 }: {
   sx?: SxProps<Theme>;
   collectionRef: CollectionReference;
+  disabled?: boolean;
   label: string;
   getLabel: (doc: GenericFirestoreDocumentWithId) => unknown;
   onChange: (
@@ -93,6 +95,7 @@ const FirestoreCollectionDropdown = ({
           setShouldOptionsLoad(true);
         }
       }}
+      disabled={disabled}
       onChange={onChange}
       options={options ?? []}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -117,6 +120,7 @@ const FirestoreCollectionDropdown = ({
       renderInput={(params) => (
         <TextField
           {...params}
+          disabled={disabled}
           label={label}
           InputProps={{
             ...params.InputProps,

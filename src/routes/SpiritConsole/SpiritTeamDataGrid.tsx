@@ -16,8 +16,6 @@ import { useFirestore } from "reactfire";
 
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 
-// TODO convert this to a generic interface for editing a firestore collection
-
 const DataGridFirebaseErrorOverlay = ({
   code, message
 }: { code: string; message: string }) => {
@@ -100,7 +98,7 @@ const SpiritTeamDataGrid = () => {
                 icon={<TableRows />}
                 disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
                 onClick={() => showTeamMembersDialog(params.row["members"])}
-                label="List Members"
+                label="Details"
               />,
             ],
           },

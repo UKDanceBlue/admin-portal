@@ -1,8 +1,15 @@
 {
+  "conditions": [
+    {
+      "name": "Admin Portal",
+      "expression": "app.id == '1:480114538491:web:62aac53817d2c43ba2bd5e'",
+      "tagColor": "INDIGO"
+    }
+  ],
   "parameters": {
-    "countdowns": {
+    "shown_tabs": {
       "defaultValue": {
-        "value": "[{\"title\":\"Test Countdown\",\"endTime\":1661153698}]"
+        "value": "[\"Events\"]"
       },
       "valueType": "JSON"
     },
@@ -14,7 +21,18 @@
     },
     "login_mode": {
       "defaultValue": {
-        "value": "{\"rn\":[\"ms-oath-linkblue\",\"anonymous\"],\"web\":[\"ms-oath-linkblue\"]}"
+        "value": "[\"ms-oath-linkblue\",\"anonymous\"]"
+      },
+      "conditionalValues": {
+        "Admin Portal": {
+          "value": "[\"ms-oath-linkblue\"]"
+        }
+      },
+      "valueType": "JSON"
+    },
+    "countdowns": {
+      "defaultValue": {
+        "value": "[{\"title\":\"Test Countdown\",\"endTime\":1661153698}]"
       },
       "valueType": "JSON"
     },
@@ -23,12 +41,6 @@
         "value": "false"
       },
       "valueType": "BOOLEAN"
-    },
-    "rn_shown_tabs": {
-      "defaultValue": {
-        "value": "[\"Events\"]"
-      },
-      "valueType": "JSON"
     },
     "dbfunds_sync_config": {
       "defaultValue": {

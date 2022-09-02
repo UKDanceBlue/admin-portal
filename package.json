@@ -6,7 +6,8 @@
     "test": "react-scripts test",
     "start-emulators": "firebase emulators:start --import=./firebase_emulator_data --export-on-exit --only auth,functions,firestore,storage",
     "pull-remoteconfig": "firebase remoteconfig:get -o remoteconfig.template.json",
-    "deploy": "yarn build && firebase deploy --except functions",
+    "deploy": "yarn build && firebase deploy --only hosting",
+    "deploy-all": "yarn build && firebase deploy --except functions",
     "lint": "eslint \"./src/**/*\"",
     "eject": "react-scripts eject"
   },

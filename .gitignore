@@ -150,28 +150,25 @@ jspm_packages/
 *.code-workspace
 
 # Local History for Visual Studio Code
-.history/
+.history
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
 .ionide
 
-# Support for Project snippet scope
-!.vscode/*.code-snippets
-
 ### Project Specific ###
 
 # jsdoc output
-doc/
+doc
 
 # cra output
-build/
+build
 
 # ts output
-build-ts/
+build-ts
 
 # firebase emulator data (probably safe, but there may be sensitive information in there)
-firebase_emulator_data/
+firebase_emulator_data
 
 .firebase

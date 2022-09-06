@@ -1,3 +1,4 @@
+import OpportunityDataGrid from "./OpportunityConsole/OpportunityDataGrid";
 import SpiritTeamDataGrid from "./SpiritTeamDataGrid";
 
 const SpiritConsole = () => {
@@ -7,6 +8,9 @@ const SpiritConsole = () => {
       <div style={{ minHeight: "60vh", display: "flex" }}>
         <div style={{ flex: 1, padding: "1em" }}>
           <SpiritTeamDataGrid />
+        </div>
+        <div style={{ flex: 1, padding: "1em" }}>
+          <OpportunityDataGrid />
         </div>
       </div>
     </div>

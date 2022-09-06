@@ -1,9 +1,11 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
-import { DataGrid, GridColumns } from "@mui/x-data-grid";
+import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
 import { CollectionReference, GeoPoint, Timestamp, doc, setDoc } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
+
+import { GenericFirestoreDocument } from "../firebase/types";
 
 const DataGridFirebaseErrorOverlay = ({
   code, message
@@ -13,25 +15,23 @@ const DataGridFirebaseErrorOverlay = ({
       <Typography variant="h4" component="h4">
         An error has occurred
       </Typography>
-      <p>Error code &apos;{code}&apos;</p>
+      {code && <p>Error code &apos;{code}&apos;</p>}
       {message && <p>{message}</p>}
     </div>
   );
 };
 
-const FirestoreCollectionDataGrid = ({
+function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocument>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,
   enablePopover = false
 }: {
-  columns: GridColumns<{
-    [key: string]: string;
-  }>;
+  columns: GridColumns<T>;
   firestoreCollectionRef: CollectionReference;
   dataGridProps?: Partial<Parameters<typeof DataGrid>[0]>;
   enablePopover?: boolean;
-}) => {
+}) {
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
   const firestoreCollection = useFirestoreCollection(firestoreCollectionRef);
 
@@ -142,6 +142,6 @@ const FirestoreCollectionDataGrid = ({
       </Popover>
     </>
   );
-};
+}
 
 export default FirestoreCollectionDataGrid;

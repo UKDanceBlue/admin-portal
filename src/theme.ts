@@ -1,5 +1,6 @@
 import { red } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
+import type {} from "@mui/x-data-grid/themeAugmentation";
 
 // A custom theme for this app
 const theme = createTheme({

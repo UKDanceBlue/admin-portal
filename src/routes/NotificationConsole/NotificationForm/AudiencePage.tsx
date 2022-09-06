@@ -24,7 +24,7 @@ const knownAttributes: { [attributeName: string]: { [attributeValue: string]: st
     "morale-committee": "Morale Committee",
   },
   dbRole: {
-    public: "General Public (exclusive)",
+    public: "General Public (i.e. no team or committee members)",
     "team-member": "Team Member",
     committee: "Committee",
   },

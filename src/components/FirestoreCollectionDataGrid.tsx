@@ -1,11 +1,11 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
-import { CollectionReference, GeoPoint, Timestamp, doc, setDoc } from "firebase/firestore";
+import { CollectionReference, GeoPoint, Timestamp, doc, limit, orderBy, query, setDoc, startAt } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
-import { GenericFirestoreDocument } from "../firebase/types";
+import { GenericFirestoreDocumentWithId } from "../firebase/types";
 
 const DataGridFirebaseErrorOverlay = ({
   code, message
@@ -21,7 +21,7 @@ const DataGridFirebaseErrorOverlay = ({
   );
 };
 
-function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocument>>({
+function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocumentWithId>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,
@@ -29,17 +29,21 @@ function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocu
 }: {
   columns: GridColumns<T>;
   firestoreCollectionRef: CollectionReference;
-  dataGridProps?: Partial<Parameters<typeof DataGrid>[0]>;
+  dataGridProps?: Partial<Parameters<typeof DataGrid<T>>[0]>;
   enablePopover?: boolean;
 }) {
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
-  const firestoreCollection = useFirestoreCollection(firestoreCollectionRef);
+
+  const [ pageNumber, setPageNumber ] = useState<number>(0);
+  const [ pageSize, setPageSize ] = useState<number>(10);
+
+  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy("id", "asc"), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);
 
   const data = firestoreCollection.data
-    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as T[]
     : [];
 
   const handleProcessRowUpdateError = useCallback((error: Error) => {
@@ -49,8 +53,12 @@ function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocu
   const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
     const field = event.currentTarget.dataset.field!;
     const id = event.currentTarget.parentElement!.dataset.id!;
-    const row = data.find((r) => r.id === id)!;
-    const value = (row as Record <string, unknown>)[field];
+    const row = data.find((r) => r.id === id);
+    if (row == null) {
+      setPopoverAnchorEl(null);
+      setPopoverText(null);
+    }
+    const value = row?.[field];
     if (value != null) {
       if (value instanceof Timestamp) {
         setPopoverAnchorEl(event.currentTarget);
@@ -79,7 +87,7 @@ function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocu
   };
 
   const processRowUpdate = useCallback(
-    (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
+    (newRow: T, oldRow: T) => {
       if (deepEquals(newRow, oldRow)) {
         return oldRow;
       } else if (newRow.id !== oldRow.id) {
@@ -98,12 +106,19 @@ function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocu
         rows={
           data
         }
-        columns={columns}
+        columns={columns.map((col) => ({ ...col, sortable: false, filterable: false }))}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
         components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
+        rowsPerPageOptions={[
+          10, 25, 50, 100
+        ]}
+        page={pageNumber}
+        onPageChange={setPageNumber}
         componentsProps={{
           cell: enablePopover ? {
             onMouseEnter: handlePopoverOpen,

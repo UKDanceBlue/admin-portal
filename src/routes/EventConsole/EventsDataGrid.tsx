@@ -58,7 +58,7 @@ const EventsDataGrid = () => {
               headerName: "Image",
               renderCell: (rowData) => rowData.value == null ? undefined : <LoadableImage
                 src={rowData.value?.uri}
-                alt={rowData.row.title}
+                alt={typeof rowData.row.title === "string" ? rowData.row.title : ""}
                 isStorageUri={rowData.value?.uri.startsWith("gs://")}
                 height={160}
               />,

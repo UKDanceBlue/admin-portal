@@ -9,6 +9,8 @@ const SpiritConsole = () => {
         <div style={{ flex: 1, padding: "1em" }}>
           <SpiritTeamDataGrid />
         </div>
+      </div>
+      <div style={{ minHeight: "60vh", display: "flex" }}>
         <div style={{ flex: 1, padding: "1em" }}>
           <OpportunityDataGrid />
         </div>

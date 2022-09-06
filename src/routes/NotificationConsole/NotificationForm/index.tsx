@@ -21,8 +21,8 @@ export type NotificationFormPendingState = {
   notificationBody?: string;
   notificationPayload?: {
     url?: NotificationPayload["url"];
-    message?: Partial<NotificationPayload["message"]>;
-    webviewSource?: NotificationPayload["webviewSource"];
+    textPopup?: Partial<NotificationPayload["textPopup"]>;
+    webviewPopup?: NotificationPayload["webviewPopup"];
   };
   selectedTeams?: GenericFirestoreDocument[];
   notificationAudiences?: { [audience: string]: string[] };

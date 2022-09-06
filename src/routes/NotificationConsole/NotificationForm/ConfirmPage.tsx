@@ -1,7 +1,7 @@
 import { Paper, Typography } from "@mui/material";
 import { useEffect } from "react";
 
-import { Notification } from "../types";
+import { Notification, NotificationPayload } from "../types";
 
 import { NotificationFormPendingState } from ".";
 
@@ -15,10 +15,46 @@ const ConfirmPage = ({
   setNotification: (notification: Notification) => void;
 }) => {
   useEffect(() => {
+    // Check the pending state and parse it correctly
+    const {
+      url, textPopup, webviewPopup
+    } = pendingState.notificationPayload ?? {};
+
+    let encodedUrl;
+    if (url != null) {
+      encodedUrl = encodeURI(url);
+    }
+
+    let parsedTextPopup: NotificationPayload["textPopup"];
+    if (textPopup != null) {
+      const {
+        title: textPopupTitle, message: textPopupMessage
+      } = textPopup;
+      if (textPopupTitle != null && textPopupMessage != null) {
+        if (textPopup.image != null && (typeof textPopup.image.uri !== "string" || typeof textPopup.image.height !== "number" || typeof textPopup.image.width !== "number")) {
+          parsedTextPopup = {
+            title: textPopupTitle,
+            message: textPopupMessage
+          };
+        } else {
+          parsedTextPopup = {
+            title: textPopupTitle,
+            message: textPopupMessage,
+            image: textPopup.image
+          };
+        }
+      }
+    }
+
+    // If all is well, set the notification
     setNotification({
       notificationTitle: pendingState.notificationTitle ?? "",
       notificationBody: pendingState.notificationBody ?? "",
-      notificationPayload: pendingState.notificationPayload ?? {},
+      notificationPayload: {
+        url: encodedUrl,
+        textPopup: parsedTextPopup,
+        webviewPopup
+      },
       notificationAudiences: pendingState.notificationAudiences,
     });
   }, [

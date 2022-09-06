@@ -23,8 +23,8 @@ const ComposePage = ({
       // @ts-expect-error
       validNotificationPayload.url = notificationPayload.url;
     }
-    if (notificationPayload?.message != null && (notificationPayload.message.title?.length ?? 0) > 0 && (notificationPayload.message.message?.length ?? 0) > 0) {
-      validNotificationPayload.message = notificationPayload.message;
+    if (notificationPayload?.textPopup != null && (notificationPayload.textPopup.title?.length ?? 0) > 0 && (notificationPayload.textPopup.message?.length ?? 0) > 0) {
+      validNotificationPayload.textPopup = notificationPayload.textPopup;
     }
     // @ts-expect-error
     if ((notificationPayload?.webviewSource?.uri?.length ?? 0) > 0) {
@@ -107,12 +107,12 @@ const ComposePage = ({
               <TextField
                 sx={{ width: "100%", mt: "1rem" }}
                 label="Title"
-                value={notificationPayload?.message?.title ?? ""}
+                value={notificationPayload?.textPopup?.title ?? ""}
                 onChange={(event) => {
                   setNotificationPayload({
                     ...notificationPayload,
-                    message: {
-                      ...notificationPayload?.message,
+                    textPopup: {
+                      ...notificationPayload?.textPopup,
                       title: event.target.value,
                     },
                   });
@@ -121,12 +121,12 @@ const ComposePage = ({
               <TextField
                 sx={{ width: "100%", mt: "1rem" }}
                 label="Body"
-                value={notificationPayload?.message?.message ?? ""}
+                value={notificationPayload?.textPopup?.message ?? ""}
                 onChange={(event) => {
                   setNotificationPayload({
                     ...notificationPayload,
-                    message: {
-                      ...notificationPayload?.message,
+                    textPopup: {
+                      ...notificationPayload?.textPopup,
                       message: event.target.value,
                     },
                   });
@@ -150,14 +150,11 @@ const ComposePage = ({
               <TextField
                 sx={{ width: "100%", mt: "1rem" }}
                 label="Url"
-                value={(notificationPayload?.webviewSource as any)?.uri ?? ""} // THIS COULD CAUSE TYPE ERRORS
+                value={(notificationPayload?.webviewPopup as any)?.uri ?? ""} // THIS COULD CAUSE TYPE ERRORS
                 onChange={(event) => {
                   setNotificationPayload({
                     ...notificationPayload,
-                    webviewSource: {
-                      ...notificationPayload?.webviewSource,
-                      uri: event.target.value,
-                    },
+                    webviewPopup: { uri: event.target.value },
                   });
                 }}
               />

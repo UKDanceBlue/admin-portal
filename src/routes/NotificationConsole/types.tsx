@@ -3,7 +3,7 @@
 export type Notification = {
   notificationTitle: string;
   notificationBody: string;
-  notificationPayload?: unknown;
+  notificationPayload?: NotificationPayload;
   // If this is going to specific users we send *notificationRecipients*, if groups we send *notificationAudiences*.
   notificationAudiences?: { [key: string]: string[] };
   notificationRecipients?: string[];
@@ -12,7 +12,7 @@ export type Notification = {
 
 export type NotificationPayload = {
   url?: string;
-  message?: {
+  textPopup?: {
     title: string;
     message: string;
     image?: {
@@ -21,7 +21,7 @@ export type NotificationPayload = {
       height: number;
     };
   };
-  webviewSource?: {
+  webviewPopup?: {
     /**
      * The URI to load in the `WebView`. Can be a local or remote file.
      */

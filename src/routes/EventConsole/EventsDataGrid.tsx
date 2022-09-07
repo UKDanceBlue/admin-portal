@@ -42,9 +42,19 @@ const EventsDataGrid = () => {
             {
               field: "link",
               headerName: "Link",
-              renderCell: ({ value }) => (
-                value == null ? null : <a href={value.url} target="_blank" rel="noreferrer">{value.text}</a>
-              ),
+              renderCell: ({ value }) => {
+                if (value == null) {
+                  return null;
+                } else if (Array.isArray(value)) {
+                  return (
+                    <div>
+                      {value.map((link, index) => (<a key={index} href={link.url} target="_blank" rel="noreferrer">{link.text}</a>))}
+                    </div>
+                  );
+                } else {
+                  return (<a href={value.url} target="_blank" rel="noreferrer">{value.text}</a>);
+                }
+              },
               flex: 1.8
             },
             {
@@ -58,7 +68,7 @@ const EventsDataGrid = () => {
               headerName: "Image",
               renderCell: (rowData) => rowData.value == null ? undefined : <LoadableImage
                 src={rowData.value?.uri}
-                alt={typeof rowData.row.title === "string" ? rowData.row.title : ""}
+                alt={rowData.value.title ?? ""}
                 isStorageUri={rowData.value?.uri.startsWith("gs://")}
                 height={160}
               />,

@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 
 import EventConsole from "./EventConsole";
 import Home from "./Home";
-import MarathonConsole from "./MarathonConsole";
-import MoraleConsole from "./MoraleConsole";
+// import MarathonConsole from "./MarathonConsole";
+// import MoraleConsole from "./MoraleConsole";
 import NotificationConsole from "./NotificationConsole";
 import SpiritConsole from "./SpiritConsole";
 
@@ -39,17 +39,17 @@ const routeList: RouteDefinition[] = [
     ],
     element: <EventConsole />,
   },
-  {
-    title: "Marathon Manager",
-    path: "/marathon-console",
-    pathFragment: "marathon-console",
-    signInRequired: true,
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
-    ],
-    element: <MarathonConsole />,
-  },
+  // {
+  //   title: "Marathon Manager",
+  //   path: "/marathon-console",
+  //   pathFragment: "marathon-console",
+  //   signInRequired: true,
+  //   requiredClaims: [
+  //     { claimKey: "dbRole", claimValues: ["committee"] },
+  //     { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
+  //   ],
+  //   element: <MarathonConsole />,
+  // },
   {
     title: "Spirit Point Manager",
     path: "/spirit-console",
@@ -61,19 +61,19 @@ const routeList: RouteDefinition[] = [
     ],
     element: <SpiritConsole />,
   },
+  // {
+  //   title: "Morale Point Manager",
+  //   path: "/morale-console",
+  //   pathFragment: "morale-console",
+  //   signInRequired: true,
+  //   requiredClaims: [
+  //     { claimKey: "dbRole", claimValues: ["committee"] },
+  //     { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
+  //   ],
+  //   element: <MoraleConsole />,
+  // },
   {
-    title: "Morale Point Manager",
-    path: "/morale-console",
-    pathFragment: "morale-console",
-    signInRequired: true,
-    requiredClaims: [
-      { claimKey: "dbRole", claimValues: ["committee"] },
-      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] },
-    ],
-    element: <MoraleConsole />,
-  },
-  {
-    title: "Notification Manager",
+    title: "Send Notification",
     path: "/notification-console",
     pathFragment: "notification-console",
     signInRequired: true,

@@ -1,13 +1,15 @@
 import AdapterLuxon from "@date-io/luxon";
-import { Box, Button, CircularProgress, Paper, TextField, Typography } from "@mui/material";
+import { Delete } from "@mui/icons-material";
+import { Box, Button, CircularProgress, IconButton, Paper, TextField, Typography } from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { Timestamp, addDoc, collection } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
+import { FirebaseStorage, ref, uploadBytes } from "firebase/storage";
 import { DateTime } from "luxon";
 import { useReducer, useRef, useState } from "react";
 import { useFirestore, useStorage } from "reactfire";
 
 import ImageSelect, { ImageSelectRef } from "../../components/ImageSelect";
+import { FirestoreImage, isFirestoreImage } from "../../firebase/types";
 
 type EventType = {
   title: string,
@@ -15,18 +17,46 @@ type EventType = {
   startTime: Timestamp,
   endTime: Timestamp
   address?: string,
-  image?: {
+  image:( {
     file: File,
     width: number,
     height: number
-  } | string,
-  link?: {
+  } | string | null)[],
+  link: {
     url: string,
     text: string
-  }
+  }[]
 }
 
-const defaultEvent: EventType = { title: "", description: "", startTime: new Timestamp(DateTime.now().toSeconds(), 0), endTime: new Timestamp(DateTime.now().plus({ days: 1 }).toSeconds(), 0) };
+const normalizeImage = async (param: string | {
+  file: File,
+  width: number,
+  height: number
+}, storage: FirebaseStorage): Promise<FirestoreImage> => {
+  if (typeof param === "string") {
+    if (param.startsWith("http://") || param.startsWith("https://") || param.startsWith("gs://")) {
+      const {
+        width, height
+      } = await findSizeOfLinkedImage(param);
+      return {
+        uri: param as `gs://${string}` | `http://${string}` | `https://${string}`,
+        width,
+        height
+      };
+    } else {
+      throw new Error("Error, url must start with 'gs://', 'http://', or 'https://'");
+    }
+  } else {
+    const uploadTaskSnapshot = await uploadBytes(ref(storage, "assets/events"), param.file);
+    return {
+      uri: uploadTaskSnapshot.ref.toString() as `gs://${string}`,
+      width: param.width,
+      height: param.height
+    };
+  }
+};
+
+const defaultEvent: EventType = { title: "", description: "", startTime: new Timestamp(DateTime.now().toSeconds(), 0), endTime: new Timestamp(DateTime.now().plus({ days: 1 }).toSeconds(), 0), image: [], link: [] };
 
 function findSizeOfLinkedImage(url: string): Promise<{ width: number; height: number; }> {
   return new Promise<{ width: number, height: number }>((resolve, reject) => {
@@ -70,22 +100,11 @@ const NewEventForm = () => {
         const eventDocData: any = { ...event, image: undefined };
 
         if (event.image != null) {
-          if (typeof event.image === "string") {
-            const {
-              width, height
-            } = await findSizeOfLinkedImage(event.image);
-            eventDocData.image = {
-              uri: event.image,
-              width,
-              height
-            };
-          } else {
-            const uploadTaskSnapshot = await uploadBytes(ref(storage, "assets/events"), event.image.file);
-            eventDocData.image = {
-              uri: uploadTaskSnapshot.ref.toString(),
-              width: event.image?.width,
-              height: event.image?.height
-            };
+          if (event.image.length > 1) {
+            const imageUploadPromises = event.image.filter((img) => img != null).map((img) => normalizeImage(img as Parameters<typeof normalizeImage>[0], storage));
+            eventDocData.image = (await Promise.all(imageUploadPromises)).filter(isFirestoreImage);
+          } else if (event.image.length === 1 && event.image[0] != null) {
+            eventDocData.image = await normalizeImage(event.image[0], storage);
           }
         }
         await addDoc(eventsCollection, eventDocData);
@@ -153,29 +172,60 @@ const NewEventForm = () => {
           fullWidth
           onChange={({ target: { value } }) => updateEvent([ "address", value.length > 0 ? value : undefined ])}
         />
-        <Paper sx={{ display: "flex", flexDirection: "row", gap: "1em", padding: "1em" }} elevation={4}>
-          <TextField
-            disabled={isLoading}
-            label="Link Text"
-            value={event.link?.text ?? ""}
-            fullWidth
-            onChange={({ target: { value } }) => updateEvent([ "link", { text: value, url: event.link?.url ?? "" } ])}
-          />
-          <TextField
-            disabled={isLoading || event.link == null}
-            label="Link URL"
-            value={event.link?.url ?? ""}
-            fullWidth
-            onChange={({ target: { value } }) => updateEvent([ "link", { text: event.link?.text ?? "", url: value } ])}
-          />
-        </Paper>
-        <ImageSelect
-          isLoading={isLoading}
-          ref={imageSelectRef}
-          onChange={(image) => updateEvent([ "image", image ])}
-          disabled={isLoading}
-          value={event.image}
-        />
+        {event.link.map((thisLink, index) => (
+          <Paper sx={{ display: "flex", flexDirection: "row", gap: "1em", padding: "1em" }} elevation={4} key={index}>
+            <TextField
+              disabled={isLoading}
+              label="Link Text"
+              value={thisLink?.text ?? ""}
+              fullWidth
+              onChange={({ target: { value } }) => updateEvent([ "link", event.link.slice(0, index).concat({ text: value, url: thisLink?.url ?? "" }).concat(event.link.slice(index + 1)) ])}
+            />
+            <TextField
+              disabled={isLoading || thisLink == null}
+              label="Link URL"
+              value={thisLink?.url ?? ""}
+              fullWidth
+              onChange={({ target: { value } }) => updateEvent([ "link", event.link.slice(0, index).concat({ text: thisLink?.text ?? "", url: value }).concat(event.link.slice(index + 1)) ])}
+            />
+            <IconButton
+              onClick={() => updateEvent([ "link", event.link.slice(0, index).concat(event.link.slice(index + 1)) ])}
+            >
+              <Delete />
+            </IconButton>
+
+          </Paper>
+        ))}
+        <Button
+          onClick={() => updateEvent([ "link", [ ...event.link, { url: "", text: "" } ] ])}
+          variant="outlined"
+          color="secondary"
+        >
+            Add Link
+        </Button>
+        {event.image.map((thisImage, index) => (
+          <Box key={index} sx={{ display: "flex", flexDirection: "row", gap: "1em" }}>
+            <ImageSelect
+              isLoading={isLoading}
+              ref={imageSelectRef}
+              onChange={(image) => updateEvent([ "image", event.image.slice(0, index).concat(image ?? null).concat(event.image.slice(index + 1)) ])}
+              disabled={isLoading}
+              value={thisImage ?? undefined}
+            />
+            <IconButton
+              onClick={() => updateEvent([ "image", event.image.slice(0, index).concat(event.image.slice(index + 1)) ])}
+            >
+              <Delete />
+            </IconButton>
+          </Box>
+        ))}
+        <Button
+          onClick={() => updateEvent([ "image", [ ...event.image, null ] ])}
+          variant="outlined"
+          color="secondary"
+        >
+            Add Image
+        </Button>
         <Button
           disabled={isLoading}
           variant="contained"

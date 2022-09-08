@@ -1,17 +1,17 @@
 import type { GeoPoint, Timestamp } from "firebase/firestore";
 import { FirebaseStorage, getDownloadURL, ref } from "firebase/storage";
 
-export type GenericFirestoreEntry = {[key: string]: GenericFirestoreEntry} | GenericFirestoreEntry[] | GeoPoint | Timestamp | string | number | boolean | null;
+export type GenericFirestoreEntry = {[key: string]: GenericFirestoreEntry | undefined} | GenericFirestoreEntry[] | GeoPoint | Timestamp | string | number | boolean | null;
 
 export interface GenericFirestoreDocument {
-  [key: string]: GenericFirestoreEntry;
+  [key: string]: GenericFirestoreEntry | undefined;
 }
 
 export interface GenericFirestoreDocumentWithId extends GenericFirestoreDocument {
   id: string;
 }
 
-export interface FirestoreImage {
+export interface FirestoreImage extends GenericFirestoreDocument {
   uri: `gs://${string}` | `http${"s" | ""}://${string}`;
   width: number;
   height: number;

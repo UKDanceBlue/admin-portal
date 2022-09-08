@@ -5,8 +5,6 @@ import { CollectionReference, GeoPoint, Timestamp, doc, limit, orderBy, query, s
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
-import { GenericFirestoreDocumentWithId } from "../firebase/types";
-
 const DataGridFirebaseErrorOverlay = ({
   code, message
 }: { code: string; message?: string }) => {
@@ -21,30 +19,32 @@ const DataGridFirebaseErrorOverlay = ({
   );
 };
 
-function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocumentWithId>>({
+function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,
   enablePopover = false
 }: {
-  columns: GridColumns<T>;
+  columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;
-  dataGridProps?: Partial<Parameters<typeof DataGrid<T>>[0]>;
+  dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
   enablePopover?: boolean;
 }) {
+  type DocumentTypeWithId = DocumentType & {id: string};
+
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
 
   const [ pageNumber, setPageNumber ] = useState<number>(0);
   const [ pageSize, setPageSize ] = useState<number>(10);
 
-  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy("id", "asc"), startAt(pageNumber * pageSize), limit(pageSize)));
+  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(columns[0]?.field ?? "", "asc"), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);
 
-  const data = firestoreCollection.data
-    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as T[]
-    : [];
+  const data: DocumentTypeWithId[] = (firestoreCollection.data
+    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...(doc.data() as DocumentType) }))
+    : []) ?? [];
 
   const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
@@ -87,7 +87,7 @@ function FirestoreCollectionDataGrid<T extends GridRowModel<GenericFirestoreDocu
   };
 
   const processRowUpdate = useCallback(
-    (newRow: T, oldRow: T) => {
+    (newRow: DocumentTypeWithId, oldRow: DocumentTypeWithId) => {
       if (deepEquals(newRow, oldRow)) {
         return oldRow;
       } else if (newRow.id !== oldRow.id) {

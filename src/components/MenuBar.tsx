@@ -48,6 +48,36 @@ const MenuBar = () => {
   }
   ), [auth]);
 
+  const pages = routeList
+    .filter((page) => {
+      if (!(page.showInMenu ?? false)) {
+        return false;
+      }
+
+      // Are there any auth requirements?
+      if (page.requiredClaims != null) {
+      // If so, does the user have any claims set, if not just return false
+        if (authClaims == null) {
+          return false;
+        }
+
+        // Check if the user has all the required claims
+        if (page.requiredClaims.every((claim) => {
+          const userClaimValue = authClaims.claims[claim.claimKey];
+          if (typeof userClaimValue === "string") {
+            return claim.claimValues.includes(userClaimValue);
+          } else {
+            return false;
+          }
+        }) === false) {
+          return false;
+        }
+      }
+
+      // If everything checks out, return true
+      return true;
+    });
+
   return (
     <AppBar position="sticky">
       <Toolbar disableGutters variant="dense" sx={{ display: "flex" }}>
@@ -79,28 +109,11 @@ const MenuBar = () => {
               setMenuOpen(false);
             }}
           >
-            {routeList
-              .filter((page) => {
-                if (!page.requiredClaims) {
-                  return true;
-                }
-                if (!authClaims) {
-                  return false;
-                }
-                return page.requiredClaims.every((claim) => {
-                  const userClaimValue = authClaims.claims[claim.claimKey];
-                  if (typeof userClaimValue === "string") {
-                    return claim.claimValues.includes(userClaimValue);
-                  } else {
-                    return false;
-                  }
-                });
-              })
-              .map((page) => (
-                <MenuItem key={page.path} onClick={() => navigate(page.path)}>
-                  <Typography textAlign="center">{page.title}</Typography>
-                </MenuItem>
-              ))}
+            {pages.map((page) => (
+              <MenuItem key={page.path} onClick={() => navigate(page.path)}>
+                <Typography textAlign="center">{page.title}</Typography>
+              </MenuItem>
+            ))}
           </Drawer>
         </Box>
         <Box
@@ -109,28 +122,11 @@ const MenuBar = () => {
             display: { xs: "none", md: "flex" },
           }}
         >
-          {routeList
-            .filter((page) => {
-              if (!page.requiredClaims) {
-                return true;
-              }
-              if (!authClaims) {
-                return false;
-              }
-              return page.requiredClaims.every((claim) => {
-                const userClaimValue = authClaims.claims[claim.claimKey];
-                if (typeof userClaimValue === "string") {
-                  return claim.claimValues.includes(userClaimValue);
-                } else {
-                  return false;
-                }
-              });
-            })
-            .map((page) => (
-              <MenuItem key={page.path} onClick={() => navigate(page.path)}>
-                <Typography textAlign="center">{page.title}</Typography>
-              </MenuItem>
-            ))}
+          {pages.map((page) => (
+            <MenuItem key={page.path} onClick={() => navigate(page.path)}>
+              <Typography textAlign="center">{page.title}</Typography>
+            </MenuItem>
+          ))}
         </Box>
         {(!user || user.isAnonymous) && (
           <Box>

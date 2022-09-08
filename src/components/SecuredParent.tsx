@@ -16,7 +16,7 @@ const SecuredParent = ({
   requiredClaims,
 }: {
   children: ReactNode;
-  requiredClaims?: AuthClaim[];
+  requiredClaims?: readonly AuthClaim[];
 }) => {
   const {
     status, data: signInCheckResult

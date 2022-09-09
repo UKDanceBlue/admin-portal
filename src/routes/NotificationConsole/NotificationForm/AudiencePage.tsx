@@ -1,10 +1,10 @@
 import { Box, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Typography } from "@mui/material";
-import { collection } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useFirestore } from "reactfire";
 
-import FirestoreCollectionDropdown from "../../../components/FirestoreCollectionDropdown";
 import { useRemoteConfigParsedJson } from "../../../customHooks";
+import { SpiritTeamsRootDoc } from "../../../firebase/types/SpiritTeamsRootDoc";
 
 import { NotificationFormPendingState } from ".";
 
@@ -58,6 +58,8 @@ const AudiencePage = ({
 }) => {
   const firestore = useFirestore();
 
+  const [ spiritTeamInfo, setSpiritTeamInfo ] = useState<SpiritTeamsRootDoc["names"] | null>(null);
+
   const validAttributes = useRemoteConfigParsedJson<{
     [key: string]: { value: string }[] | { type: "string" | "number" | "boolean" };
   }>("valid_attributes");
@@ -76,6 +78,15 @@ const AudiencePage = ({
   }, [
     handlePageUpdated, notificationAudiences, sendToAll
   ]);
+
+  useEffect(() => {
+    const spiritTeamInfoRef = getDoc(doc(firestore, "spirit", "teams"));
+    spiritTeamInfoRef.then((doc) => {
+      if (doc.exists()) {
+        setSpiritTeamInfo(doc.data()?.names);
+      }
+    });
+  }, [firestore]);
 
   return (
     <Box
@@ -106,19 +117,39 @@ const AudiencePage = ({
         inputProps={{ "aria-label": "controlled" }}
       />}
       label="Send to All" />
-      <FirestoreCollectionDropdown
-        sx={{ width: "90%", mt: "1rem" }}
-        label="Team Selection"
-        disabled={sendToAll}
-        getLabel={(doc) => doc.name}
-        onChange={(__, value) => {
-          setNotificationAudiences({
-            ...notificationAudiences,
-            team: value.map((doc) => doc.id),
-          });
-        }}
-        collectionRef={collection(firestore, "teams")}
-      />
+      <FormControl sx={{ width: "90%", mt: "1rem" }} disabled={sendToAll}>
+        <InputLabel id={"select-spiritTeamId-label"}>Team</InputLabel>
+        <Select
+          labelId={"select-spiritTeamId-label"}
+          id={"select-spiritTeamId"}
+          value={notificationAudiences?.team ?? []}
+          label="Team"
+          disabled={sendToAll}
+          multiple
+          onClick={(event) => {
+            event.preventDefault();
+          }}
+          onChange={(event) => {
+            const currentNotificationAudiences = { ...notificationAudiences };
+            if (Array.isArray(event.target.value)) {
+              currentNotificationAudiences.spiritTeamId = event.target.value;
+            } else if (event.target.value === "") {
+              delete currentNotificationAudiences.spiritTeamId;
+            } else {
+              currentNotificationAudiences.spiritTeamId = [event.target.value];
+            }
+            setNotificationAudiences(currentNotificationAudiences);
+          }}
+        >
+          {spiritTeamInfo == null ? null : (
+            Object.entries(spiritTeamInfo).map(([ id, name ]) => (
+              <MenuItem key={id} value={id}>
+                {name}
+              </MenuItem>
+            ))
+          )}
+        </Select>
+      </FormControl>
       {validAttributes.data &&
         Object.entries(validAttributes.data)?.map(([ attributeName, attributeValues ]) => {
           if (Array.isArray(attributeValues)) {

@@ -1,4 +1,4 @@
-import { FirebaseStorageTypes } from "@react-native-firebase/storage";
+import { FirebaseStorage, getDownloadURL, ref } from "firebase/storage";
 
 export interface FirestoreImage {
   uri: `gs://${string}` | `http${"s" | ""}://${string}`;
@@ -51,8 +51,8 @@ export interface DownloadableImage {
   height: number;
 }
 
-export const parseFirestoreImage = async (firestoreImage: FirestoreImage, fbStorage: FirebaseStorageTypes.Module): Promise<DownloadableImage> => ({
-  url: firestoreImage.uri.startsWith("gs://") ? await fbStorage.refFromURL(firestoreImage.uri).getDownloadURL().catch(() => undefined) : firestoreImage.uri,
+export const parseFirestoreImage = async (firestoreImage: FirestoreImage, fbStorage: FirebaseStorage): Promise<DownloadableImage> => ({
+  url: firestoreImage.uri.startsWith("gs://") ? await getDownloadURL(ref(fbStorage, firestoreImage.uri)).catch(() => undefined) : firestoreImage.uri,
   width: firestoreImage.width,
   height: firestoreImage.height,
 });

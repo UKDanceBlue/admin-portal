@@ -1,9 +1,9 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 
 export interface FirestoreNotification {
   body: string;
   data?: Record<string, unknown>;
-  sendTime: FirebaseFirestoreTypes.Timestamp;
+  sendTime: Timestamp;
   sound: string;
   title: string;
 }
@@ -26,7 +26,7 @@ export function isFirestoreNotification(notification?: object): notification is 
 
   if (sendTime == null) {
     return false;
-  } else if (!(sendTime instanceof FirebaseFirestoreTypes.Timestamp)) {
+  } else if (!(sendTime instanceof Timestamp)) {
     return false;
   }
 

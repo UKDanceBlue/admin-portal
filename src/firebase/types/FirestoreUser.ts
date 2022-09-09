@@ -1,4 +1,4 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
+import { DocumentData, DocumentReference } from "firebase/firestore";
 
 import { isDocumentReference } from "./firebaseTypes";
 
@@ -8,11 +8,11 @@ export interface FirestoreUser {
   firstName: string;
   lastName: string;
   linkblue?: string | null;
-  team?: FirebaseFirestoreTypes.DocumentReference | null;
-  pastNotifications?: FirebaseFirestoreTypes.DocumentReference[] | null;
+  team?: DocumentReference | null;
+  pastNotifications?: DocumentReference[] | null;
 }
 
-export function isFirestoreUser(documentData?: FirebaseFirestoreTypes.DocumentData): documentData is FirestoreUser {
+export function isFirestoreUser(documentData?: DocumentData): documentData is FirestoreUser {
   if (documentData == null) {
     return false;
   }

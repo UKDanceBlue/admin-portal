@@ -1,5 +1,5 @@
-import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
-import { FirebaseStorageTypes } from "@react-native-firebase/storage";
+import { Timestamp } from "firebase/firestore";
+import { FirebaseStorage } from "firebase/storage";
 import { DateTime, Interval } from "luxon";
 
 import { DownloadableImage, FirestoreImage, isFirestoreImage, parseFirestoreImage } from "./commonStructs";
@@ -9,8 +9,8 @@ export interface RawFirestoreEvent {
   description: string;
   image?: FirestoreImage | FirestoreImage[];
   address?: string;
-  startTime?: FirebaseFirestoreTypes.Timestamp;
-  endTime?: FirebaseFirestoreTypes.Timestamp;
+  startTime?: Timestamp;
+  endTime?: Timestamp;
   link?: {
     text: string;
     url: string;
@@ -105,11 +105,11 @@ export function isRawFirestoreEvent(documentData?: object): documentData is RawF
     return false;
   }
 
-  if (startTime != null && !(startTime instanceof FirebaseFirestoreTypes.Timestamp)) {
+  if (startTime != null && !(startTime instanceof Timestamp)) {
     return false;
   }
 
-  if (endTime != null && !(endTime instanceof FirebaseFirestoreTypes.Timestamp)) {
+  if (endTime != null && !(endTime instanceof Timestamp)) {
     return false;
   }
 
@@ -124,7 +124,7 @@ export function isRawFirestoreEvent(documentData?: object): documentData is RawF
   return true;
 }
 
-export const parseFirestoreEvent = async (event: RawFirestoreEvent, storage: FirebaseStorageTypes.Module): Promise<ParsedFirestoreEvent> => ({
+export const parseFirestoreEvent = async (event: RawFirestoreEvent, storage: FirebaseStorage): Promise<ParsedFirestoreEvent> => ({
   title: event.title,
   description: event.description,
   image: event.image != null ? (Array.isArray(event.image) ? await Promise.all(event.image.map((image) => parseFirestoreImage(image, storage))) : await parseFirestoreImage(event.image, storage)) : undefined,

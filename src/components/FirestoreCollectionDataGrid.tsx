@@ -37,6 +37,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   const [ pageNumber, setPageNumber ] = useState<number>(0);
   const [ pageSize, setPageSize ] = useState<number>(10);
 
+  // TODO switch to cursor : https://cloud.google.com/firestore/pricing#large-result-sets
   const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(columns[0]?.field ?? "", "asc"), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);

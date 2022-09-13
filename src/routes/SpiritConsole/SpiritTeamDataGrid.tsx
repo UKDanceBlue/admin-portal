@@ -1,4 +1,4 @@
-import { People, TableRows } from "@mui/icons-material";
+import { Delete, People, TableRows } from "@mui/icons-material";
 import { Button,
   Dialog,
   DialogActions,
@@ -9,7 +9,7 @@ import { Button,
   ListItemText,
   Typography } from "@mui/material";
 import { GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
-import { collection } from "firebase/firestore";
+import { collection, deleteDoc, doc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useFirestore } from "reactfire";
@@ -98,14 +98,22 @@ const SpiritTeamDataGrid = () => {
                 icon={<People />}
                 disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
                 onClick={() => showTeamMembersDialog(params.row["members"])}
-                label="Details"
+                label="Members"
               />,
               <GridActionsCellItem
                 key={1}
                 icon={<TableRows />}
-                disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
                 onClick={() => window.location.assign(`/spirit-points/spirit-teams/${params.row["id"]}`)}
                 label="Details"
+              />,
+              <GridActionsCellItem
+                key={2}
+                icon={<Delete />}
+                onClick={() => deleteDoc(doc(spiritTeamsCollectionRef, params.row["id"])).catch((error) => {
+                  console.error("Error removing document: ", error);
+                  alert(`Error removing document: ${ error}`);
+                })}
+                label="Delete"
               />,
             ],
           },

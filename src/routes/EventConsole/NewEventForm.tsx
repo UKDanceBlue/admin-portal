@@ -1,12 +1,12 @@
-import AdapterLuxon from "@date-io/luxon";
 import { Delete } from "@mui/icons-material";
-import { Box, Button, CircularProgress, IconButton, Paper, TextField, Typography } from "@mui/material";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { Timestamp, addDoc, collection } from "firebase/firestore";
+import { Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, Paper, TextField, Typography } from "@mui/material";
+import { DateTimePicker } from "@mui/x-date-pickers";
+import { Timestamp, addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { FirebaseStorage, ref, uploadBytes } from "firebase/storage";
 import { DateTime } from "luxon";
 import { useReducer, useRef, useState } from "react";
 import { useFirestore, useStorage } from "reactfire";
+import { v4 as uuidV4 } from "uuid";
 
 import ImageSelect, { ImageSelectRef } from "../../components/ImageSelect";
 import { FirestoreImage, isFirestoreImage } from "../../firebase/types";
@@ -88,6 +88,8 @@ const NewEventForm = () => {
     };
   }, defaultEvent);
 
+  const [ shouldCreateSpiritOpportunity, setShouldCreateSpiritOpportunity ] = useState(false);
+
   const firestore = useFirestore();
   const storage = useStorage();
 
@@ -95,9 +97,37 @@ const NewEventForm = () => {
     <form onSubmit={async (e) => {
       e.preventDefault();
       const eventsCollection = collection(firestore, "events");
+
+      if (event.title == null) {
+        alert("Please enter a title");
+      }
+      if (event.description == null) {
+        alert("Please enter a description");
+      }
+      if (event.startTime == null) {
+        alert("Please enter a start time");
+      }
+      if (event.endTime == null) {
+        alert("Please enter an end time");
+      }
+      if (event.title == null || event.description == null || event.startTime == null || event.endTime == null) {
+        return;
+      }
+
       try {
         setIsLoading(true);
-        const eventDocData: any = { ...event, image: undefined };
+        const eventDocData: any = {
+          title: event.title,
+          description: event.description,
+          startTime: event.startTime,
+          endTime: event.endTime,
+        };
+        if (event.address != null) {
+          eventDocData.address = event.address;
+        }
+        if (event.link != null) {
+          eventDocData.link = event.link;
+        }
 
         if (event.image != null) {
           if (event.image.length > 1) {
@@ -108,6 +138,16 @@ const NewEventForm = () => {
           }
         }
         await addDoc(eventsCollection, eventDocData);
+
+        try {
+          if (shouldCreateSpiritOpportunity) {
+            const newDocument = doc(collection(firestore, "spirit/opportunities/documents"), uuidV4());
+            await setDoc(newDocument, { name: event.title, date: event.startTime });
+          }
+        } catch (e) {
+          alert(`Event created successfully, however there was and error creating spirit opportunity:\n${JSON.stringify((e as any).message, undefined, 2)}`);
+        }
+
         updateEvent("reset");
         imageSelectRef.current?.setImageMode(null);
       } catch (e) {
@@ -135,35 +175,34 @@ const NewEventForm = () => {
         />
         <TextField
           disabled={isLoading}
-          label="Description" required
+          label="Description"
+          required
           value={event.description ?? ""}
           multiline
           fullWidth
           onChange={({ target: { value } }) => updateEvent([ "description", value.length > 0 ? value : undefined ])}
         />
         <Box sx={{ display: "flex", flexDirection: "row", gap: "1em" }}>
-          <LocalizationProvider dateAdapter={AdapterLuxon} >
-            <DateTimePicker
-              disabled={isLoading}
-              renderInput={(props) => <TextField fullWidth {...props} />}
-              label="Start Time" value={DateTime.fromMillis(event.startTime.toMillis())}
-              disablePast
-              onChange={(value) => {
-                if (value != null && event.endTime.toMillis() < value.toMillis()) {
-                  updateEvent([ "endTime", Timestamp.fromMillis(value.plus({ hours: 1 }).toMillis()) ]);
-                }
-                updateEvent([ "startTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ]);
-              }}
-            />
-            <DateTimePicker
-              disabled={isLoading}
-              renderInput={(props) => <TextField fullWidth {...props} />}
-              label="End Time" value={DateTime.fromMillis(event.endTime.toMillis())}
-              minDateTime={DateTime.fromMillis(event.startTime.toMillis())}
-              disablePast
-              onChange={(value) => updateEvent([ "endTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ])}
-            />
-          </LocalizationProvider>
+          <DateTimePicker
+            disabled={isLoading}
+            renderInput={(props) => <TextField required fullWidth {...props} />}
+            label="Start Time" value={DateTime.fromMillis(event.startTime.toMillis())}
+            disablePast
+            onChange={(value) => {
+              if (value != null && event.endTime.toMillis() < value.toMillis()) {
+                updateEvent([ "endTime", Timestamp.fromMillis(value.plus({ hours: 1 }).toMillis()) ]);
+              }
+              updateEvent([ "startTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ]);
+            }}
+          />
+          <DateTimePicker
+            disabled={isLoading}
+            renderInput={(props) => <TextField required fullWidth {...props} />}
+            label="End Time" value={DateTime.fromMillis(event.endTime.toMillis())}
+            minDateTime={DateTime.fromMillis(event.startTime.toMillis())}
+            disablePast
+            onChange={(value) => updateEvent([ "endTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ])}
+          />
         </Box>
         <TextField
           disabled={isLoading}
@@ -175,6 +214,7 @@ const NewEventForm = () => {
         {event.link.map((thisLink, index) => (
           <Paper sx={{ display: "flex", flexDirection: "row", gap: "1em", padding: "1em" }} elevation={4} key={index}>
             <TextField
+              required
               disabled={isLoading}
               label="Link Text"
               value={thisLink?.text ?? ""}
@@ -182,6 +222,7 @@ const NewEventForm = () => {
               onChange={({ target: { value } }) => updateEvent([ "link", event.link.slice(0, index).concat({ text: value, url: thisLink?.url ?? "" }).concat(event.link.slice(index + 1)) ])}
             />
             <TextField
+              required
               disabled={isLoading || thisLink == null}
               label="Link URL"
               value={thisLink?.url ?? ""}
@@ -226,6 +267,14 @@ const NewEventForm = () => {
         >
             Add Image
         </Button>
+
+
+        <FormControlLabel control={<Checkbox
+          checked={shouldCreateSpiritOpportunity}
+          onChange={(val) => setShouldCreateSpiritOpportunity(val.target.checked)}
+          inputProps={{ "aria-label": "controlled" }}
+        />}
+        label="Create a Spirit Point Opportunity Too?" />
         <Button
           disabled={isLoading}
           variant="contained"

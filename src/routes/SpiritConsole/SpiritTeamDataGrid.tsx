@@ -81,7 +81,7 @@ const SpiritTeamDataGrid = () => {
             type: "number",
           },
           {
-            field: "totalSpiritPoints",
+            field: "totalPoints",
             headerName: "Total Spirit Points",
             flex: 1.75,
             type: "number",

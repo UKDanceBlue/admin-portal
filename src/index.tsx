@@ -1,5 +1,7 @@
+import AdapterLuxon from "@date-io/luxon";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
+import { LocalizationProvider } from "@mui/x-date-pickers";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -20,12 +22,14 @@ if (container) {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-            <ReactFireProvider>
-              <LoadingWrapper>
-                <CssBaseline />
-                <App />
-              </LoadingWrapper>
-            </ReactFireProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon} >
+              <ReactFireProvider>
+                <LoadingWrapper>
+                  <CssBaseline />
+                  <App />
+                </LoadingWrapper>
+              </ReactFireProvider>
+            </LocalizationProvider>
           </FirebaseAppProvider>
         </ThemeProvider>
       </BrowserRouter>

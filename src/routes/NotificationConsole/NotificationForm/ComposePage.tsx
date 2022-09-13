@@ -80,17 +80,29 @@ const ComposePage = ({
       >
         <Typography variant="body2">
           Notification Payload (stuff that happens when you click it)
+          <br/>
+          <i>All Optional</i>
         </Typography> {/* An editor that allows entering a url (to launch the app to), a message object (as defined in notificationPayload's type) and a webviewSource object (also in notificationPayload's type) */}
         <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <TextField
-            sx={{ width: "100%", mt: "1rem" }}
-            label="URL"
-            value={notificationPayload?.url ?? ""}
-            onChange={(event) => {
-              setNotificationPayload({ ...notificationPayload, url: event.target.value });
-            }
-            }
-          />
+          <Paper
+            sx={{
+              width: "100%",
+              mt: "1rem",
+              p: "1rem",
+              borderRadius: "0.5rem",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <TextField
+              sx={{ width: "100%" }}
+              label="Link to open on click"
+              value={notificationPayload?.url ?? ""}
+              onChange={(event) => {
+                setNotificationPayload({ ...notificationPayload, url: event.target.value });
+              }
+              }
+            />
+          </Paper>
           <Paper
             sx={{
               width: "100%",

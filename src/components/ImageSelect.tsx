@@ -12,7 +12,7 @@ export interface ImageSelectRef {
 }
 
 const ImageSelect = ({
-  value, onChange, isLoading = false, disabled = false, ref
+  value, onChange, isLoading = false, disabled = false, ref, allowedModes = [ "url", "upload" ]
 }: {
   value: {
     file: File,
@@ -27,6 +27,7 @@ const ImageSelect = ({
   isLoading?: boolean;
   disabled?: boolean;
   ref?: MutableRefObject<ImageSelectRef | undefined>;
+  allowedModes?: (Omit<ImageMode, "null">)[];
 }) => {
   const [ imageMode, setImageMode ] = useState<ImageMode>(null);
 
@@ -47,12 +48,20 @@ const ImageSelect = ({
           aria-label="text alignment"
           disabled={disabled}
         >
-          <ToggleButton value="upload">
+          {
+            allowedModes.includes("upload") && (
+              <ToggleButton value="upload">
               Upload
-          </ToggleButton>
-          <ToggleButton value="url">
+              </ToggleButton>
+            )
+          }
+          {
+            allowedModes.includes("url") && (
+              <ToggleButton value="url">
               Link
-          </ToggleButton>
+              </ToggleButton>
+            )
+          }
         </ToggleButtonGroup>
         <Typography>
               When possible, prefer the link option as it saves us a few cents of storage (basically, avoid downloading an image from a website and re-uploading here, just put the image&apos;s URL in the link field).

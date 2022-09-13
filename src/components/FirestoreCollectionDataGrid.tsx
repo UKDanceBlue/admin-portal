@@ -1,7 +1,7 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
-import { DataGrid, GridColumns } from "@mui/x-data-grid";
+import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
-import { CollectionReference, GeoPoint, Timestamp, doc, setDoc } from "firebase/firestore";
+import { CollectionReference, GeoPoint, Timestamp, doc, limit, orderBy, query, setDoc, startAt } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
@@ -13,34 +13,42 @@ const DataGridFirebaseErrorOverlay = ({
       <Typography variant="h4" component="h4">
         An error has occurred
       </Typography>
-      <p>Error code &apos;{code}&apos;</p>
+      {code && <p>Error code &apos;{code}&apos;</p>}
       {message && <p>{message}</p>}
     </div>
   );
 };
 
-const FirestoreCollectionDataGrid = ({
+function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,
-  enablePopover = false
+  enablePopover = false,
+  defaultSortField
 }: {
-  columns: GridColumns<{
-    [key: string]: string;
-  }>;
+  columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;
-  dataGridProps?: Partial<Parameters<typeof DataGrid>[0]>;
+  dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
   enablePopover?: boolean;
-}) => {
+  defaultSortField: typeof columns[number]["field"];
+}) {
+  type DocumentTypeWithId = DocumentType & {id: string};
+
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
-  const firestoreCollection = useFirestoreCollection(firestoreCollectionRef);
+
+  const [ pageNumber, setPageNumber ] = useState<number>(0);
+  const [ pageSize, setPageSize ] = useState<number>(10);
+  const [sortField] = useState<string>(defaultSortField);
+  const [sortDirection] = useState<"asc" | "desc">("asc");
+
+  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);
 
-  const data = firestoreCollection.data
-    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
-    : [];
+  const data: DocumentTypeWithId[] = (firestoreCollection.data
+    ? firestoreCollection.data.docs.map((doc) => ({ id: doc.id, ...(doc.data() as DocumentType) }))
+    : []) ?? [];
 
   const handleProcessRowUpdateError = useCallback((error: Error) => {
     setSnackbar({ children: error.message, severity: "error" });
@@ -49,8 +57,12 @@ const FirestoreCollectionDataGrid = ({
   const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
     const field = event.currentTarget.dataset.field!;
     const id = event.currentTarget.parentElement!.dataset.id!;
-    const row = data.find((r) => r.id === id)!;
-    const value = (row as Record <string, unknown>)[field];
+    const row = data.find((r) => r.id === id);
+    if (row == null) {
+      setPopoverAnchorEl(null);
+      setPopoverText(null);
+    }
+    const value = row?.[field];
     if (value != null) {
       if (value instanceof Timestamp) {
         setPopoverAnchorEl(event.currentTarget);
@@ -79,7 +91,7 @@ const FirestoreCollectionDataGrid = ({
   };
 
   const processRowUpdate = useCallback(
-    (newRow: { [key: string]: string }, oldRow: { [key: string]: string }) => {
+    (newRow: DocumentTypeWithId, oldRow: DocumentTypeWithId) => {
       if (deepEquals(newRow, oldRow)) {
         return oldRow;
       } else if (newRow.id !== oldRow.id) {
@@ -98,12 +110,19 @@ const FirestoreCollectionDataGrid = ({
         rows={
           data
         }
-        columns={columns}
+        columns={columns.map((col) => ({ ...col, sortable: false, filterable: false }))}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
         components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}
         processRowUpdate={processRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
+        rowsPerPageOptions={[
+          10, 25, 50, 100
+        ]}
+        page={pageNumber}
+        onPageChange={setPageNumber}
         componentsProps={{
           cell: enablePopover ? {
             onMouseEnter: handlePopoverOpen,
@@ -142,6 +161,6 @@ const FirestoreCollectionDataGrid = ({
       </Popover>
     </>
   );
-};
+}
 
 export default FirestoreCollectionDataGrid;

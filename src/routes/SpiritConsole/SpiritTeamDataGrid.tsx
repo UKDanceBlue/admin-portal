@@ -74,6 +74,14 @@ const SpiritTeamDataGrid = () => {
             editable: true,
           },
           {
+            field: "teamClass",
+            headerName: "Visibility",
+            flex: 1,
+            editable: true,
+            type: "singleSelect",
+            valueOptions: [ "public", "committee" ],
+          },
+          {
             field: "networkForGoodId",
             headerName: "Network For Good ID",
             flex: 1.75,

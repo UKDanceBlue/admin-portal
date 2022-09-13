@@ -12,8 +12,9 @@ export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
 
   return (
     <LoadingContext.Provider value={[ loadingReasons, setLoading ]}>
-      {(Object.values(loadingReasons).some((val) => val)) &&
-      <CircularProgress style={{ position: "absolute", top: "50%", left: "49vw", width: "2vw", height: "2vw" }} />
+      {
+        (Object.values(loadingReasons).some((val) => val)) &&
+        (<CircularProgress style={{ position: "fixed", top: "48vw", left: "48vw", width: "4vw", height: "4vw" }} />)
       }
       {children}
     </LoadingContext.Provider>

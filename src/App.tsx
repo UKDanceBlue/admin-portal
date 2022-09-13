@@ -22,14 +22,19 @@ export default function App() {
               {routeDefinitions["event-manager"].element}
             </SecuredParent>
           } />
-          <Route path={routeDefinitions["spirit-points"].pathFragment} element={
-            <SecuredParent requiredClaims={routeDefinitions["spirit-points"].requiredClaims}>
-              {routeDefinitions["spirit-points"].element}
+          <Route path={routeDefinitions["spirit-teams"].pathFragment} element={
+            <SecuredParent requiredClaims={routeDefinitions["spirit-teams"].requiredClaims}>
+              {routeDefinitions["spirit-teams"].element}
             </SecuredParent>
           } />
           <Route path={routeDefinitions["spirit-opportunities"].pathFragment} element={
             <SecuredParent requiredClaims={routeDefinitions["spirit-opportunities"].requiredClaims}>
               {routeDefinitions["spirit-opportunities"].element}
+            </SecuredParent>
+          } />
+          <Route path={routeDefinitions["spirit-points"].pathFragment} element={
+            <SecuredParent requiredClaims={routeDefinitions["spirit-points"].requiredClaims}>
+              {routeDefinitions["spirit-points"].element}
             </SecuredParent>
           } />
           <Route path={routeDefinitions["notification-console"].pathFragment} element={

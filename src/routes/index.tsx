@@ -6,6 +6,7 @@ import Home from "./Home";
 // import MoraleConsole from "./MoraleConsole";
 import NotificationConsole from "./NotificationConsole";
 import SpiritConsole, { OpportunityConsole } from "./SpiritConsole";
+import TeamConsole from "./SpiritConsole/TeamConsole";
 
 export type AuthClaim = {
   claimKey: string;
@@ -75,6 +76,16 @@ const routeDefinitions = {
       { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
     ] as const,
     element: <OpportunityConsole />,
+  },
+  "spirit-teams": {
+    title: "Spirit Opportunities",
+    pathFragment: "spirit-points/spirit-teams/:teamId",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <TeamConsole />,
   },
   // "morale-console": {
   //   title: "Morale Point Manager",

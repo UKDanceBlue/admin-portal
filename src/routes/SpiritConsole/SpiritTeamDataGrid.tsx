@@ -1,4 +1,4 @@
-import { TableRows } from "@mui/icons-material";
+import { People, TableRows } from "@mui/icons-material";
 import { Button,
   Dialog,
   DialogActions,
@@ -41,7 +41,7 @@ const SpiritTeamDataGrid = () => {
   const [ membersDialogOpen, setMembersDialogOpen ] = useState(false);
   const [ membersDialogContent, setMembersDialogContent ] = useState({});
 
-  const spiritTeamsCollectionRef = collection(firestore, "teams");
+  const spiritTeamsCollectionRef = collection(firestore, "spirit/teams/documents");
 
   const membersDialogDescriptionElementRef = useRef<any>(null);
   useEffect(() => {
@@ -95,15 +95,23 @@ const SpiritTeamDataGrid = () => {
             getActions: (params: GridRowParams) => [
               <GridActionsCellItem
                 key={0}
-                icon={<TableRows />}
+                icon={<People />}
                 disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
                 onClick={() => showTeamMembersDialog(params.row["members"])}
+                label="Details"
+              />,
+              <GridActionsCellItem
+                key={1}
+                icon={<TableRows />}
+                disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
+                onClick={() => window.location.assign(`/spirit-points/spirit-teams/${params.row["id"]}`)}
                 label="Details"
               />,
             ],
           },
         ]}
         firestoreCollectionRef={spiritTeamsCollectionRef}
+        defaultSortField="name"
       />
       <Dialog
         open={membersDialogOpen}

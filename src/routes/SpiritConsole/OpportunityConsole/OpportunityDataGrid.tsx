@@ -33,17 +33,25 @@ const columns: GridColumns<{
     valueSetter: ({
       row, value
     }) => ({ ...row, date: value == null ? null : Timestamp.fromDate(value) })
+  },
+  {
+    field: "totalPoints",
+    headerName: "Total Points",
+    flex: 1,
+    type: "number",
+    editable: false,
   }
 ];
 const OpportunityDataGrid = () => {
   const firestore = useFirestore();
 
-  const opportunitiesCollectionRef = collection(firestore, "opportunities");
+  const opportunitiesCollectionRef = collection(firestore, "/spirit/opportunities/documents");
 
   return (
     <FirestoreCollectionDataGrid
       columns={columns}
       firestoreCollectionRef={opportunitiesCollectionRef}
+      defaultSortField="date"
     />
   );
 };

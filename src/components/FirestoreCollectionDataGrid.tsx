@@ -23,12 +23,14 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   columns,
   firestoreCollectionRef,
   dataGridProps,
-  enablePopover = false
+  enablePopover = false,
+  defaultSortField
 }: {
   columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;
   dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
   enablePopover?: boolean;
+  defaultSortField: typeof columns[number]["field"];
 }) {
   type DocumentTypeWithId = DocumentType & {id: string};
 
@@ -36,9 +38,10 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
 
   const [ pageNumber, setPageNumber ] = useState<number>(0);
   const [ pageSize, setPageSize ] = useState<number>(10);
+  const [sortField] = useState<string>(defaultSortField);
+  const [sortDirection] = useState<"asc" | "desc">("asc");
 
-  // TODO switch to cursor : https://cloud.google.com/firestore/pricing#large-result-sets
-  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(columns[0]?.field ?? "", "asc"), startAt(pageNumber * pageSize), limit(pageSize)));
+  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);

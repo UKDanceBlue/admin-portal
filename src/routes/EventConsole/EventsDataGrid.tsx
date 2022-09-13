@@ -88,6 +88,7 @@ const EventsDataGrid = () => {
           columns={columns}
           dataGridProps={{ getRowHeight: () => "auto" }}
           enablePopover
+          defaultSortField="startTime"
         />
       </div>
     </div>

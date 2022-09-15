@@ -95,8 +95,8 @@ const SpiritTeamDataGrid = () => {
             type: "number",
           },
           {
-            field: "members",
-            headerName: "Members",
+            field: "actions",
+            headerName: "Actions",
             flex: 0.75,
             editable: false,
             type: "actions",
@@ -117,10 +117,18 @@ const SpiritTeamDataGrid = () => {
               <GridActionsCellItem
                 key={2}
                 icon={<Delete />}
-                onClick={() => deleteDoc(doc(spiritTeamsCollectionRef, params.row["id"])).catch((error) => {
-                  console.error("Error removing document: ", error);
-                  alert(`Error removing document: ${ error}`);
-                })}
+                onClick={() => {
+                  const displayedName = ((params.row["name"]?.length ?? 0) === 0)
+                    ? "this team"
+                    : params.row["name"];
+
+                  if (confirm(`Are you sure you want to delete ${displayedName}?`)) {
+                    deleteDoc(doc(spiritTeamsCollectionRef, params.row["id"])).catch((error) => {
+                      console.error("Error removing document: ", error);
+                      alert(`Error removing document: ${ error}`);
+                    });
+                  }
+                }}
                 label="Delete"
               />,
             ],

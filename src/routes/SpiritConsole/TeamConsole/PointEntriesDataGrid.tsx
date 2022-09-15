@@ -85,7 +85,21 @@ const PointEntriesDataGrid = () => {
                 flex: 1,
                 type: "actions",
                 getActions: (rowData) => [
-                  <IconButton key={rowData.row.id} onClick={() => deleteDoc(doc(entiresCollectionRef, rowData.row.id)).catch(alert)}>
+                  <IconButton
+                    key={rowData.row.id}
+                    onClick={() => {
+                      const displayedName = (((rowData.row["displayName"] as string)?.length ?? 0) === 0)
+                        ? "this person"
+                        : rowData.row["displayName"];
+
+                      if (confirm(`Are you sure you want to delete the entry for ${displayedName}?`)) {
+                        deleteDoc(doc(entiresCollectionRef, rowData.row.id)).catch((error) => {
+                          console.error("Error removing document: ", error);
+                          alert(`Error removing document: ${ error}`);
+                        });
+                      }
+                    }}
+                  >
                     <Delete />
                   </IconButton>
                 ]

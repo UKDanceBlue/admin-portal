@@ -1,7 +1,7 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
-import { CollectionReference, GeoPoint, Timestamp, doc, limit, orderBy, query, setDoc, startAt } from "firebase/firestore";
+import { CollectionReference, GeoPoint, Timestamp, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
@@ -45,7 +45,12 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   const [sortField] = useState<string>(defaultSortField);
   const [sortDirection] = useState<"asc" | "desc">("asc");
 
-  const firestoreCollection = useFirestoreCollection(documentCount == null ? query(firestoreCollectionRef, orderBy(sortField, sortDirection)) : query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
+  const firestoreCollection = useFirestoreCollection(
+    query(
+      firestoreCollectionRef,
+      orderBy(sortField, sortDirection)
+    )
+  );
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);

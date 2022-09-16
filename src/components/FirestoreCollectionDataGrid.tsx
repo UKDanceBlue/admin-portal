@@ -26,7 +26,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   enablePopover = false,
   defaultSortField,
   documentCount,
-  initialPageSize = 10,
+  initialPageSize = 25,
 }: {
   columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;

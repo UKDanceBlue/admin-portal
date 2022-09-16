@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Typography } from "@mui/material";
-import { doc, getDoc } from "firebase/firestore";
+import { CollectionReference, doc, getDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useFirestore } from "reactfire";
 
@@ -58,7 +58,7 @@ const AudiencePage = ({
 }) => {
   const firestore = useFirestore();
 
-  const [ spiritTeamInfo, setSpiritTeamInfo ] = useState<SpiritTeamsRootDoc["names"] | null>(null);
+  const [ spiritTeamInfo, setSpiritTeamInfo ] = useState<SpiritTeamsRootDoc | null>(null);
 
   const validAttributes = useRemoteConfigParsedJson<{
     [key: string]: { value: string }[] | { type: "string" | "number" | "boolean" };
@@ -80,10 +80,10 @@ const AudiencePage = ({
   ]);
 
   useEffect(() => {
-    const spiritTeamInfoRef = getDoc(doc(firestore, "spirit", "teams"));
+    const spiritTeamInfoRef = getDoc(doc<SpiritTeamsRootDoc>(firestore as unknown as CollectionReference<SpiritTeamsRootDoc>, "spirit", "teams"));
     spiritTeamInfoRef.then((doc) => {
       if (doc.exists()) {
-        setSpiritTeamInfo(doc.data()?.names);
+        setSpiritTeamInfo(doc.data());
       }
     });
   }, [firestore]);
@@ -101,11 +101,13 @@ const AudiencePage = ({
           Select the audiences that will receive this notification.
         </Typography>
         <Typography variant="body2" sx={{ mt: "1em" }}>
-          Note that Leaving a box blank means that the server will completely ignore that field.
-          However, if you select every value for an audience then you will exclude anyone who does
-          not have a value for that field. For example selecting both &quot;yes&quot; and
-          &quot;no&quot; for Spirit captain is usually the same as just selecting &quot;yes&quot; as
-          dancers&apos; spirit captain field is blank in the database. Again, if you have any
+          If you want to ignore a criteria, simply leave the box blank. To override all filters and
+          send a notification to everyone possible, simply select &quot;Send to All&quot;. Selecting
+          multiple options for a field will allow that field to be any one of them, however selecting
+          multiple fields will require each field. As an example, let&apos;s say you select teams X,
+          Y, and Z, and select &quot;Team&nbsp;Captain:&nbsp;yes&quot;, this will send a notification to any
+          team captain on teams X, Y, or Z. If you selected Team Z, Y, or Z as well as a committee
+          rank however, you would be unlikely to send a notification to anyone. Again, if you have any
           questions about how this works, please contact the app coordinator. If you would like more
           granular control over who receives this notification, please feel free to reach out to the
           tech committee.
@@ -122,7 +124,7 @@ const AudiencePage = ({
         <Select
           labelId={"select-spiritTeamId-label"}
           id={"select-spiritTeamId"}
-          value={notificationAudiences?.team ?? []}
+          value={notificationAudiences?.spiritTeamId ?? []}
           label="Team"
           disabled={sendToAll}
           multiple
@@ -142,7 +144,7 @@ const AudiencePage = ({
           }}
         >
           {spiritTeamInfo == null ? null : (
-            Object.entries(spiritTeamInfo).map(([ id, name ]) => (
+            Object.entries(spiritTeamInfo.basicInfo).map(([ id, { name } ]) => (
               <MenuItem key={id} value={id}>
                 {name}
               </MenuItem>

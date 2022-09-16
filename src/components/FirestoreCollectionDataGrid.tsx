@@ -24,24 +24,28 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   firestoreCollectionRef,
   dataGridProps,
   enablePopover = false,
-  defaultSortField
+  defaultSortField,
+  documentCount,
+  initialPageSize = 10,
 }: {
   columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;
   dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
   enablePopover?: boolean;
   defaultSortField: typeof columns[number]["field"];
+  documentCount?: number;
+  initialPageSize?: number;
 }) {
   type DocumentTypeWithId = DocumentType & {id: string};
 
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
 
   const [ pageNumber, setPageNumber ] = useState<number>(0);
-  const [ pageSize, setPageSize ] = useState<number>(10);
+  const [ pageSize, setPageSize ] = useState<number>(initialPageSize);
   const [sortField] = useState<string>(defaultSortField);
   const [sortDirection] = useState<"asc" | "desc">("asc");
 
-  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
+  const firestoreCollection = useFirestoreCollection(documentCount == null ? query(firestoreCollectionRef, orderBy(sortField, sortDirection)) : query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);
@@ -111,6 +115,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
           data
         }
         columns={columns.map((col) => ({ ...col, sortable: false, filterable: false }))}
+        rowCount={documentCount ?? firestoreCollection.data?.docs.length ?? 0}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
         components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}

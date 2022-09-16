@@ -1,5 +1,11 @@
 export interface SpiritTeamsRootDoc {
-  teamIds: string[];
-  points: Record<string, number>;
-  names: Record<string, string>;
+  basicInfo: {
+    [teamId: string]: {
+      name: string;
+      teamClass?: "public" | "committee";
+      totalPoints?: number;
+    }
+  }
 }
+
+// TODO add a validation function for this type

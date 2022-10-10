@@ -140,6 +140,7 @@ const SpiritTeamDataGrid = () => {
         firestoreCollectionRef={spiritTeamsCollectionRef}
         defaultSortField="name"
         documentCount={Object.keys(spiritTeamInfoDocData?.data?.basicInfo ?? {}).length}
+        initialPageSize={100}
       />
       <Dialog
         open={membersDialogOpen}

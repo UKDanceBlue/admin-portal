@@ -16,7 +16,7 @@ const TeamConsole = () => {
 
   const {
     name, fundraisingTotal, totalPoints, networkForGoodId, teamClass
-  } = team.data.data() ?? {};
+  } = team?.data?.data() ?? {};
 
   return (
     <div>

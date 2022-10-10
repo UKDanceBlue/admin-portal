@@ -119,7 +119,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
         rows={
           data
         }
-        columns={columns.map((col) => ({ ...col, sortable: false, filterable: false }))}
+        columns={columns.map((col) => ({ ...col, sortable: false }))}
         rowCount={documentCount ?? firestoreCollection.data?.docs.length ?? 0}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}

@@ -185,7 +185,7 @@ const ComposePage = ({
                   name="dryRun"
                 />
               }
-              label="Dry Run"
+              label="Dry Run (don't actually send the notification; mostly for testing)"
             />
           </FormGroup>
         </Box>

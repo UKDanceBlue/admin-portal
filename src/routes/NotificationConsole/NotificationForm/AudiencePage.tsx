@@ -104,13 +104,15 @@ const AudiencePage = ({
           If you want to ignore a criteria, simply leave the box blank. To override all filters and
           send a notification to everyone possible, simply select &quot;Send to All&quot;. Selecting
           multiple options for a field will allow that field to be any one of them, however selecting
-          multiple fields will require each field. As an example, let&apos;s say you select teams X,
-          Y, and Z, and select &quot;Team&nbsp;Captain:&nbsp;yes&quot;, this will send a notification to any
-          team captain on teams X, Y, or Z. If you selected Team Z, Y, or Z as well as a committee
-          rank however, you would be unlikely to send a notification to anyone. Again, if you have any
-          questions about how this works, please contact the app coordinator. If you would like more
-          granular control over who receives this notification, please feel free to reach out to the
-          tech committee.
+          multiple fields will require each field. That&apos;s kinda confusing, so as an example, let&apos;s say you select teams X,
+          Y, and Z, and also select &quot;Team&nbsp;Captain:&nbsp;yes&quot;, this will send a notification to any
+          team captain on teams X, Y, or Z as you are telling the server &quot;send a notification to the captains of X, Y,
+          and Z&quot;. On the other hand if you instead selected Team Z, Y, or Z as well and &quot;Committee&nbsp;rank:&nbsp;coordinator&quot;,
+          you would be unlikely to send a notification to anyone as you would be telling the server
+          &quot;send a notification to all the coordinators on team X, Y, or Z&quot;. Again, if you have any
+          questions about how this works, <i>please</i> contact the app coordinator. If you would like more
+          granular control over who receives this notification, feel free to reach out to the
+          tech committee, there is a lot of room for improvement here and I am down for it.
         </Typography>
       </Box>
       <FormControlLabel control={<Checkbox

@@ -27,6 +27,7 @@ export type NotificationFormPendingState = {
   selectedTeams?: GenericFirestoreDocument[];
   notificationAudiences?: { [audience: string]: string[] };
   sendToAll?: boolean;
+  dryRun?: boolean;
 };
 
 const steps: string[] = [

@@ -46,8 +46,7 @@ const ConfirmPage = ({
       }
     }
 
-    // If all is well, set the notification
-    setNotification({
+    const createdNotification: Notification = {
       notificationTitle: pendingState.notificationTitle ?? "",
       notificationBody: pendingState.notificationBody ?? "",
       notificationPayload: {
@@ -55,14 +54,26 @@ const ConfirmPage = ({
         textPopup: parsedTextPopup,
         webviewPopup
       },
-      notificationAudiences: pendingState.notificationAudiences,
+      notificationAudiences: (Object.keys(pendingState.notificationAudiences ?? {}).length > 0) ? pendingState.notificationAudiences : undefined,
+      dryRun: pendingState.dryRun ?? false,
+      // notificationRecipients: pendingState.notificationRecipients ?? null,     TODO
+      sendToAll: pendingState.sendToAll ?? false,
+    };
+
+    const stringifiedNotification = JSON.stringify({
+      notificationTitle: createdNotification.notificationTitle,
+      notificationBody: createdNotification.notificationBody,
+      notificationPayload: createdNotification.notificationPayload,
     });
+
+    if (stringifiedNotification.length > 2730) {
+      alert("Notification is too long! Please shorten the title, body, or payload.");
+    } else {
+    // If all is well, set the notification
+      setNotification(createdNotification);
+    }
   }, [
-    pendingState.notificationBody,
-    pendingState.notificationPayload,
-    pendingState.notificationTitle,
-    pendingState.notificationAudiences,
-    setNotification,
+    pendingState.notificationBody, pendingState.notificationPayload, pendingState.notificationTitle, pendingState.notificationAudiences, setNotification, pendingState.dryRun, pendingState.sendToAll
   ]);
 
   return (
@@ -108,15 +119,42 @@ const ConfirmPage = ({
         With special content: {JSON.stringify(notification.notificationPayload)}
       </Typography>
       <br />
-      <Typography variant="body2">To be sent to:</Typography>
-      {notification.notificationAudiences &&
-      Object.keys(notification.notificationAudiences).length > 0
-        ? Object.entries(notification.notificationAudiences).map(([ audience, audienceIds ]) => (
-          <Typography key={audience} variant="body2" sx={{ ml: "1em" }}>
-            {` ${audience}: ${audienceIds.join(", ")}\n`}
-          </Typography>
-        ))
-        : "NOBODY"}
+      <Typography variant="body2">To be sent to:
+        {
+          notification.notificationAudiences && Object.keys(notification.notificationAudiences).length > 0
+            ? (
+              // Show all the audiences that are selected
+              Object.entries(notification.notificationAudiences)
+                .map(
+                  ([ audience, audienceIds ]) => (
+                    <Typography key={audience} variant="body2" sx={{ ml: "1em" }}>
+                      {` ${audience}: ${audienceIds.join(", ")}\n`}
+                    </Typography>
+                  ))
+            )
+            : (
+              notification.notificationRecipients && notification.notificationRecipients.length > 0
+                ? (
+                  // Show all the number of recipients that are selected
+                  <Typography variant="body2" sx={{ ml: "1em" }}>
+                    {notification.notificationRecipients.length.toString().concat(" recipients")}
+                  </Typography>)
+                : (
+                  notification.sendToAll
+                    ? (
+                      // Show that all recipients are selected
+                      "All users"
+                    )
+                    : (
+                      // Show that no recipients are selected
+                      <Typography variant="body2" sx={{ ml: "1em" }}>
+                        {"No recipients"}
+                      </Typography>
+                    )
+                )
+            )
+        }
+      </Typography>
     </div>
   );
 };

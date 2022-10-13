@@ -1,4 +1,4 @@
-import { Delete } from "@mui/icons-material";
+import { Delete, Numbers } from "@mui/icons-material";
 import { GridActionsCellItem, GridColumns, GridRowParams } from "@mui/x-data-grid";
 import { Timestamp, collection, deleteDoc, doc } from "firebase/firestore";
 import { useFirestore } from "reactfire";
@@ -15,11 +15,6 @@ const OpportunityDataGrid = () => {
     name: string | null,
     date: Timestamp | null
   }> = [
-    {
-      field: "id",
-      headerName: "Opportunity ID",
-      flex: 2,
-    },
     {
       field: "name",
       headerName: "Name",
@@ -70,6 +65,16 @@ const OpportunityDataGrid = () => {
             }
           }}
           label="Delete"
+          title="Delete"
+        />,
+        <GridActionsCellItem
+          key={2}
+          onClick={() => {
+            navigator.clipboard.writeText(params.row.id);
+          }}
+          label="Copy ID"
+          title="Copy ID"
+          icon={<Numbers />}
         />,
       ],
     }

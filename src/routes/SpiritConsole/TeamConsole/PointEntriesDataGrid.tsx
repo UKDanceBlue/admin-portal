@@ -1,4 +1,4 @@
-import { Delete } from "@mui/icons-material";
+import { Delete, Numbers } from "@mui/icons-material";
 import { Button, IconButton, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DocumentData, DocumentReference, Timestamp, collection, deleteDoc, doc, setDoc } from "firebase/firestore";
@@ -54,11 +54,6 @@ const PointEntriesDataGrid = () => {
           <FirestoreCollectionDataGrid
             columns={[
               {
-                field: "id",
-                headerName: "Entry Id",
-                flex: 2,
-              },
-              {
                 field: "displayName",
                 headerName: "Entry Name",
                 flex: 2,
@@ -68,6 +63,7 @@ const PointEntriesDataGrid = () => {
                 headerName: "Linkblue",
                 flex: 1.5,
                 type: "linkblue",
+                valueFormatter: ({ value }) => value === "%TEAM%" ? "Everyone" : value,
               },
               {
                 headerName: "Total Points",
@@ -76,8 +72,9 @@ const PointEntriesDataGrid = () => {
               },
               {
                 headerName: "Opportunity",
-                flex: 1,
+                flex: 1.5,
                 field: "opportunityId",
+                valueFormatter: ({ value }) => opportunitiesBasicInfo.data()?.basicInfo[value]?.name ?? value,
               },
               {
                 field: "actions",
@@ -86,7 +83,7 @@ const PointEntriesDataGrid = () => {
                 type: "actions",
                 getActions: (rowData) => [
                   <IconButton
-                    key={rowData.row.id}
+                    key={`${rowData.row.id }-delete`}
                     onClick={() => {
                       const displayedName = (((rowData.row["displayName"] as string)?.length ?? 0) === 0)
                         ? "this person"
@@ -99,9 +96,19 @@ const PointEntriesDataGrid = () => {
                         });
                       }
                     }}
+                    title="Delete"
                   >
                     <Delete />
-                  </IconButton>
+                  </IconButton>,
+                  <IconButton
+                    key={`${rowData.row.id }-id`}
+                    onClick={() => {
+                      navigator.clipboard.writeText(rowData.row.id);
+                    }}
+                    title="Copy ID"
+                  >
+                    <Numbers />
+                  </IconButton>,
                 ]
               }
             ]}

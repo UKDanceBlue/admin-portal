@@ -1,4 +1,4 @@
-import { Delete, People, TableRows } from "@mui/icons-material";
+import { Delete, Numbers, People, TableRows } from "@mui/icons-material";
 import { Button,
   Dialog,
   DialogActions,
@@ -66,11 +66,6 @@ const SpiritTeamDataGrid = () => {
       <FirestoreCollectionDataGrid
         columns={[
           {
-            field: "id",
-            headerName: "Team ID",
-            flex: 2,
-          },
-          {
             field: "name",
             headerName: "Name",
             flex: 2.5,
@@ -133,6 +128,15 @@ const SpiritTeamDataGrid = () => {
                   }
                 }}
                 label="Delete"
+              />,
+              <GridActionsCellItem
+                key={3}
+                onClick={() => {
+                  navigator.clipboard.writeText(params.row.id);
+                }}
+                label="Copy ID"
+                title="Copy ID"
+                icon={<Numbers />}
               />,
             ],
           },

@@ -8,6 +8,7 @@ export type Notification = {
   notificationAudiences?: { [key: string]: string[] };
   notificationRecipients?: string[];
   sendToAll?: boolean;
+  dryRun?: boolean;
 };
 
 export type NotificationPayload = {

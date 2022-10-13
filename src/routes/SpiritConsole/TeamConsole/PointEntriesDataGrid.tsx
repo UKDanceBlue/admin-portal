@@ -1,5 +1,5 @@
 import { Delete } from "@mui/icons-material";
-import { Button, IconButton, Paper, TextField } from "@mui/material";
+import { Button, IconButton, Paper, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DocumentData, DocumentReference, Timestamp, collection, deleteDoc, doc, setDoc } from "firebase/firestore";
 import { useEffect, useReducer } from "react";
@@ -134,20 +134,29 @@ const PointEntriesDataGrid = () => {
           >
             <TextField
               fullWidth
-              label="Name"
-              sx={{ marginBottom: "1em" }}
+              label="Reason"
               value={newEntry.displayName ?? ""}
               onChange={(e) => updateNewEntry({ displayName: e.target.value })}
               required
             />
+            <Typography
+              variant="caption"
+              sx={{ marginBottom: "1em" }}
+            >
+              Like &apos;memo&apos; on a check
+            </Typography>
             <TextField
               fullWidth
               label="Linkblue"
-              sx={{ marginBottom: "1em" }}
               value={newEntry.linkblue ?? ""}
               onChange={(e) => updateNewEntry({ linkblue: e.target.value })}
-              required
             />
+            <Typography
+              variant="caption"
+              sx={{ marginBottom: "1em" }}
+            >
+              (blank for team)
+            </Typography>
             <TextField
               fullWidth
               label="Opportunity"

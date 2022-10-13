@@ -1,37 +1,14 @@
 import { Box, Button } from "@mui/material";
-import { doc, setDoc } from "firebase/firestore";
 import { NavLink } from "react-router-dom";
-import { useFirestore } from "reactfire";
-import { v4 } from "uuid";
 
 import { routeDefinitions } from "..";
 
-import SpiritTeamDataGrid from "./SpiritTeamDataGrid";
+import SpiritTeamList from "./SpiritTeamList";
 
 const SpiritConsole = () => {
-  const firestore = useFirestore();
   return (
     <Box display="flex" flexDirection="column">
-      <h1>Spirit Teams</h1>
-      <p>
-        You can hover over a column&apos;s header and click the ... button to show sorting and filtering options.
-      </p>
-      <div style={{ minHeight: "60vh", display: "flex" }}>
-        <div style={{ flex: 1, padding: "1em" }}>
-          <SpiritTeamDataGrid />
-        </div>
-      </div>
-      {/** Create a new team */}
-      <Button
-        onClick={() => {
-          const name = prompt("Enter a name");
-          if (name) {
-            setDoc(doc(firestore, `/spirit/teams/documents/${v4()}`), { name });
-          }
-        }}
-      >
-            Create a new team
-      </Button>
+      <SpiritTeamList />
       <NavLink to={routeDefinitions["spirit-opportunities"].path ?? ""}>
         <Button>
           Manage Spirit Opportunities

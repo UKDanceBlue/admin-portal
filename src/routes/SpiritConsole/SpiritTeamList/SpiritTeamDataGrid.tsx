@@ -14,8 +14,8 @@ import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useFirestore, useFirestoreDocData } from "reactfire";
 
-import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
-import { SpiritTeamsRootDoc } from "../../firebase/types/SpiritTeamsRootDoc";
+import FirestoreCollectionDataGrid from "../../../components/FirestoreCollectionDataGrid";
+import { SpiritTeamsRootDoc } from "../../../firebase/types/SpiritTeamsRootDoc";
 
 const DataGridFirebaseErrorOverlay = ({
   code, message

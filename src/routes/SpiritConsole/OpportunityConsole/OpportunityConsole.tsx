@@ -14,7 +14,10 @@ import OpportunityDataGrid from "./OpportunityDataGrid";
 
 const OpportunityConsole = () => {
   const [ isLoading, setIsLoading ] = useLoading();
-  const [ newEntry, updateNewEntry ] = useReducer((state: Partial<FirestoreOpportunityInfo>, newState: Partial<FirestoreOpportunityInfo>) => ({ ...state, ...newState }), {});
+  const [ newEntry, updateNewEntry ] = useReducer((state: Omit<FirestoreOpportunityInfo, "totalPoints"> & {totalPoints?: number}, newState: Partial<Omit<FirestoreOpportunityInfo, "totalPoints"> & {totalPoints?: number}>) => ({ ...state, ...newState }), {
+    name: "",
+    date: Timestamp.now(),
+  });
 
   const firestore = useFirestore();
 
@@ -32,14 +35,20 @@ const OpportunityConsole = () => {
           <form
             onSubmit={(e) => {
               e.preventDefault();
+
+              if (!(newEntry.name && newEntry.date)) {
+                alert("Please fill out all fields (name and date).");
+                return;
+              }
+
               setIsLoading(true);
               const newDocument = doc(collection(firestore, "spirit/opportunities/documents"), uuidV4());
               setDoc(newDocument, { name: newEntry.name, date: newEntry.date }).then(() => {
                 setIsLoading(false);
 
                 updateNewEntry({
-                  name: undefined,
-                  date: undefined,
+                  name: "",
+                  date: Timestamp.now(),
                   totalPoints: undefined,
                 });
               }).catch((e) => {
@@ -52,14 +61,14 @@ const OpportunityConsole = () => {
               fullWidth
               label="Name"
               sx={{ marginBottom: "1em" }}
-              value={newEntry.name ?? ""}
+              value={newEntry.name}
               onChange={(e) => updateNewEntry({ name: e.target.value })}
               disabled={isLoading}
               required
             />
             <DateTimePicker
               label="Date (for sorting in the list)"
-              value={newEntry.date == null ? DateTime.now() : DateTime.fromJSDate(newEntry.date.toDate())}
+              value={DateTime.fromJSDate(newEntry.date.toDate())}
               onChange={(newValue) => updateNewEntry({ date: newValue == null ? undefined : Timestamp.fromDate(newValue.toJSDate()) })}
               renderInput={(params) => <TextField fullWidth sx={{ marginBottom: "1em" }} required {...params} />}
               disabled={isLoading}

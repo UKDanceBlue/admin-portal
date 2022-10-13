@@ -14,10 +14,7 @@ import OpportunityDataGrid from "./OpportunityDataGrid";
 
 const OpportunityConsole = () => {
   const [ isLoading, setIsLoading ] = useLoading();
-  const [ newEntry, updateNewEntry ] = useReducer((state: Omit<FirestoreOpportunityInfo, "totalPoints"> & {totalPoints?: number}, newState: Partial<Omit<FirestoreOpportunityInfo, "totalPoints"> & {totalPoints?: number}>) => ({ ...state, ...newState }), {
-    name: "",
-    date: Timestamp.now(),
-  });
+  const [ newEntry, updateNewEntry ] = useReducer((state: Partial<FirestoreOpportunityInfo>, newState: Partial<FirestoreOpportunityInfo>) => ({ ...state, ...newState }), {});
 
   const firestore = useFirestore();
 
@@ -47,8 +44,8 @@ const OpportunityConsole = () => {
                 setIsLoading(false);
 
                 updateNewEntry({
-                  name: "",
-                  date: Timestamp.now(),
+                  name: undefined,
+                  date: undefined,
                   totalPoints: undefined,
                 });
               }).catch((e) => {
@@ -61,16 +58,20 @@ const OpportunityConsole = () => {
               fullWidth
               label="Name"
               sx={{ marginBottom: "1em" }}
-              value={newEntry.name}
+              value={newEntry.name ?? ""}
               onChange={(e) => updateNewEntry({ name: e.target.value })}
               disabled={isLoading}
               required
             />
             <DateTimePicker
               label="Date (for sorting in the list)"
-              value={DateTime.fromJSDate(newEntry.date.toDate())}
+              value={newEntry.date == null ? DateTime.now().set({
+                minute: 0,
+                second: 0,
+                millisecond: 0,
+              }) : DateTime.fromJSDate(newEntry.date.toDate())}
               onChange={(newValue) => updateNewEntry({ date: newValue == null ? undefined : Timestamp.fromDate(newValue.toJSDate()) })}
-              renderInput={(params) => <TextField fullWidth sx={{ marginBottom: "1em" }} required {...params} />}
+              renderInput={(params) => <TextField fullWidth sx={{ marginBottom: "1em" }} required {...params} inputProps={{ ...params.inputProps, value: newEntry.date == null ? "" : params.inputProps?.value ?? "" }} />}
               disabled={isLoading}
             />
             <Button

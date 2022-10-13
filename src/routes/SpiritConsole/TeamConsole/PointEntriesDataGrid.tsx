@@ -56,17 +56,17 @@ const PointEntriesDataGrid = () => {
               {
                 field: "id",
                 headerName: "Entry Id",
-                flex: 1.5,
+                flex: 2,
               },
               {
                 field: "displayName",
-                headerName: "Name",
-                flex: 2.5,
+                headerName: "Entry Name",
+                flex: 2,
               },
               {
                 field: "linkblue",
-                headerName: "Date (for sorting)",
-                flex: 2.5,
+                headerName: "Linkblue",
+                flex: 1.5,
                 type: "linkblue",
               },
               {
@@ -137,7 +137,6 @@ const PointEntriesDataGrid = () => {
               label="Reason"
               value={newEntry.displayName ?? ""}
               onChange={(e) => updateNewEntry({ displayName: e.target.value })}
-              required
             />
             <Typography
               variant="caption"

@@ -1,4 +1,4 @@
-import { Box, Paper, TextField, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, FormGroup, Paper, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 import { NotificationFormPendingState } from ".";
@@ -15,6 +15,7 @@ const ComposePage = ({
   const [ notificationPayload, setNotificationPayload ] = useState<typeof pendingState["notificationPayload"]>(
     pendingState.notificationPayload ?? {}
   );
+  const [ dryRun, setDryRun ] = useState(pendingState.dryRun ?? false);
 
   useEffect(() => {
     const validNotificationPayload: NotificationFormPendingState["notificationPayload"] = {};
@@ -36,9 +37,10 @@ const ComposePage = ({
       notificationTitle,
       notificationBody,
       notificationPayload: validNotificationPayload,
+      dryRun,
     });
   }, [
-    handlePageUpdated, notificationTitle, notificationBody, notificationPayload
+    handlePageUpdated, notificationTitle, notificationBody, notificationPayload, dryRun
   ]);
 
   // TODO validate length of title and body
@@ -172,6 +174,20 @@ const ComposePage = ({
               />
             </Box>
           </Paper>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={dryRun ?? false}
+                  onChange={(event) => {
+                    setDryRun(event.target.checked);
+                  }}
+                  name="dryRun"
+                />
+              }
+              label="Dry Run (don't actually send the notification; mostly for testing)"
+            />
+          </FormGroup>
         </Box>
       </Paper>
     </Box>

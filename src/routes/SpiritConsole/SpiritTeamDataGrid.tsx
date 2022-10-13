@@ -9,12 +9,13 @@ import { Button,
   ListItemText,
   Typography } from "@mui/material";
 import { GridActionsCellItem, GridRowParams } from "@mui/x-data-grid";
-import { collection, deleteDoc, doc } from "firebase/firestore";
+import { CollectionReference, collection, deleteDoc, doc } from "firebase/firestore";
 import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
-import { useFirestore } from "reactfire";
+import { useFirestore, useFirestoreDocData } from "reactfire";
 
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
+import { SpiritTeamsRootDoc } from "../../firebase/types/SpiritTeamsRootDoc";
 
 const DataGridFirebaseErrorOverlay = ({
   code, message
@@ -39,7 +40,9 @@ const SpiritTeamDataGrid = () => {
   const firestore = useFirestore();
 
   const [ membersDialogOpen, setMembersDialogOpen ] = useState(false);
-  const [ membersDialogContent, setMembersDialogContent ] = useState({});
+  const [ membersDialogContent, setMembersDialogContent ] = useState<Record<string, string>>({});
+
+  const spiritTeamInfoDocData = useFirestoreDocData(doc<SpiritTeamsRootDoc>(collection(firestore, "spirit") as CollectionReference<SpiritTeamsRootDoc>, "teams"));
 
   const spiritTeamsCollectionRef = collection(firestore, "spirit/teams/documents");
 
@@ -53,7 +56,7 @@ const SpiritTeamDataGrid = () => {
     }
   }, [membersDialogOpen]);
 
-  const showTeamMembersDialog = useCallback((teamMembers: unknown[]) => {
+  const showTeamMembersDialog = useCallback((teamMembers: Record<string, string>) => {
     setMembersDialogContent(teamMembers);
     setMembersDialogOpen(true);
   }, []);
@@ -97,15 +100,15 @@ const SpiritTeamDataGrid = () => {
           {
             field: "actions",
             headerName: "Actions",
-            flex: 0.75,
+            flex: 1,
             editable: false,
             type: "actions",
             getActions: (params: GridRowParams) => [
               <GridActionsCellItem
                 key={0}
                 icon={<People />}
-                disabled={!params.row["members"] || Object.keys(params.row["members"]).length === 0}
-                onClick={() => showTeamMembersDialog(params.row["members"])}
+                disabled={!params.row["memberNames"] || Object.keys(params.row["memberNames"]).length === 0}
+                onClick={() => showTeamMembersDialog(params.row["memberNames"])}
                 label="Members"
               />,
               <GridActionsCellItem
@@ -136,6 +139,8 @@ const SpiritTeamDataGrid = () => {
         ]}
         firestoreCollectionRef={spiritTeamsCollectionRef}
         defaultSortField="name"
+        documentCount={Object.keys(spiritTeamInfoDocData?.data?.basicInfo ?? {}).length}
+        initialPageSize={100}
       />
       <Dialog
         open={membersDialogOpen}

@@ -13,6 +13,9 @@ const SpiritConsole = () => {
   return (
     <Box display="flex" flexDirection="column">
       <h1>Spirit Teams</h1>
+      <p>
+        You can hover over a column&apos;s header and click the ... button to show sorting and filtering options.
+      </p>
       <div style={{ minHeight: "60vh", display: "flex" }}>
         <div style={{ flex: 1, padding: "1em" }}>
           <SpiritTeamDataGrid />
@@ -21,7 +24,10 @@ const SpiritConsole = () => {
       {/** Create a new team */}
       <Button
         onClick={() => {
-          setDoc(doc(firestore, `/spirit/teams/documents/${v4()}`), { name: prompt("Enter a name") });
+          const name = prompt("Enter a name");
+          if (name) {
+            setDoc(doc(firestore, `/spirit/teams/documents/${v4()}`), { name });
+          }
         }}
       >
             Create a new team

@@ -1,7 +1,7 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import deepEquals from "deep-equal";
-import { CollectionReference, GeoPoint, Timestamp, doc, limit, orderBy, query, setDoc, startAt } from "firebase/firestore";
+import { CollectionReference, GeoPoint, Timestamp, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
 import { useFirestoreCollection } from "reactfire";
 
@@ -24,24 +24,33 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
   firestoreCollectionRef,
   dataGridProps,
   enablePopover = false,
-  defaultSortField
+  defaultSortField,
+  documentCount,
+  initialPageSize = 25,
 }: {
   columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
   firestoreCollectionRef: CollectionReference;
   dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
   enablePopover?: boolean;
   defaultSortField: typeof columns[number]["field"];
+  documentCount?: number;
+  initialPageSize?: number;
 }) {
   type DocumentTypeWithId = DocumentType & {id: string};
 
   const [ snackbar, setSnackbar ] = useState<{ children: string; severity: AlertColor } | null>(null);
 
   const [ pageNumber, setPageNumber ] = useState<number>(0);
-  const [ pageSize, setPageSize ] = useState<number>(10);
+  const [ pageSize, setPageSize ] = useState<number>(initialPageSize);
   const [sortField] = useState<string>(defaultSortField);
   const [sortDirection] = useState<"asc" | "desc">("asc");
 
-  const firestoreCollection = useFirestoreCollection(query(firestoreCollectionRef, orderBy(sortField, sortDirection), startAt(pageNumber * pageSize), limit(pageSize)));
+  const firestoreCollection = useFirestoreCollection(
+    query(
+      firestoreCollectionRef,
+      orderBy(sortField, sortDirection)
+    )
+  );
 
   const [ popoverAnchorEl, setPopoverAnchorEl ] = useState<HTMLElement | null>(null);
   const [ popoverText, setPopoverText ] = useState<string | null>(null);
@@ -110,7 +119,8 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
         rows={
           data
         }
-        columns={columns.map((col) => ({ ...col, sortable: false, filterable: false }))}
+        columns={columns.map((col) => ({ ...col, sortable: false }))}
+        rowCount={documentCount ?? firestoreCollection.data?.docs.length ?? 0}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
         components={{ ErrorOverlay: DataGridFirebaseErrorOverlay }}

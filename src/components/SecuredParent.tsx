@@ -22,6 +22,9 @@ const SecuredParent = ({
     status, data: signInCheckResult
   } = useSigninCheck({
     validateCustomClaims: (userClaims) => {
+      if (userClaims.committee === "tech-committee") {
+        return { hasRequiredClaims: true, errors: {} };
+      }
       // Make sure that the user supplied requiredClaims, if not then just return the component
       if (requiredClaims && Array.isArray(requiredClaims)) {
         // Iterate over the requiredClaims and make sure that the user has the required claim

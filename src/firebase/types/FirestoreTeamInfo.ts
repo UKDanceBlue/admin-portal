@@ -7,44 +7,49 @@ export interface FirestoreTeamInfo {
   fundraisingTotal?: number;
   totalPoints?: number;
   networkForGoodId?: string;
+  individualTotals?: Record<string, number>;
 }
 
 export function isFirestoreTeamInfo(
-  data: any
+  data: unknown
 ): data is FirestoreTeamInfo {
   if (data == null) {
     return false;
   }
 
-  if (typeof data.name !== "string") {
+  if (typeof (data as Partial<FirestoreTeamInfo>).name !== "string") {
     return false;
   }
 
-  if (data.teamClass != null && typeof data.teamClass !== "string") {
+  if ((data as Partial<FirestoreTeamInfo>).teamClass != null && typeof (data as Partial<FirestoreTeamInfo>).teamClass !== "string") {
     return false;
   }
 
-  if (!Array.isArray(data.members) || data.members.some((m: any) => typeof m !== "string")) {
+  if (!Array.isArray((data as Partial<FirestoreTeamInfo>).members) || (data as Partial<FirestoreTeamInfo>).members?.some((m: unknown) => typeof m !== "string")) {
     return false;
   }
 
-  if (typeof data.memberAccounts !== "object" || data.memberAccounts == null) {
+  if (typeof (data as Partial<FirestoreTeamInfo>).memberAccounts !== "object" || (data as Partial<FirestoreTeamInfo>).memberAccounts == null) {
     return false;
   }
 
-  if (typeof data.memberNames !== "object" || data.memberNames == null) {
+  if (typeof (data as Partial<FirestoreTeamInfo>).memberNames !== "object" || (data as Partial<FirestoreTeamInfo>).memberNames == null) {
     return false;
   }
 
-  if (data.fundraisingTotal != null && typeof data.fundraisingTotal !== "number") {
+  if ((data as Partial<FirestoreTeamInfo>).fundraisingTotal != null && typeof (data as Partial<FirestoreTeamInfo>).fundraisingTotal !== "number") {
     return false;
   }
 
-  if (data.totalPoints != null && typeof data.totalPoints !== "number") {
+  if ((data as Partial<FirestoreTeamInfo>).totalPoints != null && typeof (data as Partial<FirestoreTeamInfo>).totalPoints !== "number") {
     return false;
   }
 
-  if (data.networkForGoodId != null && typeof data.networkForGoodId !== "string") {
+  if ((data as Partial<FirestoreTeamInfo>).networkForGoodId != null && typeof (data as Partial<FirestoreTeamInfo>).networkForGoodId !== "string") {
+    return false;
+  }
+
+  if (typeof (data as Partial<FirestoreTeamInfo>).individualTotals !== "object" || (data as Partial<FirestoreTeamInfo>).individualTotals == null) {
     return false;
   }
 

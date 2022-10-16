@@ -2,6 +2,7 @@ export interface FirestoreTeamInfo {
   name: string;
   teamClass?: "public" | "committee";
   members: string[];
+  captains: string[];
   memberNames: Record<string, string | null>;
   memberAccounts: Record<string, string | null>;
   fundraisingTotal?: number;

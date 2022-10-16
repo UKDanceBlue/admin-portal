@@ -18,7 +18,7 @@ const TeamMembersDataGrid = ({ teamObservable }: {teamObservable: ObservableStat
     setIsLoading(teamObservable.status === "loading");
   }, [ teamObservable.status, setIsLoading ]);
 
-  const [ teamMembers, setTeamMembers ] = useState<{linkblue: string, name?: string, uid?: string}[]>([]);
+  const [ teamMembers, setTeamMembers ] = useState<{linkblue: string, name?: string, uid?: string, isCaptain?: boolean}[]>([]);
   useEffect(() => {
     if (teamObservable.status === "success") {
       const teamData = teamObservable.data.data();
@@ -27,7 +27,8 @@ const TeamMembersDataGrid = ({ teamObservable }: {teamObservable: ObservableStat
         for (const memberLinkblue of teamData.members) {
           const memberName = teamData.memberNames?.[memberLinkblue] ?? undefined;
           const memberUid = teamData.memberAccounts?.[memberLinkblue] ?? undefined;
-          parsedMembers.push({ linkblue: memberLinkblue, name: memberName, uid: memberUid });
+          const isCaptain = teamData.captains?.includes(memberLinkblue);
+          parsedMembers.push({ linkblue: memberLinkblue, name: memberName, uid: memberUid, isCaptain });
         }
         setTeamMembers(parsedMembers);
       }
@@ -42,6 +43,13 @@ const TeamMembersDataGrid = ({ teamObservable }: {teamObservable: ObservableStat
         <DataGrid
           loading={isLoading}
           rows={teamMembers}
+          onCellEditCommit={({
+            field, value, id
+          }) => {
+            if (field === "isCaptain") {
+              updateDoc(teamObservable.data.ref, { captains: value ? arrayUnion(id) : arrayRemove(id) });
+            }
+          }}
           getRowId={(row) => row.linkblue}
           columns={[
             {
@@ -60,6 +68,13 @@ const TeamMembersDataGrid = ({ teamObservable }: {teamObservable: ObservableStat
               headerName: "User ID",
               flex: 4,
               valueFormatter: ({ value }) => value ?? "No associated account",
+            },
+            {
+              field: "isCaptain",
+              headerName: "Captain",
+              flex: 1,
+              type: "boolean",
+              editable: true,
             },
             {
               field: "actions",

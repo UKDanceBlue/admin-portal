@@ -139,7 +139,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
         pageSize={pageSize}
         onPageSizeChange={setPageSize}
         rowsPerPageOptions={[
-          10, 25, 50, 100
+          10, 25, 50, 100, 150
         ]}
         page={pageNumber}
         onPageChange={setPageNumber}

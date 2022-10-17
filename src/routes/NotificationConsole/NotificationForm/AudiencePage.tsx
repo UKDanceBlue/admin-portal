@@ -22,11 +22,13 @@ const knownAttributes: { [attributeName: string]: { [attributeValue: string]: st
     "fundraising-committee": "Fundraising Committee",
     "mini-marathons-committee": "Mini Marathons Committee",
     "morale-committee": "Morale Committee",
+    _name: "Committee",
   },
   dbRole: {
     public: "General Public (i.e. no team or committee members)",
     "team-member": "Team Member",
     committee: "Committee",
+    _name: "Role",
   },
   committeeRank: {
     advisor: "Advisor",
@@ -34,6 +36,7 @@ const knownAttributes: { [attributeName: string]: { [attributeValue: string]: st
     chair: "Chair",
     coordinator: "Coordinator",
     "committee-member": "Committee Member",
+    _name: "Committee Rank",
   },
 };
 
@@ -72,8 +75,11 @@ const AudiencePage = ({
   useEffect(() => {
     if (sendToAll) {
       handlePageUpdated({ sendToAll, notificationAudiences: undefined });
-    } else {
-      handlePageUpdated({ notificationAudiences, sendToAll: undefined });
+    } else if (notificationAudiences) {
+      const filteredNotificationAudiences: Parameters<typeof handlePageUpdated>[0]["notificationAudiences"] = Object.fromEntries(
+        Object.entries(notificationAudiences).filter(([ , value ]) => Array.isArray(value) && value.length > 0)
+      );
+      handlePageUpdated({ notificationAudiences: filteredNotificationAudiences, sendToAll: undefined });
     }
   }, [
     handlePageUpdated, notificationAudiences, sendToAll
@@ -159,7 +165,7 @@ const AudiencePage = ({
           if (Array.isArray(attributeValues)) {
             return (
               <FormControl key={attributeName} sx={{ width: "90%", mt: "1rem" }} disabled={sendToAll}>
-                <InputLabel id={`select-${attributeName}-label`}>{attributeName}</InputLabel>
+                <InputLabel id={`select-${attributeName}-label`}>{knownAttributes[attributeName]._name ?? attributeName}</InputLabel>
                 <Select
                   labelId={`select-${attributeName}-label`}
                   id={`select-${attributeName}`}

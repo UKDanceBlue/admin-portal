@@ -9,6 +9,7 @@ import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useFunctions } from "reactfire";
 
 import { SendPushNotificationReturnType } from "..";
+import { useLoading } from "../../../components/LoadingWrapper";
 import { GenericFirestoreDocument } from "../../../firebase/types";
 import { Notification, NotificationPayload } from "../types";
 
@@ -37,6 +38,8 @@ const steps: string[] = [
 const NotificationForm = ({ handlePushSent }: {
   handlePushSent: (tickets: SendPushNotificationReturnType[]) => void;
 }) => {
+  const [ isLoading, setIsLoading ] = useLoading();
+
   const [ activeStep, setActiveStep ] = useState(0);
   const [ notification, setNotification ] = useState<Notification>({
     notificationTitle: "",
@@ -55,11 +58,19 @@ const NotificationForm = ({ handlePushSent }: {
   );
 
   const sendPushNotification = useCallback(async () => {
-    const sendPushNotificationCloudFunc = httpsCallable(functions, "sendPushNotification");
-    const result = await (sendPushNotificationCloudFunc as HttpsCallable<Notification, SendPushNotificationReturnType[]>)(notification);
-    handlePushSent(result.data);
+    setIsLoading(true);
+    try {
+      const sendPushNotificationCloudFunc = httpsCallable(functions, "sendPushNotification");
+      const result = await (sendPushNotificationCloudFunc as HttpsCallable<Notification, SendPushNotificationReturnType[]>)(notification);
+      handlePushSent(result.data);
+    } catch (e) {
+      alert(`Error sending push notification: ${ e}`);
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   }, [
-    functions, handlePushSent, notification
+    functions, handlePushSent, notification, setIsLoading
   ]);
 
   const getCurrentPage = useCallback(() => {
@@ -138,7 +149,7 @@ const NotificationForm = ({ handlePushSent }: {
             </Button>
             <Box sx={{ flex: "1 1 auto" }} />
             <Button
-              disabled={nextButtonDisabled}
+              disabled={nextButtonDisabled || isLoading}
               variant="contained"
               onClick={activeStep === steps.length - 1 ? sendPushNotification : handleNext}
             >

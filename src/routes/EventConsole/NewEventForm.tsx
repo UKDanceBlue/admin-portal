@@ -1,5 +1,5 @@
 import { Delete } from "@mui/icons-material";
-import { Box, Button, Checkbox, CircularProgress, FormControlLabel, IconButton, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, FormControlLabel, IconButton, Paper, TextField, Typography } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { Timestamp, addDoc, collection, doc, setDoc } from "firebase/firestore";
 import { FirebaseStorage, ref, uploadBytes } from "firebase/storage";
@@ -9,6 +9,7 @@ import { useFirestore, useStorage } from "reactfire";
 import { v4 as uuidV4 } from "uuid";
 
 import ImageSelect, { ImageSelectRef } from "../../components/ImageSelect";
+import { useLoading } from "../../components/LoadingWrapper";
 import { FirestoreImage, isFirestoreImage } from "../../firebase/types";
 
 type EventType = {
@@ -72,7 +73,7 @@ function findSizeOfLinkedImage(url: string): Promise<{ width: number; height: nu
 }
 
 const NewEventForm = () => {
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [ isLoading, setIsLoading ] = useLoading();
   const imageSelectRef = useRef<ImageSelectRef>();
 
   const [ event, updateEvent ] = useReducer<(prev: EventType, action: [keyof EventType, EventType[keyof EventType]] | "reset") => EventType>((prev, action) => {
@@ -157,14 +158,6 @@ const NewEventForm = () => {
       }
     }}>
       <Paper sx={{ display: "flex", flexDirection: "column", gap: "1em", my: "2em", mx: "1em", p: "1.5em" }} elevation={3}>
-        {isLoading && <CircularProgress
-          sx={{
-            display: "block",
-            position: "fixed",
-            zIndex: 1031, /* High z-index so it is on top of the page */
-            top: "50%",
-            right: "50%", /* Or: left: 50%; */
-          }} />}
         <Typography variant="h5">Add a New Event</Typography>
         <TextField
           disabled={isLoading}

@@ -12,7 +12,7 @@ const SpiritTeamList = () => {
     <>
       <h1>Spirit Teams</h1>
       <p>
-        You can hover over a column&apos;s header and click the ... button to show sorting and filtering options.
+        You can hover over a column&apos;s header and click the ... button to show sorting and filtering options. Be warned that sorting by a field will HIDE any teams that have no value for that field (same for all other tables).
       </p>
       <div style={{ minHeight: "60vh", display: "flex" }}>
         <div style={{ flex: 1, padding: "1em" }}>

@@ -1,14 +1,22 @@
 import { Box, CircularProgress } from "@mui/material";
-import { ReactNode, createContext, useCallback, useContext, useId, useState } from "react";
+import { ReactNode, createContext, useCallback, useContext, useId, useReducer } from "react";
 
-const LoadingContext = createContext<[Record<string, boolean>, (state: boolean, id: string) => void]>([ {}, () => {} ]);
+const LoadingContext = createContext<[Partial<Record<string, boolean>>, (state: boolean, id: string) => void]>([ {}, () => {} ]);
 
 export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
-  const [ loadingReasons, setLoadingReasons ] = useState<Record<string, boolean>>({});
+  const [ loadingReasons, updateLoadingReasons ] = useReducer(
+    (state: Partial<Record<string, boolean>>, [ id, stateChange ]: [string, boolean]) => {
+      return {
+        ...state,
+        [id]: stateChange,
+      };
+    },
+    {}
+  );
 
-  const setLoading = (state: boolean, id: string) => {
-    setLoadingReasons({ ...loadingReasons, [id]: state });
-  };
+  const setLoading = useCallback((state: boolean, id: string) => {
+    updateLoadingReasons([ id, state ]);
+  }, []);
 
   return (
     <LoadingContext.Provider value={[ loadingReasons, setLoading ]}>
@@ -26,13 +34,16 @@ export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useLoading = (): [boolean, (state: boolean) => void] => {
-  const loadingId = useId();
+export const useLoading = (customId?: string): [boolean, (state: boolean) => void, Partial<Record<string, boolean>>] => {
+  const autoId = useId();
+  const loadingId = customId ?? autoId;
 
   const [ loadingReasons, setLoadingReasons ] = useContext(LoadingContext);
 
   const isLoading = loadingReasons[loadingId] ?? false;
   const setIsLoading = useCallback((state: boolean) => setLoadingReasons(state, loadingId), [ loadingId, setLoadingReasons ]);
 
-  return [ isLoading, setIsLoading ];
+  return [
+    isLoading, setIsLoading, loadingReasons
+  ];
 };

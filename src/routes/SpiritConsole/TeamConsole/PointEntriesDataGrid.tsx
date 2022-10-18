@@ -35,9 +35,10 @@ const PointEntriesDataGrid = () => {
   const {
     data: opportunitiesBasicInfo, error: opportunitiesBasicInfoError, isComplete: opportunitiesBasicInfoIsComplete
   } = useFirestoreDocOnce<RootOpportunitiesDoc>(doc(firestore, "spirit/opportunities") as DocumentReference<RootOpportunitiesDoc>);
-  const [ , setIsLoading ] = useLoading();
+  const [ isLoadingGlobal, setIsLoading ] = useLoading(`${teamId}-point-entries`);
+  const isLoading = isLoadingGlobal || !opportunitiesBasicInfoIsComplete;
 
-  const [ newEntry, updateNewEntry ] = useReducer((state: Partial<PointEntry>, newState: Partial<PointEntry>) => ({ ...state, ...newState }), {});
+  const [ newEntry, updateNewEntry ] = useReducer((state: Partial<PointEntry>, newState: Partial<PointEntry>) => ({ ...state, ...(Object.fromEntries(Object.entries(newState).filter(([ , val ]) => (val != null)))) }), {});
 
   const entiresCollectionRef = collection(firestore, `/spirit/teams/documents/${teamId}/pointEntries`);
 
@@ -124,26 +125,30 @@ const PointEntriesDataGrid = () => {
               e.preventDefault();
               setIsLoading(true);
               const newDocument = doc(entiresCollectionRef, uuidV4());
-              setDoc(newDocument, { ...newEntry, teamId }).then(() => {
-                setIsLoading(false);
-
-                updateNewEntry({
-                  displayName: undefined,
-                  linkblue: undefined,
-                  opportunityId: undefined,
-                  points: undefined,
+              setDoc(newDocument, { ...newEntry, teamId })
+                .then(() => {
+                  updateNewEntry({
+                    displayName: undefined,
+                    linkblue: undefined,
+                    opportunityId: undefined,
+                    points: undefined,
+                  });
+                })
+                .catch((e) => {
+                  alert(e);
+                  console.error(e);
+                })
+                .finally(() => {
+                  setIsLoading(false);
                 });
-              }).catch((e) => {
-                setIsLoading(false);
-                alert(e);
-              });
             }}
           >
             <TextField
               fullWidth
               label="Reason"
+              disabled={isLoading}
               value={newEntry.displayName ?? ""}
-              onChange={(e) => updateNewEntry({ displayName: e.target.value })}
+              onChange={(e) => updateNewEntry({ displayName: e.target.value.length === 0 ? undefined : e.target.value })}
             />
             <Typography
               variant="caption"
@@ -154,8 +159,9 @@ const PointEntriesDataGrid = () => {
             <TextField
               fullWidth
               label="Linkblue"
+              disabled={isLoading}
               value={newEntry.linkblue ?? ""}
-              onChange={(e) => updateNewEntry({ linkblue: e.target.value })}
+              onChange={(e) => updateNewEntry({ linkblue: e.target.value.length === 0 ? undefined : e.target.value })}
             />
             <Typography
               variant="caption"
@@ -168,10 +174,10 @@ const PointEntriesDataGrid = () => {
               label="Opportunity"
               sx={{ marginBottom: "1em" }}
               value={newEntry.opportunityId ?? ""}
-              onChange={(e) => updateNewEntry({ opportunityId: e.target.value })}
+              onChange={(e) => updateNewEntry({ opportunityId: e.target.value.length === 0 ? undefined : e.target.value })}
               select
               SelectProps={{ native: true }}
-              disabled={!opportunitiesBasicInfoIsComplete}
+              disabled={isLoading}
               required
             >
               <option value="" />
@@ -188,13 +194,14 @@ const PointEntriesDataGrid = () => {
             <TextField
               fullWidth
               label="Points"
+              disabled={isLoading}
               sx={{ marginBottom: "1em" }}
               value={newEntry.points ?? ""}
-              onChange={(e) => updateNewEntry({ points: Number(e.target.value) })}
+              onChange={(e) => updateNewEntry({ points: e.target.value.length === 0 ? undefined : Number(e.target.value) })}
               type="number"
               required
             />
-            <Button fullWidth type="submit" variant="contained" color="primary" disabled={!opportunitiesBasicInfoIsComplete}>
+            <Button fullWidth type="submit" variant="contained" color="primary" disabled={isLoading}>
               Add
             </Button>
           </form>

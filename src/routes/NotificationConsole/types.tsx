@@ -5,7 +5,7 @@ export type Notification = {
   notificationBody: string;
   notificationPayload?: NotificationPayload;
   // If this is going to specific users we send *notificationRecipients*, if groups we send *notificationAudiences*.
-  notificationAudiences?: { [key: string]: string[] };
+  notificationAudiences?: { [key: string]: (string | boolean | number)[] };
   notificationRecipients?: string[];
   sendToAll?: boolean;
   dryRun?: boolean;

@@ -91,7 +91,7 @@ export const BbnvolvedImportDialog = ({
                       updateEvent([ "address", fullEvent.address.address ]);
                     }
                     if (fullEvent.imageUrl) {
-                      updateEvent([ "image", [fullEvent.imageUrl] ]);
+                      updateEvent([ "image", [`${fullEvent.imageUrl}?preset=large-w`] ]);
                     }
 
                     const links: {

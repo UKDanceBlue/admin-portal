@@ -1,7 +1,7 @@
-import { Box, Button, Dialog } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { DateTime } from "luxon";
-import { Dispatch, useEffect, useState } from "react";
+import { Dispatch, useEffect, useRef, useState } from "react";
 import { useFunctions } from "reactfire";
 
 import { getEvent } from "../../bbnvolved/event-get";
@@ -25,20 +25,22 @@ type updateEventCallback = Dispatch<"reset" | [keyof EventType, string | Timesta
 export const BbnvolvedImportDialog = ({
   open, updateEvent, onClose,
 }: {open:boolean, updateEvent: updateEventCallback, onClose: () => void}) => {
+  const loaded = useRef(false);
   const [ , setIsLoading ] = useLoading();
   const [ events, setEvents ] = useState<ListedEvent[]>([]);
   const functions = useFunctions();
 
   useEffect(() => {
-    if (open === true) {
+    if (open === true && loaded.current === false) {
       setIsLoading(true);
       listEvents({
         endsAfter: DateTime.now(),
-        organizationId: 192535,
+        organizationId: 192535, // DanceBlue's organization ID
         functions
       }).then((events) => {
-        setEvents(events);
+        setEvents(events.sort((a, b) => (a.startsOn && b.startsOn ? DateTime.fromISO(a.startsOn).toMillis() - DateTime.fromISO(b.startsOn).toMillis() : 0)));
         setIsLoading(false);
+        loaded.current = true;
       });
     }
   }, [
@@ -46,46 +48,53 @@ export const BbnvolvedImportDialog = ({
   ]);
 
   return (
-    <Dialog open={open} onClose={onClose} sx={{ display: "flex", flexDirection: "column" }}>
-      {
-        events.map((event) => (
-          <Box key={event.id} sx={{ flexDirection: "row" }}>
-            <Box sx={{ flex: 2 }}>
-              {event.name}
-            </Box>
-            <Button variant="contained" sx={{ flex: 1 }} onClick={() => {
-              if (!event.id) {
-                return;
-              }
-              getEvent({ id: event.id, functions }).then((fullEvent) => {
-                updateEvent("reset");
-                if (fullEvent.name) {
-                  updateEvent([ "title", fullEvent.name ]);
-                }
-                if (fullEvent.description) {
-                  // Create a new div element
-                  const tempDivElement = document.createElement("div");
+    <Dialog open={open} onClose={onClose} >
+      <DialogTitle>Import Event</DialogTitle>
+      <DialogContentText sx={{ px: "1em" }}>
+        Select an event to import from BBNvolved. Note that this will only show you the next 8 at most.
+        Click outside of this dialog to cancel.
+      </DialogContentText>
+      <DialogContent>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "1em" }} component="ul">
+          {
+            events.map((event) => (
+              <Box key={event.id} sx={{ flexDirection: "row" }} component="li">
+                <Box sx={{ flex: 2 }}>
+                  {event.name}
+                </Box>
+                <Button sx={{ flex: 1 }} onClick={() => {
+                  if (!event.id) {
+                    return;
+                  }
+                  getEvent({ id: event.id, functions }).then((fullEvent) => {
+                    updateEvent("reset");
+                    if (fullEvent.name) {
+                      updateEvent([ "title", fullEvent.name ]);
+                    }
+                    if (fullEvent.description) {
+                      // Create a new div element
+                      const tempDivElement = document.createElement("div");
 
-                  // Set the HTML content with the given value
-                  tempDivElement.innerHTML = fullEvent.description;
+                      // Set the HTML content with the given value
+                      tempDivElement.innerHTML = fullEvent.description;
 
-                  // Retrieve the text property of the element
-                  updateEvent([ "description", tempDivElement.textContent ?? tempDivElement.innerText ?? "" ]);
-                }
-                if (fullEvent.startsOn) {
-                  updateEvent([ "startTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate()) ]);
-                }
-                if (fullEvent.endsOn) {
-                  updateEvent([ "endTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate()) ]);
-                }
-                if (fullEvent.address?.address) {
-                  updateEvent([ "address", fullEvent.address.address ]);
-                }
-                if (fullEvent.imageUrl) {
-                  updateEvent([ "image", [fullEvent.imageUrl] ]);
-                }
+                      // Retrieve the text property of the element
+                      updateEvent([ "description", tempDivElement.textContent ?? tempDivElement.innerText ?? "" ]);
+                    }
+                    if (fullEvent.startsOn) {
+                      updateEvent([ "startTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate()) ]);
+                    }
+                    if (fullEvent.endsOn) {
+                      updateEvent([ "endTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate()) ]);
+                    }
+                    if (fullEvent.address?.address) {
+                      updateEvent([ "address", fullEvent.address.address ]);
+                    }
+                    if (fullEvent.imageUrl) {
+                      updateEvent([ "image", [fullEvent.imageUrl] ]);
+                    }
 
-                const links: {
+                    const links: {
                   url: string;
                   text: string;
                 }[] = [
@@ -94,22 +103,25 @@ export const BbnvolvedImportDialog = ({
                     text: "BBNvolved Page"
                   }
                 ];
-                if (fullEvent.address?.onlineLocation) {
-                  alert(JSON.stringify(fullEvent.address.onlineLocation));
-                  links.push({
-                    url: fullEvent.address?.onlineLocation,
-                    text: fullEvent.address?.provider ?? "Online Event Url"
+                    if (fullEvent.address?.onlineLocation) {
+                      alert(JSON.stringify(fullEvent.address.onlineLocation));
+                      links.push({
+                        url: fullEvent.address?.onlineLocation,
+                        text: fullEvent.address?.provider ?? "Online Event Url"
+                      });
+                    }
+                    updateEvent([ "link", links ]);
                   });
-                }
-                updateEvent([ "link", links ]);
-              });
-            }}>
-                Import
-            </Button>
-          </Box>
-        ))
-      }
 
+                  onClose();
+                }}>
+                Import
+                </Button>
+              </Box>
+            ))
+          }
+        </Box>
+      </DialogContent>
     </Dialog>
   );
 };

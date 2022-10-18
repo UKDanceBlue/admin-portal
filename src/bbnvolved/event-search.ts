@@ -36,7 +36,7 @@ export async function listEvents({
   organizationId?: number;
   functions: Functions
 }): Promise<ListedEvent[]> {
-  let url = "https://uky.campuslabs.com/engage/api/discovery/event/search?query";
+  let url = "https://uky.campuslabs.com/engage/api/discovery/event/search?query&take=8";
   if (endsAfter) {
     url += `&endsAfter=${endsAfter.toISO()}`;
   }

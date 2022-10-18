@@ -8,7 +8,7 @@ import { useReducer, useRef, useState } from "react";
 import { useFirestore, useStorage } from "reactfire";
 import { v4 as uuidV4 } from "uuid";
 
-import ImageSelect, { ImageSelectRef } from "../../components/ImageSelect";
+import ImageSelect, { ImageSelectModeRef } from "../../components/ImageSelect";
 import { useLoading } from "../../components/LoadingWrapper";
 import { FirestoreImage, isFirestoreImage } from "../../firebase/types";
 
@@ -76,7 +76,7 @@ function findSizeOfLinkedImage(url: string): Promise<{ width: number; height: nu
 
 const NewEventForm = () => {
   const [ isLoading, setIsLoading ] = useLoading();
-  const imageSelectRef = useRef<ImageSelectRef>();
+  const imageSelectModeRef = useRef<ImageSelectModeRef>();
 
   const [ isBbnvolvedDialogOpen, setIsBbnvolvedDialogOpen ] = useState(false);
 
@@ -155,7 +155,7 @@ const NewEventForm = () => {
           }
 
           updateEvent("reset");
-          imageSelectRef.current?.setImageMode(null);
+          imageSelectModeRef.current?.setImageMode(null);
         } catch (e) {
           alert(`Error adding event to Firestore:\n${JSON.stringify((e as any).message, undefined, 2)}`);
         } finally {
@@ -185,6 +185,7 @@ const NewEventForm = () => {
           />
           <Box sx={{ display: "flex", flexDirection: "row", gap: "1em" }}>
             <DateTimePicker
+              disableMaskedInput
               disabled={isLoading}
               renderInput={(props) => <TextField required fullWidth {...props} />}
               label="Start Time" value={DateTime.fromMillis(event.startTime.toMillis())}
@@ -197,6 +198,7 @@ const NewEventForm = () => {
               }}
             />
             <DateTimePicker
+              disableMaskedInput
               disabled={isLoading}
               renderInput={(props) => <TextField required fullWidth {...props} />}
               label="End Time" value={DateTime.fromMillis(event.endTime.toMillis())}
@@ -249,7 +251,7 @@ const NewEventForm = () => {
             <Box key={index} sx={{ display: "flex", flexDirection: "row", gap: "1em" }}>
               <ImageSelect
                 isLoading={isLoading}
-                ref={imageSelectRef}
+                modeRef={imageSelectModeRef}
                 onChange={(image) => updateEvent([ "image", event.image.slice(0, index).concat(image ?? null).concat(event.image.slice(index + 1)) ])}
                 disabled={isLoading}
                 value={thisImage ?? undefined}

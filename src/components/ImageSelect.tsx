@@ -7,12 +7,12 @@ import ImageUpload from "./ImageUpload";
 
 type ImageMode = null | "url" | "upload";
 
-export interface ImageSelectRef {
+export interface ImageSelectModeRef {
   setImageMode: Dispatch<SetStateAction<ImageMode>>;
 }
 
 const ImageSelect = ({
-  value, onChange, isLoading = false, disabled = false, ref, allowedModes = [ "url", "upload" ]
+  value, onChange, isLoading = false, disabled = false, modeRef, allowedModes = [ "url", "upload" ]
 }: {
   value: {
     file: File,
@@ -26,13 +26,15 @@ const ImageSelect = ({
   } | string | undefined) => void;
   isLoading?: boolean;
   disabled?: boolean;
-  ref?: MutableRefObject<ImageSelectRef | undefined>;
+  modeRef?: MutableRefObject<ImageSelectModeRef | undefined>;
   allowedModes?: (Omit<ImageMode, "null">)[];
 }) => {
-  const [ imageMode, setImageMode ] = useState<ImageMode>(null);
+  const [ imageMode, setImageMode ] = useState<ImageMode>(
+    value == null ? null : (typeof value === "string" ? "url" : "upload")
+  );
 
-  if (ref?.current != null) {
-    ref.current.setImageMode = setImageMode;
+  if (modeRef?.current != null) {
+    modeRef.current.setImageMode = setImageMode;
   }
 
   return (

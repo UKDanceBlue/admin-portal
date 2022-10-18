@@ -1,7 +1,5 @@
 import { Box, Button, Dialog } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
-// @ts-ignore
-import { htmlToText } from "html-to-text";
 import { DateTime } from "luxon";
 import { Dispatch, useEffect, useState } from "react";
 import { useFunctions } from "reactfire";
@@ -52,7 +50,7 @@ export const BbnvolvedImportDialog = ({
       {
         events.map((event) => (
           <Box key={event.id} sx={{ flexDirection: "row" }}>
-            <Box sx={{ flex: 3 }}>
+            <Box sx={{ flex: 2 }}>
               {event.name}
             </Box>
             <Button variant="contained" sx={{ flex: 1 }} onClick={() => {
@@ -65,9 +63,14 @@ export const BbnvolvedImportDialog = ({
                   updateEvent([ "title", fullEvent.name ]);
                 }
                 if (fullEvent.description) {
-                  // @ts-ignore
-                  const htmlParsedDescription = htmlToText(fullEvent.description, { preserveNewlines: true });
-                  updateEvent([ "description", htmlParsedDescription ]);
+                  // Create a new div element
+                  const tempDivElement = document.createElement("div");
+
+                  // Set the HTML content with the given value
+                  tempDivElement.innerHTML = fullEvent.description;
+
+                  // Retrieve the text property of the element
+                  updateEvent([ "description", tempDivElement.textContent ?? tempDivElement.innerText ?? "" ]);
                 }
                 if (fullEvent.startsOn) {
                   updateEvent([ "startTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate()) ]);
@@ -88,15 +91,17 @@ export const BbnvolvedImportDialog = ({
                 }[] = [
                   {
                     url: `https://uky.campuslabs.com/engage/event/${event.id}`,
-                    text: "BBNvolved Event Page"
+                    text: "BBNvolved Page"
                   }
                 ];
                 if (fullEvent.address?.onlineLocation) {
+                  alert(JSON.stringify(fullEvent.address.onlineLocation));
                   links.push({
                     url: fullEvent.address?.onlineLocation,
                     text: fullEvent.address?.provider ?? "Online Event Url"
                   });
                 }
+                updateEvent([ "link", links ]);
               });
             }}>
                 Import

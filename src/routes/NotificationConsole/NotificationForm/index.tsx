@@ -26,7 +26,7 @@ export type NotificationFormPendingState = {
     webviewPopup?: NotificationPayload["webviewPopup"];
   };
   selectedTeams?: GenericFirestoreDocument[];
-  notificationAudiences?: { [audience: string]: string[] };
+  notificationAudiences?: { [audience: string]: (string | boolean)[] };
   sendToAll?: boolean;
   dryRun?: boolean;
 };

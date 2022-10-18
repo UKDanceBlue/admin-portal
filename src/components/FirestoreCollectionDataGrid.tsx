@@ -42,8 +42,8 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
 
   const [ pageNumber, setPageNumber ] = useState<number>(0);
   const [ pageSize, setPageSize ] = useState<number>(initialPageSize);
-  const [sortField] = useState<string>(defaultSortField);
-  const [sortDirection] = useState<"asc" | "desc">("asc");
+  const [ sortField, setSortField ] = useState<string>(defaultSortField);
+  const [ sortDirection, setSortDirection ] = useState<"asc" | "desc">("asc");
 
   const firestoreCollection = useFirestoreCollection(
     query(
@@ -119,7 +119,17 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
         rows={
           data
         }
-        columns={columns.map((col) => ({ ...col, sortable: false }))}
+        columns={columns.map((col) => ({ ...col }))}
+        sortModel={[{ field: sortField, sort: sortDirection }]}
+        onSortModelChange={(model) => {
+          if (model.length > 0) {
+            setSortDirection(model[0].sort ?? "asc");
+            setSortField(model[0].field);
+          } else {
+            setSortDirection("asc");
+            setSortField(defaultSortField);
+          }
+        }}
         rowCount={documentCount ?? firestoreCollection.data?.docs.length ?? 0}
         loading={firestoreCollection.status === "loading"}
         error={firestoreCollection.error}
@@ -129,7 +139,7 @@ function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown
         pageSize={pageSize}
         onPageSizeChange={setPageSize}
         rowsPerPageOptions={[
-          10, 25, 50, 100
+          10, 25, 50, 100, 150
         ]}
         page={pageNumber}
         onPageChange={setPageNumber}

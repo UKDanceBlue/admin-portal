@@ -6,6 +6,7 @@ import { DownloadableImage, FirestoreImage, GenericFirestoreDocument, isFirestor
 
 export interface RawFirestoreEvent extends GenericFirestoreDocument {
   title: string;
+  shortDescription?: string;
   description: string;
   image?: FirestoreImage | FirestoreImage[];
   address?: string;
@@ -22,6 +23,7 @@ export interface RawFirestoreEvent extends GenericFirestoreDocument {
 
 export interface ParsedFirestoreEvent {
   title: string;
+  shortDescription?: string;
   description: string;
   image?: DownloadableImage | DownloadableImage[];
   address?: string;
@@ -75,13 +77,17 @@ export function isRawFirestoreEvent(documentData?: object): documentData is RawF
   }
 
   const {
-    title, description, image, address, startTime, endTime, link
+    title, description, shortDescription, image, address, startTime, endTime, link
   } = documentData as Partial<RawFirestoreEvent>;
 
   // Check that all required fields are present and of the correct type
   if (title == null) {
     return false;
   } else if (typeof title !== "string") {
+    return false;
+  }
+
+  if (shortDescription != null && typeof shortDescription !== "string") {
     return false;
   }
 

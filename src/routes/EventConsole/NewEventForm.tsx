@@ -16,6 +16,7 @@ import { BbnvolvedImportDialog } from "./BbnvolvedImportDialog";
 
 export type EventType = {
   title: string,
+  shortDescription?: string;
   description: string,
   startTime: Timestamp,
   endTime: Timestamp
@@ -173,6 +174,12 @@ const NewEventForm = () => {
             required
             value={event.title ?? ""}
             onChange={({ target: { value } }) => updateEvent([ "title", value.length > 0 ? value : undefined ])}
+          />
+          <TextField
+            disabled={isLoading}
+            label="Short Event Description"
+            value={event.shortDescription ?? ""}
+            onChange={({ target: { value } }) => updateEvent([ "shortDescription", value.length > 0 ? value : undefined ])}
           />
           <TextField
             disabled={isLoading}

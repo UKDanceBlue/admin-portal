@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 
 import EventConsole from "./EventConsole";
+import { ExistingEvent } from "./EventConsole/EventEditor/ExistingEvent";
+import { NewEvent } from "./EventConsole/EventEditor/NewEvent";
 import Home from "./Home";
 // import MarathonConsole from "./MarathonConsole";
 // import MoraleConsole from "./MoraleConsole";
@@ -52,7 +54,7 @@ const routeDefinitions = {
       { claimKey: "dbRole", claimValues: ["committee"] as const },
       { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
     ] as const,
-    element: <EventConsole />,
+    element: <ExistingEvent />,
   },
   "new-event": {
     title: "New Event",
@@ -63,7 +65,7 @@ const routeDefinitions = {
       { claimKey: "dbRole", claimValues: ["committee"] as const },
       { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
     ] as const,
-    element: <EventConsole />,
+    element: <NewEvent />,
   },
   // "marathon-console": {
   //   title: "Marathon Manager",

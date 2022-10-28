@@ -1,16 +1,18 @@
-import { GridColumns } from "@mui/x-data-grid";
-import { Timestamp, collection } from "firebase/firestore";
+import { Delete, Edit } from "@mui/icons-material";
+import { GridActionsCellItem, GridColumns } from "@mui/x-data-grid";
+import { Firestore, collection, deleteDoc, doc } from "firebase/firestore";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useFirestore } from "reactfire";
 
+import { routeDefinitions } from "..";
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
-import LoadableImage from "../../components/LoadableImage";
-import { RawFirestoreEvent } from "../../firebase/FirestoreEvent";
+import { RawFirestoreEvent } from "../../firebase/types/FirestoreEvent";
 
-const columns: GridColumns<RawFirestoreEvent & {id: string}> = [
+const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<RawFirestoreEvent & {id: string}> => [
   {
     field: "title",
     headerName: "Title",
-    editable: true,
     flex: 1
   },
   {
@@ -18,10 +20,6 @@ const columns: GridColumns<RawFirestoreEvent & {id: string}> = [
     headerName: "Start Time",
     type: "dateTime",
     valueGetter: ({ row }) => row.startTime?.toDate(),
-    valueSetter: ({
-      value, row
-    }) => ({ ...row, startTime: value instanceof Date ? Timestamp.fromDate(value) : Timestamp.now() }),
-    editable: true,
     flex: 1
   },
   {
@@ -29,16 +27,11 @@ const columns: GridColumns<RawFirestoreEvent & {id: string}> = [
     headerName: "End Time",
     type: "dateTime",
     valueGetter: ({ value }) => value?.toDate(),
-    valueSetter: ({
-      value, row
-    }) => ({ ...row, endTime: Timestamp.fromDate(value) }),
-    editable: true,
     flex: 1
   },
   {
     field: "address",
     headerName: "Address",
-    editable: true,
     flex: 2
   },
   {
@@ -60,25 +53,35 @@ const columns: GridColumns<RawFirestoreEvent & {id: string}> = [
     flex: 1.8
   },
   {
-    field: "description",
-    headerName: "Description",
-    editable: true,
-    flex: 3
-  },
-  {
-    field: "image",
-    headerName: "Image",
-    renderCell: (rowData) => rowData.value == null ? undefined : <LoadableImage
-      src={rowData.value?.uri}
-      alt={rowData.value.title ?? ""}
-      isStorageUri={rowData.value?.uri.startsWith("gs://")}
-      height={160} />,
-    flex: 3
+    field: "actions",
+    headerName: "Actions",
+    flex: 1,
+    type: "actions",
+    getActions: (rowData) => [
+      <GridActionsCellItem
+        key={0}
+        icon={<Delete />}
+        onClick={() => deleteDoc(doc(firestore, `events/${rowData.id}`)).catch((e) => {
+          console.error(e);
+          alert(`Error deleting event: ${e.message}`);
+        })}
+        label="Delete"
+      />,
+      <GridActionsCellItem
+        key={1}
+        icon={<Edit />}
+        onClick={() => navigate({ pathname: `/${ routeDefinitions["event-manager"].pathFragment }/${ rowData.id}` })}
+        label="Edit"
+      />
+    ]
   }
 ];
 
 const EventsDataGrid = () => {
   const firestore = useFirestore();
+  const navigate = useNavigate();
+
+  const columns = useMemo(() => getColumns(firestore, navigate), [ firestore, navigate ]);
 
   return (
     <div style={{ minHeight: "60vh", display: "flex" }}>

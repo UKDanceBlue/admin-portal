@@ -1,5 +1,5 @@
 import { Auth, ParsedToken, User, onIdTokenChanged } from "firebase/auth";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useReducer, useState } from "react";
 import { useRemoteConfigString } from "reactfire";
 
 const updateAuthClaims = async (
@@ -67,4 +67,25 @@ export const useRemoteConfigParsedJson = <T = unknown>(field: string) => {
     isComplete: encodedJson.isComplete,
     status: encodedJson.status,
   };
+};
+
+export const useFormReducer = <T extends Record<string, unknown>>(initialState: T) => {
+  return useReducer(
+    (state: T, newState: ["reset"] | ["update", [keyof T, T[keyof T]]] | ["set", T]) => {
+      switch (newState[0]) {
+      case "reset":
+        return initialState;
+      case "update":
+        return {
+          ...state,
+          [newState[1][0]]: newState[1][1],
+        };
+      case "set":
+        return newState[1];
+      default:
+        throw new Error("Invalid action");
+      }
+    },
+    initialState
+  );
 };

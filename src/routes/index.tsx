@@ -43,6 +43,28 @@ const routeDefinitions = {
     ] as const,
     element: <EventConsole />,
   },
+  "event-editor": {
+    title: "Event Editor",
+    showInMenu: false,
+    pathFragment: "event-manager/:eventId",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <EventConsole />,
+  },
+  "new-event": {
+    title: "New Event",
+    showInMenu: false,
+    pathFragment: "event-manager/new",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <EventConsole />,
+  },
   // "marathon-console": {
   //   title: "Marathon Manager",
   //   path: "/marathon-console",

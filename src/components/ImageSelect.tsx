@@ -12,13 +12,8 @@ export interface ImageSelectModeRef {
 }
 
 const ImageSelect = ({
-  value, onChange, isLoading = false, disabled = false, modeRef, allowedModes = [ "url", "upload" ]
+  onChange, isLoading = false, disabled = false, modeRef, allowedModes = [ "url", "upload" ], initialValue
 }: {
-  value: {
-    file: File,
-    width: number,
-    height: number
-  } | string | undefined;
   onChange: (image: {
     file: File,
     width: number,
@@ -28,9 +23,18 @@ const ImageSelect = ({
   disabled?: boolean;
   modeRef?: MutableRefObject<ImageSelectModeRef | undefined>;
   allowedModes?: (Omit<ImageMode, "null">)[];
+  initialValue?: string | HTMLImageElement
 }) => {
+  type ImageSelectValue = {
+    file: File;
+    width: number;
+    height: number;
+  } | string | undefined;
+
+  const [ value, setValue ] = useState<ImageSelectValue>(undefined);
+
   const [ imageMode, setImageMode ] = useState<ImageMode>(
-    value == null ? null : (typeof value === "string" ? "url" : "upload")
+    initialValue == null ? null : (typeof initialValue === "string" ? "url" : "upload")
   );
 
   if (modeRef?.current != null) {
@@ -71,21 +75,32 @@ const ImageSelect = ({
       </Box>
 
       {
-        imageMode === "upload" && <ImageUpload onUploaded={(file, {
-          width, height
-        }) => {
-          if (file != null) {
-            onChange({ file, width, height });
-          }
-        }} />
+        imageMode === "upload" && <ImageUpload
+          onUploaded={(file, {
+            width, height
+          }) => {
+            if (file != null) {
+              setValue({
+                file,
+                width,
+                height
+              });
+              onChange({ file, width, height });
+            }
+          }}
+          initialPreview={initialValue instanceof HTMLImageElement ? initialValue : undefined}
+        />
       }
       {
         imageMode === "url" && <TextField
           disabled={isLoading || disabled}
           label="Image URL"
-          value={value ?? ""}
+          value={value ?? (typeof initialValue === "string" ? initialValue : "")}
           fullWidth
-          onChange={({ target: { value } }) => onChange(value.length > 0 ? value : undefined )}
+          onChange={({ target: { value } }) => {
+            setValue(value);
+            onChange(value.length > 0 ? value : undefined );
+          }}
         />
       }
     </Paper>

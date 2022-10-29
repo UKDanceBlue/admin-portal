@@ -261,7 +261,7 @@ const NewEventForm = () => {
                 modeRef={imageSelectModeRef}
                 onChange={(image) => updateEvent([ "image", event.image.slice(0, index).concat(image ?? null).concat(event.image.slice(index + 1)) ])}
                 disabled={isLoading}
-                value={thisImage ?? undefined}
+                // value={thisImage ?? undefined}
               />
               <IconButton
                 onClick={() => updateEvent([ "image", event.image.slice(0, index).concat(event.image.slice(index + 1)) ])}

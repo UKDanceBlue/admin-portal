@@ -59,6 +59,7 @@ const routeDefinitions = {
   "new-event": {
     title: "New Event",
     showInMenu: false,
+    path: "/event-manager/new",
     pathFragment: "event-manager/new",
     signInRequired: true,
     requiredClaims: [

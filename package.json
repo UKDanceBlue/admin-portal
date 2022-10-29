@@ -34,6 +34,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "^5.0.1",
     "reactfire": "^4.2.1",
+    "turndown": "^7.1.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -44,6 +45,7 @@
     "@types/prettier": "^2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/turndown": "^5.0.1",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "eslint": "^8.18.0",

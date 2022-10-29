@@ -1,34 +1,33 @@
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
 import { DateTime } from "luxon";
-import { Dispatch, useEffect, useRef, useState } from "react";
-import { useFunctions } from "reactfire";
+import { useEffect, useRef, useState } from "react";
+import { useFunctions, useStorage } from "reactfire";
+import TurndownService from "turndown";
 
 import { getEvent } from "../../bbnvolved/event-get";
 import { ListedEvent, listEvents } from "../../bbnvolved/event-search";
 import { useLoading } from "../../components/LoadingWrapper";
+import { RawFirestoreEvent } from "../../firebase/types/FirestoreEvent";
 
-import { EventType } from "./NewEventForm";
+import { normalizeImage } from "./EventEditor/EventEditor";
 
-type updateEventCallback = Dispatch<"reset" | [keyof EventType, string | Timestamp | (string | {
-  file: File;
-  width: number;
-  height: number;
-} | null)[] | {
-  url: string;
-  text: string;
-}[] | undefined]>;
+function htmlToMarkdown(html: string): string {
+  const turndownService = new TurndownService();
+  return turndownService.turndown(html);
+}
 
 /**
  * Gets and displays a list of BBNvolved events using bbnvolved/event-search.ts
 */
 export const BbnvolvedImportDialog = ({
-  open, updateEvent, onClose,
-}: {open:boolean, updateEvent: updateEventCallback, onClose: () => void}) => {
+  open, setFilledEvent, onClose,
+}: {open:boolean, setFilledEvent?: (event: RawFirestoreEvent) => void, onClose: () => void}) => {
   const loaded = useRef(false);
   const [ , setIsLoading ] = useLoading();
   const [ events, setEvents ] = useState<ListedEvent[]>([]);
   const functions = useFunctions();
+  const storage = useStorage();
 
   useEffect(() => {
     if (open === true && loaded.current === false) {
@@ -57,52 +56,47 @@ export const BbnvolvedImportDialog = ({
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: "1em" }} component="ul">
           {
-            events.map((event) => (
-              <Box key={event.id} sx={{ flexDirection: "row" }} component="li">
+            events.map((listedEvent) => (
+              <Box key={listedEvent.id} sx={{ flexDirection: "row" }} component="li">
                 <Box sx={{ flex: 2 }}>
-                  {event.name}
+                  {listedEvent.name}
                 </Box>
                 <Button sx={{ flex: 1 }} onClick={() => {
-                  if (!event.id) {
+                  if (!listedEvent.id) {
                     return;
                   }
-                  getEvent({ id: event.id, functions }).then((fullEvent) => {
-                    updateEvent("reset");
-                    if (fullEvent.name) {
-                      updateEvent([ "title", fullEvent.name ]);
+                  getEvent({ id: listedEvent.id, functions }).then(async (fullEvent) => {
+                    if (!setFilledEvent || !fullEvent.name || !fullEvent.description) {
+                      alert("Something went wrong. Please try again later.");
+                      console.error("One of setFilledEvent, fullEvent.name, or fullEvent.description was falsy in BbnvolvedImportDialog");
+                      return;
                     }
-                    if (fullEvent.description) {
-                      // Create a new div element
-                      const tempDivElement = document.createElement("div");
-
-                      // Set the HTML content with the given value
-                      tempDivElement.innerHTML = fullEvent.description;
-
-                      // Retrieve the text property of the element
-                      updateEvent([ "description", tempDivElement.textContent ?? tempDivElement.innerText ?? "" ]);
-                    }
+                    const createdEvent: RawFirestoreEvent = {
+                      title: fullEvent.name,
+                      description: htmlToMarkdown(fullEvent.description),
+                    };
                     if (fullEvent.startsOn) {
-                      updateEvent([ "startTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate()) ]);
+                      createdEvent.startTime = Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate());
                     }
                     if (fullEvent.endsOn) {
-                      updateEvent([ "endTime", Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate()) ]);
+                      createdEvent.endTime = Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate());
                     }
                     if (fullEvent.address?.address) {
-                      updateEvent([ "address", fullEvent.address.address ]);
+                      createdEvent.address = fullEvent.address.address;
                     }
                     if (fullEvent.imageUrl) {
-                      updateEvent([ "image", [`${fullEvent.imageUrl}?preset=large-w`] ]);
+                      createdEvent.image = [await normalizeImage(`${fullEvent.imageUrl}?preset=large-w`, storage)];
                     }
 
                     const links: {
-                  url: string;
-                  text: string;
-                }[] = [
-                  {
-                    url: `https://uky.campuslabs.com/engage/event/${event.id}`,
-                    text: "BBNvolved Page"
-                  }
-                ];
+                      url: string;
+                      text: string;
+                    }[] = [
+                      {
+                        url: `https://uky.campuslabs.com/engage/event/${listedEvent.id}`,
+                        text: "BBNvolved Page"
+                      }
+                    ];
                     if (fullEvent.address?.onlineLocation) {
                       alert(JSON.stringify(fullEvent.address.onlineLocation));
                       links.push({
@@ -110,7 +104,9 @@ export const BbnvolvedImportDialog = ({
                         text: fullEvent.address?.provider ?? "Online Event Url"
                       });
                     }
-                    updateEvent([ "link", links ]);
+                    createdEvent.link = links;
+
+                    setFilledEvent(createdEvent);
                   });
 
                   onClose();

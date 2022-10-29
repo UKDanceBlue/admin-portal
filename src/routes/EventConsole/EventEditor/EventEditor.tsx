@@ -56,7 +56,7 @@ function findSizeOfLinkedImage(url: string): Promise<{ width: number; height: nu
   });
 }
 
-const normalizeImage = async (param: string | {
+export const normalizeImage = async (param: string | {
   file: File,
   width: number,
   height: number
@@ -225,7 +225,7 @@ export const EventEditor = (
       </Typography>
       <Wysimark
         editor={editor}
-        onChange={(value) => updateEvent([ "update", [ "description", value.getMarkdown() ] ])}
+        onChange={(value) => value.getMarkdown() !== event.description && updateEvent([ "update", [ "description", value.getMarkdown() ] ])}
       />
       <Paper sx={{ display: "flex", flexDirection: "column", gap: "1em", my: "1em", mx: "1em", p: "1.5em" }} elevation={3}>
         {eventLinks.map((thisLink, index) => (

@@ -1,5 +1,7 @@
+import { Button, Typography } from "@mui/material";
+import { Box } from "@mui/system";
 import { collection, doc, setDoc } from "firebase/firestore";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFirestore } from "reactfire";
 import { v4 } from "uuid";
@@ -7,6 +9,7 @@ import { v4 } from "uuid";
 import { routeDefinitions } from "../..";
 import { useLoading } from "../../../components/LoadingWrapper";
 import { RawFirestoreEvent } from "../../../firebase/types/FirestoreEvent";
+import { BbnvolvedImportDialog } from "../BbnvolvedImportDialog";
 
 import { EventEditor } from "./EventEditor";
 
@@ -16,7 +19,9 @@ export const NewEvent = () => {
 
   const [ key, resetEditor ] = useReducer((key) => key + 1, 0);
 
-  const [ , setIsLoading ] = useLoading();
+  const [ isLoading, setIsLoading ] = useLoading();
+  const [ isBbnvolvedDialogOpen, setIsBbnvolvedDialogOpen ] = useState(false);
+  const [ filledEvent, setFilledEvent ] = useState<RawFirestoreEvent | undefined>();
 
   const saveEvent = async (event: RawFirestoreEvent) => {
     setIsLoading(true);
@@ -26,14 +31,36 @@ export const NewEvent = () => {
   };
 
   return (
-    <div style={{ minHeight: "60vh", display: "flex" }}>
-      <div style={{ flex: 1, padding: "1em" }}>
+    <Box sx={{ minHeight: "60vh", display: "flex" }}>
+      <Box sx={{ flex: 1, padding: "1em" }}>
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Typography variant="h5">Add a New Event</Typography>
+          <Button
+            variant="contained"
+            disabled={isLoading}
+            onClick={() => setIsBbnvolvedDialogOpen(true)}
+          >
+            Autofill From BBNvolved
+          </Button>
+        </Box>
         <EventEditor
           onEventSaved={saveEvent}
           key={key}
-          resetMe={resetEditor}
+          resetMe={() => {
+            setFilledEvent(undefined);
+            resetEditor();
+          }}
+          disabled={isLoading}
+          initialData={filledEvent}
         />
-      </div>
-    </div>
+      </Box>
+      <BbnvolvedImportDialog
+        open={isBbnvolvedDialogOpen}
+        onClose={() => setIsBbnvolvedDialogOpen(false)}
+        setFilledEvent={(newEvent: RawFirestoreEvent) => {
+          setFilledEvent(newEvent);
+          resetEditor();
+        }} />
+    </Box>
   );
 };

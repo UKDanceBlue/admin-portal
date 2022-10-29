@@ -1,10 +1,14 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { useNavigate } from "react-router-dom";
+
+import { routeDefinitions } from "..";
 
 import EventsDataGrid from "./EventsDataGrid";
 import NewEventForm from "./NewEventForm";
 
 const EventConsole = () => {
+  const navigate = useNavigate();
   return (
     <Box>
       <Typography variant="h4" component="h4">
@@ -15,6 +19,9 @@ const EventConsole = () => {
       </Typography>
       <NewEventForm />
       <EventsDataGrid />
+      <Button variant="contained" onClick={() => navigate({ pathname: routeDefinitions["new-event"].path })}>
+        Add New Event
+      </Button>
       <p style={{ marginTop: "1em" }}>
         If you need to edit something you cannot change here, send an email to <a href="mailto:app@danceblue.org">the App Coordinator</a>
       </p>

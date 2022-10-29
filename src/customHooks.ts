@@ -69,23 +69,37 @@ export const useRemoteConfigParsedJson = <T = unknown>(field: string) => {
   };
 };
 
-export const useFormReducer = <T extends Record<string, unknown>>(initialState: T) => {
-  return useReducer(
+export const useFormReducer = <T>(initialState: T, validator?: (state: T) => Partial<Record<keyof T, boolean | string>>) => {
+  const [ errors, setErrors ] = useState<Partial<Record<keyof T, boolean | string>>>({});
+  const reducer = useReducer(
     (state: T, newState: ["reset"] | ["update", [keyof T, T[keyof T]]] | ["set", T]) => {
       switch (newState[0]) {
-      case "reset":
+      case "reset":{
         return initialState;
-      case "update":
-        return {
+      }
+      case "update":{
+        const updatedState = {
           ...state,
           [newState[1][0]]: newState[1][1],
         };
-      case "set":
+        if (validator) {
+          setErrors(validator(updatedState));
+        }
+        return updatedState;
+      }
+      case "set":{
+        if (validator) {
+          setErrors(validator(newState[1]));
+        }
         return newState[1];
-      default:
+      }
+      default:{
         throw new Error("Invalid action");
+      }
       }
     },
     initialState
   );
+
+  return [ reducer, errors ] as const;
 };

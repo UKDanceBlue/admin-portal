@@ -2,9 +2,9 @@ import { Timestamp } from "firebase/firestore";
 import { FirebaseStorage } from "firebase/storage";
 import { DateTime, Interval } from "luxon";
 
-import { DownloadableImage, FirestoreImage, GenericFirestoreDocument, isFirestoreImage, parseFirestoreImage } from ".";
+import { DownloadableImage, FirestoreImage, isFirestoreImage, parseFirestoreImage } from ".";
 
-export interface RawFirestoreEvent extends GenericFirestoreDocument {
+export interface RawFirestoreEvent {
   title: string;
   shortDescription?: string;
   description: string;

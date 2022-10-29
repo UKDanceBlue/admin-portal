@@ -19,7 +19,7 @@ const DataGridFirebaseErrorOverlay = ({
   );
 };
 
-function FirestoreCollectionDataGrid<DocumentType extends Record<string, unknown>>({
+function FirestoreCollectionDataGrid<DocumentType extends Partial<Record<string, unknown>>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,

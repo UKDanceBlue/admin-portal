@@ -1,4 +1,5 @@
 import { collection, doc, setDoc } from "firebase/firestore";
+import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFirestore } from "reactfire";
 import { v4 } from "uuid";
@@ -12,6 +13,8 @@ import { EventEditor } from "./EventEditor";
 export const NewEvent = () => {
   const navigate = useNavigate();
   const firestore = useFirestore();
+
+  const [ key, resetEditor ] = useReducer((key) => key + 1, 0);
 
   const [ , setIsLoading ] = useLoading();
 
@@ -27,6 +30,8 @@ export const NewEvent = () => {
       <div style={{ flex: 1, padding: "1em" }}>
         <EventEditor
           onEventSaved={saveEvent}
+          key={key}
+          resetMe={resetEditor}
         />
       </div>
     </div>

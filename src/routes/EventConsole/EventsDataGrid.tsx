@@ -81,7 +81,7 @@ const EventsDataGrid = () => {
   const firestore = useFirestore();
   const navigate = useNavigate();
 
-  const columns = useMemo(() => getColumns(firestore, navigate), [ firestore, navigate ]);
+  const columns = useMemo(() => getColumns(firestore, navigate), [ firestore, navigate ]) as GridColumns<Partial<Record<string, unknown>> & {id: string}>;
 
   return (
     <div style={{ minHeight: "60vh", display: "flex" }}>

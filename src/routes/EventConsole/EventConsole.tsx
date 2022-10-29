@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { routeDefinitions } from "..";
 
 import EventsDataGrid from "./EventsDataGrid";
-import NewEventForm from "./NewEventForm";
 
 const EventConsole = () => {
   const navigate = useNavigate();
@@ -17,7 +16,6 @@ const EventConsole = () => {
       <Typography variant="subtitle1" component="p">
         Modify the events shown in the &ldquo;Events&rdquo; page on the app
       </Typography>
-      <NewEventForm />
       <EventsDataGrid />
       <Button variant="contained" onClick={() => navigate({ pathname: routeDefinitions["new-event"].path })}>
         Add New Event

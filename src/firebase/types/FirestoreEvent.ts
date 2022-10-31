@@ -4,6 +4,7 @@ import { DateTime, Interval } from "luxon";
 
 import { DownloadableImage, FirestoreImage, isFirestoreImage, parseFirestoreImage } from ".";
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface RawFirestoreEvent {
   title: string;
   shortDescription?: string;
@@ -21,6 +22,7 @@ export interface RawFirestoreEvent {
   }[];
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface ParsedFirestoreEvent {
   title: string;
   shortDescription?: string;
@@ -37,6 +39,7 @@ export interface ParsedFirestoreEvent {
   }[];
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function validateLink(link: unknown): link is {
   text: string;
   url: string;
@@ -71,6 +74,7 @@ export function validateLink(link: unknown): link is {
   return true;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isRawFirestoreEvent(documentData?: object): documentData is RawFirestoreEvent {
   if (documentData == null) {
     return false;
@@ -130,6 +134,7 @@ export function isRawFirestoreEvent(documentData?: object): documentData is RawF
   return true;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export const parseFirestoreEvent = async (event: RawFirestoreEvent, storage: FirebaseStorage): Promise<ParsedFirestoreEvent> => ({
   title: event.title,
   description: event.description,

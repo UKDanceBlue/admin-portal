@@ -3174,6 +3174,11 @@
     "@typescript-eslint/types" "5.28.0"
     eslint-visitor-keys "^3.3.0"
 
+"@ukdanceblue/db-app-common@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ukdanceblue/db-app-common/-/db-app-common-1.0.0.tgz#52fc2ca3cd5a324ce96a5d2e91eb2e621f5ff191"
+  integrity sha512-U/Da9HHq2HwfhuUfnXkpz82T3MAC5hjYySVT0ZUHQR9Idj1xsk/rc7ilPecircjhvqan98hnZ+xM3TvusyVBkw==
+
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.1.tgz#2bfd767eae1a6996f432ff7e8d7fc75679c0b6a7"

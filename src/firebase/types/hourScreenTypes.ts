@@ -1,10 +1,12 @@
 export type HourInstructionsType = string | (string | string[])[];
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface SpecialComponentType {
   id: string;
   uniqueOptions: Record<string, string>;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isSpecialComponentType(specialComponent?: object): specialComponent is SpecialComponentType {
   // If specialComponent is nullish, return false
   if (specialComponent == null) {

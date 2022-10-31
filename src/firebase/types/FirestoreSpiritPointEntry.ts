@@ -1,3 +1,4 @@
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface SpiritPointEntry {
   points: number;
   teamId: string;
@@ -6,6 +7,7 @@ export interface SpiritPointEntry {
   displayName?: string;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isSpiritPointEntry(
   data: any
 ): data is SpiritPointEntry {

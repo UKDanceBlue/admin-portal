@@ -148,7 +148,7 @@ const PointEntriesDataGrid = () => {
               label="Reason"
               disabled={isLoading}
               value={newEntry.displayName ?? ""}
-              onChange={(e) => updateNewEntry({ displayName: e.target.value.length === 0 ? undefined : e.target.value })}
+              onChange={(e) => updateNewEntry({ displayName: e.target.value })}
             />
             <Typography
               variant="caption"
@@ -161,7 +161,7 @@ const PointEntriesDataGrid = () => {
               label="Linkblue"
               disabled={isLoading}
               value={newEntry.linkblue ?? ""}
-              onChange={(e) => updateNewEntry({ linkblue: e.target.value.length === 0 ? undefined : e.target.value })}
+              onChange={(e) => updateNewEntry({ linkblue: e.target.value })}
             />
             <Typography
               variant="caption"
@@ -174,7 +174,7 @@ const PointEntriesDataGrid = () => {
               label="Opportunity"
               sx={{ marginBottom: "1em" }}
               value={newEntry.opportunityId ?? ""}
-              onChange={(e) => updateNewEntry({ opportunityId: e.target.value.length === 0 ? undefined : e.target.value })}
+              onChange={(e) => updateNewEntry({ opportunityId: e.target.value })}
               select
               SelectProps={{ native: true }}
               disabled={isLoading}

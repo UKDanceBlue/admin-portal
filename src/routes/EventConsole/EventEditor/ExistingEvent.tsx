@@ -1,31 +1,27 @@
-import { FirestoreDataConverter, collection, doc, setDoc } from "firebase/firestore";
-import { useEffect, useReducer } from "react";
+import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { Firestore, collection, doc, setDoc } from "firebase/firestore";
+import { useEffect, useMemo, useReducer } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFirestore, useFirestoreDocDataOnce } from "reactfire";
 
 import { routeDefinitions } from "../..";
 import { useLoading } from "../../../components/LoadingWrapper";
-import { RawFirestoreEvent, isRawFirestoreEvent } from "../../../firebase/types/FirestoreEvent";
+import { makeConverter } from "../../../firebase/Converter";
 
 import { EventEditor } from "./EventEditor";
 
-// @ts-ignore There is a weird complex type error here - ts(2589)
-const eventConverter: FirestoreDataConverter<RawFirestoreEvent> = {
-  toFirestore(event){
-    return event;
-  },
-  fromFirestore(snapshot, options?) {
-    const event = snapshot.data(options);
-    if (isRawFirestoreEvent(event)){
-      return event;
-    } else {
-      throw new Error("Invalid data");
-    }
-  },
-};
+function getEventDoc(firestore: Firestore, eventId: string) {
+  return doc(collection(firestore, "events"), eventId).withConverter(makeConverter(FirestoreEvent));
+}
 
 export const ExistingEvent = () => {
   const { eventId } = useParams();
+
+  if (!eventId) {
+    alert("Invalid URL!");
+    throw new Error("Event ID not provided");
+  }
+
   const [ isLoading, setIsLoading ] = useLoading();
 
   const navigate = useNavigate();
@@ -33,7 +29,14 @@ export const ExistingEvent = () => {
 
   const {
     data, error, status
-  } = useFirestoreDocDataOnce<RawFirestoreEvent>(doc(collection(firestore, "events"), eventId).withConverter(eventConverter));
+  } = useFirestoreDocDataOnce<FirestoreEventJson>(getEventDoc(firestore, eventId));
+  const parsedData = useMemo(() => {
+    if (status === "success" && data != null) {
+      return FirestoreEvent.fromJson(data);
+    } else {
+      return undefined;
+    }
+  }, [ data, status ]);
 
   const [ key, resetEditor ] = useReducer((key) => key + 1, 0);
 
@@ -45,9 +48,9 @@ export const ExistingEvent = () => {
     }
   }, [ error, navigate ]);
 
-  const saveEvent = async (event: RawFirestoreEvent) => {
+  const saveEvent = async (event: FirestoreEventJson) => {
     setIsLoading(true);
-    await setDoc(doc(collection(firestore, "events"), eventId), event);
+    await setDoc(getEventDoc(firestore, eventId), event);
     setIsLoading(false);
     navigate({ pathname: routeDefinitions["event-manager"].path });
   };
@@ -62,7 +65,7 @@ export const ExistingEvent = () => {
             disabled={isLoading}
             key={key}
             resetMe={resetEditor}
-            initialData={data}
+            initialData={parsedData}
           />
         )}
       </div>

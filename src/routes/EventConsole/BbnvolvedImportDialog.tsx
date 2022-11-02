@@ -1,4 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { Timestamp } from "firebase/firestore";
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
@@ -8,7 +9,6 @@ import TurndownService from "turndown";
 import { getEvent } from "../../bbnvolved/event-get";
 import { ListedEvent, listEvents } from "../../bbnvolved/event-search";
 import { useLoading } from "../../components/LoadingWrapper";
-import { RawFirestoreEvent } from "../../firebase/types/FirestoreEvent";
 
 import { normalizeImage } from "./EventEditor/EventEditor";
 
@@ -22,7 +22,7 @@ function htmlToMarkdown(html: string): string {
 */
 export const BbnvolvedImportDialog = ({
   open, setFilledEvent, onClose,
-}: {open:boolean, setFilledEvent?: (event: RawFirestoreEvent) => void, onClose: () => void}) => {
+}: {open:boolean, setFilledEvent?: (event: FirestoreEventJson) => void, onClose: () => void}) => {
   const loaded = useRef(false);
   const [ , setIsLoading ] = useLoading();
   const [ events, setEvents ] = useState<ListedEvent[]>([]);
@@ -71,21 +71,26 @@ export const BbnvolvedImportDialog = ({
                       console.error("One of setFilledEvent, fullEvent.name, or fullEvent.description was falsy in BbnvolvedImportDialog");
                       return;
                     }
-                    const createdEvent: RawFirestoreEvent = {
-                      title: fullEvent.name,
+
+                    const fakeDomeElement = document.createElement("div");
+                    fakeDomeElement.innerHTML = fullEvent.description;
+                    const shortDescription = fakeDomeElement.textContent?.substring(0, 100);
+
+                    const createdEvent: FirestoreEventJson = {
+                      name: fullEvent.name,
+                      shortDescription: shortDescription ?? "",
                       description: htmlToMarkdown(fullEvent.description),
+                      interval: {
+                        start: fullEvent.startsOn != null ? Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate()) : Timestamp.now(),
+                        end: fullEvent.endsOn != null ? Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate()) : Timestamp.now(),
+                      },
                     };
-                    if (fullEvent.startsOn) {
-                      createdEvent.startTime = Timestamp.fromDate(DateTime.fromISO(fullEvent.startsOn).toJSDate());
-                    }
-                    if (fullEvent.endsOn) {
-                      createdEvent.endTime = Timestamp.fromDate(DateTime.fromISO(fullEvent.endsOn).toJSDate());
-                    }
+
                     if (fullEvent.address?.address) {
                       createdEvent.address = fullEvent.address.address;
                     }
                     if (fullEvent.imageUrl) {
-                      createdEvent.image = [await normalizeImage(`${fullEvent.imageUrl}?preset=large-w`, storage)];
+                      createdEvent.images = [await normalizeImage(`${fullEvent.imageUrl}?preset=large-w`, storage)];
                     }
 
                     const links: {
@@ -104,7 +109,7 @@ export const BbnvolvedImportDialog = ({
                         text: fullEvent.address?.provider ?? "Online Event Url"
                       });
                     }
-                    createdEvent.link = links;
+                    createdEvent.highlightedLinks = links;
 
                     setFilledEvent(createdEvent);
                   });

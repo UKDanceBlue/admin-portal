@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
     "geocode"
-  ]
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

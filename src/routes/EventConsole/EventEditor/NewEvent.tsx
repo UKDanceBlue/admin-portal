@@ -1,5 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +9,7 @@ import { v4 } from "uuid";
 
 import { routeDefinitions } from "../..";
 import { useLoading } from "../../../components/LoadingWrapper";
-import { RawFirestoreEvent } from "../../../firebase/types/FirestoreEvent";
+import { makeConverter } from "../../../firebase/Converter";
 import { BbnvolvedImportDialog } from "../BbnvolvedImportDialog";
 
 import { EventEditor } from "./EventEditor";
@@ -21,11 +22,11 @@ export const NewEvent = () => {
 
   const [ isLoading, setIsLoading ] = useLoading();
   const [ isBbnvolvedDialogOpen, setIsBbnvolvedDialogOpen ] = useState(false);
-  const [ filledEvent, setFilledEvent ] = useState<RawFirestoreEvent | undefined>();
+  const [ filledEvent, setFilledEvent ] = useState<FirestoreEventJson | undefined>();
 
-  const saveEvent = async (event: RawFirestoreEvent) => {
+  const saveEvent = async (event: FirestoreEventJson) => {
     setIsLoading(true);
-    await setDoc(doc(collection(firestore, "events"), v4()), event);
+    await setDoc(doc(collection(firestore, "events").withConverter(makeConverter(FirestoreEvent)), v4()), event);
     setIsLoading(false);
     navigate({ pathname: routeDefinitions["event-manager"].path });
   };
@@ -57,7 +58,7 @@ export const NewEvent = () => {
       <BbnvolvedImportDialog
         open={isBbnvolvedDialogOpen}
         onClose={() => setIsBbnvolvedDialogOpen(false)}
-        setFilledEvent={(newEvent: RawFirestoreEvent) => {
+        setFilledEvent={(newEvent: FirestoreEventJson) => {
           setFilledEvent(newEvent);
           resetEditor();
         }} />

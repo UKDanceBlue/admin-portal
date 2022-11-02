@@ -2,6 +2,8 @@ import { Delete } from "@mui/icons-material";
 import { Button, IconButton, Paper, TextField as TextFieldBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DateTimePicker } from "@mui/x-date-pickers";
+import { FirestoreEvent, FirestoreEventJson, FirestoreImageJson } from "@ukdanceblue/db-app-common";
+import { useFormReducer } from "@ukdanceblue/db-app-common/dist/util/formReducer";
 import { Wysimark, useEditor } from "@wysimark/react";
 import { Timestamp } from "firebase/firestore";
 import { FirebaseStorage, ref, uploadBytes } from "firebase/storage";
@@ -10,15 +12,19 @@ import { useCallback, useRef } from "react";
 import { useStorage } from "reactfire";
 
 import ImageSelect, { ImageSelectModeRef } from "../../../components/ImageSelect";
-import { useFormReducer } from "../../../customHooks";
-import { FirestoreImage } from "../../../firebase/types";
-import { RawFirestoreEvent } from "../../../firebase/types/FirestoreEvent";
 
-type RawFirestoreEventWithNullableImage = Omit<RawFirestoreEvent, "image"> & {
-  image?: FirestoreImage | (FirestoreImage | null)[];
+type FirestoreEventJsonWithNullableImage = Omit<FirestoreEventJson, "images"> & {
+  images?: (FirestoreImageJson | null)[];
 };
 
-const FormTextField = (props: Parameters<typeof TextFieldBase>[0] & {eventReducer: ReturnType<typeof useFormReducer<RawFirestoreEventWithNullableImage>>} & {name: keyof RawFirestoreEvent}) => {
+function filterNullImages(event: FirestoreEventJsonWithNullableImage): FirestoreEventJson {
+  return {
+    ...event,
+    images: event.images == null ? [] : (event.images.filter((image) => image != null) as NonNullable<(typeof event.images)[number]>[]),
+  };
+}
+
+const FormTextField = (props: Parameters<typeof TextFieldBase>[0] & {eventReducer: ReturnType<typeof useFormReducer<FirestoreEventJsonWithNullableImage>>} & {name: keyof FirestoreEventJson}) => {
   if (props.name == null) {
     throw new Error("FormTextField requires a name prop");
   }
@@ -34,7 +40,7 @@ const FormTextField = (props: Parameters<typeof TextFieldBase>[0] & {eventReduce
     <TextFieldBase
       {...Object.fromEntries(Object.entries(props).filter(([key]) => key !== "eventReducer"))}
       value={event[props.name]}
-      onChange={(e) => updateEvent([ "update", [ "title", e.target.value ] ])}
+      onChange={(e) => updateEvent([ "update", [ props.name, e.target.value ] ])}
       error={errors[props.name] != null}
       helperText={helperText}
       margin="dense"
@@ -60,7 +66,7 @@ export const normalizeImage = async (param: string | {
   file: File,
   width: number,
   height: number
-}, storage: FirebaseStorage): Promise<FirestoreImage> => {
+}, storage: FirebaseStorage): Promise<FirestoreImageJson> => {
   if (typeof param === "string") {
     if (param.startsWith("http://") || param.startsWith("https://") || param.startsWith("gs://")) {
       const {
@@ -84,14 +90,24 @@ export const normalizeImage = async (param: string | {
   }
 };
 
+function valueForDateTimePicker(value: unknown, inAnHour?: boolean): DateTime | null {
+  if (value instanceof Timestamp) {
+    return DateTime.fromJSDate(value.toDate());
+  } else if (inAnHour) {
+    return DateTime.now().plus({ hours: 1 });
+  } else {
+    return DateTime.now();
+  }
+}
+
 
 export const EventEditor = (
   {
     initialData, onEventSaved, disabled = false, resetMe
   }:
   {
-    initialData?: RawFirestoreEvent;
-    onEventSaved?: (event: RawFirestoreEvent) => void;
+    initialData?: FirestoreEventJson;
+    onEventSaved?: (event: FirestoreEventJson) => void;
     disabled?: boolean;
     resetMe?: () => void;
   }
@@ -103,37 +119,18 @@ export const EventEditor = (
 
   const editor = useEditor({ initialMarkdown: initialData?.description ?? "" }, [initialData?.description]);
 
-  const eventReducer = useFormReducer<RawFirestoreEventWithNullableImage>(initialData ?? { title: "", description: "" }, (event) => {
-    const errors: Partial<Record<keyof RawFirestoreEvent, string>> = {};
-
-    if (event.title !== "" && event.title.trim() === "") {
-      errors.title = "Title is required";
-    }
-
-    if (event.startTime == null) {
-      errors.startTime = "Start time is required";
-    }
-
-    if (event.endTime == null) {
-      errors.endTime = "End time is required";
-    }
-
-    if (event.startTime != null && event.endTime != null && event.startTime >= event.endTime) {
-      errors.endTime = "End time must be after start time";
-    }
-
-    if (event.description !== "" && event.description.trim() === "") {
-      errors.description = "Description is required";
-    }
-
-    return errors;
+  const eventReducer = useFormReducer<FirestoreEventJsonWithNullableImage>(initialData ?? { name: "", shortDescription: "", description: "" }, (event) => {
+    return FirestoreEvent.whatIsWrongWithThisJson(event) ?? {};
   });
 
   const [[ event, updateEventBase ]] = eventReducer;
 
   const updateEvent = useCallback(
     (action: Parameters<typeof updateEventBase>[0]): ReturnType<typeof updateEventBase> => {
-      if (action[0] === "update" && action[1][1] === "" && action[1][0] !== "description" && action[1][0] !== "title") {
+      if (action[0] === "update" && action[1][0] === "description") {
+        // We ignore description to let slate handle it's own state, the value is extracted in the onSubmit method
+        return;
+      } else if (action[0] === "update" && action[1][1] === "" && action[1][0] !== "name") {
         return updateEventBase([ "update", [ action[1][0], undefined ] ]);
       } else {
         return updateEventBase(action);
@@ -142,19 +139,19 @@ export const EventEditor = (
     [updateEventBase]
   );
 
-  const eventImages = Array.isArray(event.image)
-    ? event.image
+  const eventImages = Array.isArray(event.images)
+    ? event.images
     : (
-      event.image == null
+      event.images == null
         ? []
-        : [event.image]
+        : [event.images]
     );
-  const eventLinks = Array.isArray(event.link)
-    ? event.link
+  const eventLinks = Array.isArray(event.highlightedLinks)
+    ? event.highlightedLinks
     : (
-      event.link == null
+      event.highlightedLinks == null
         ? []
-        : [event.link]
+        : [event.highlightedLinks]
     );
 
   return (
@@ -163,11 +160,13 @@ export const EventEditor = (
         e.preventDefault();
 
         // Need to remove any nulls from the event's image array before we try to save it
-        const eventToSave: RawFirestoreEvent = {
-          ...event,
-          image: eventImages.filter((image) => image != null) as Exclude<typeof eventImages[number], null>[],
-        };
-        onEventSaved?.(eventToSave);
+        onEventSaved?.(filterNullImages(Object.fromEntries(Object.entries({ ...event, description: editor.getMarkdown() }).filter((([ key, value ]) => {
+          if (key === "name" || key === "description" || key === "shortDescription") {
+            return true;
+          } else {
+            return value !== undefined;
+          }
+        }))) as FirestoreEventJsonWithNullableImage));
       }}
       onReset={resetMe ? () => {
         if (confirm("Are you sure you want to reset?")) {
@@ -176,8 +175,8 @@ export const EventEditor = (
       } : undefined}
     >
       <FormTextField
-        label="Title"
-        name="title"
+        label="Event Name"
+        name="name"
         required
         disabled={disabled}
         eventReducer={eventReducer}
@@ -201,23 +200,104 @@ export const EventEditor = (
           disableMaskedInput
           disabled={disabled}
           renderInput={(props) => <TextFieldBase margin="dense" fullWidth {...props} />}
-          label="Start Time" value={DateTime.fromMillis((event.startTime?.toMillis()?? now.toMillis()))}
+          label="Start Time"
+          value={valueForDateTimePicker(event.interval?.start)}
           disablePast
           onChange={(value) => {
-            if (value != null && (event.endTime?.toMillis() ?? now.toMillis()) < value.toMillis()) {
-              updateEvent([ "update", [ "endTime", Timestamp.fromMillis(value.plus({ hours: 1 }).toMillis()) ] ]);
+            const currentInterval = event.interval;
+            if (value != null && currentInterval != null) {
+              if ((currentInterval?.start?.toMillis() ?? now.toMillis()) < value.toMillis()) {
+                const newInterval = {
+                  start: Timestamp.fromDate(value.toJSDate()),
+                  end: currentInterval.end
+                };
+                updateEvent([ "update", [ "interval", newInterval ] ]);
+              } else {
+                alert("Start time must be before end time");
+
+                updateEvent([
+                  "update", [
+                    "interval", {
+                      start: currentInterval.start,
+                      end: currentInterval.end
+                    }
+                  ]
+                ]);
+              }
+            } else if (currentInterval != null) {
+              updateEvent([
+                "update", [
+                  "interval", {
+                    start: currentInterval.start,
+                    end: currentInterval.end
+                  }
+                ]
+              ]);
+            } else if (value != null) {
+              updateEvent([
+                "update", [
+                  "interval", {
+                    start: Timestamp.fromDate(value.toJSDate()),
+                    end: Timestamp.fromDate(value.plus({ hours: 1 }).toJSDate())
+                  }
+                ]
+              ]);
+            } else {
+              updateEvent([ "update", [ "interval", undefined ] ]);
             }
-            updateEvent([ "update", [ "startTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ] ]);
           }}
         />
         <DateTimePicker
           disableMaskedInput
           disabled={disabled}
           renderInput={(props) => <TextFieldBase margin="dense" fullWidth {...props} />}
-          label="End Time" value={DateTime.fromMillis((event.endTime?.toMillis() ?? now.toMillis()))}
-          minDateTime={DateTime.fromMillis((event.startTime?.toMillis() ?? now.toMillis()))}
+          label="End Time"
+          value={valueForDateTimePicker(event.interval?.end)}
+          minDateTime={DateTime.fromMillis((event.interval?.start?.toMillis() ?? now.toMillis()))}
           disablePast
-          onChange={(value) => updateEvent([ "update", [ "endTime", value != null ? Timestamp.fromMillis(value.toMillis()) : undefined ] ])}
+          onChange={(value) => {
+            const currentInterval = event.interval;
+            if (value != null && currentInterval != null) {
+              if ((currentInterval?.end?.toMillis() ?? now.toMillis()) < value.toMillis()) {
+                const newInterval = {
+                  end: Timestamp.fromDate(value.toJSDate()),
+                  start: currentInterval.start
+                };
+                updateEvent([ "update", [ "interval", newInterval ] ]);
+              } else {
+                alert("end time must be before start time");
+
+                updateEvent([
+                  "update", [
+                    "interval", {
+                      end: currentInterval.end,
+                      start: currentInterval.start
+                    }
+                  ]
+                ]);
+              }
+            } else if (currentInterval != null) {
+              updateEvent([
+                "update", [
+                  "interval", {
+                    end: currentInterval.end,
+                    start: currentInterval.start
+                  }
+                ]
+              ]);
+            } else if (value != null) {
+              updateEvent([
+                "update", [
+                  "interval", {
+                    end: Timestamp.fromDate(value.toJSDate()),
+                    start: Timestamp.fromDate(value.plus({ hours: 1 }).toJSDate())
+                  }
+                ]
+              ]);
+            } else {
+              updateEvent([ "update", [ "interval", undefined ] ]);
+            }
+          }}
         />
       </Box>
       <Typography mt={2}>
@@ -225,7 +305,6 @@ export const EventEditor = (
       </Typography>
       <Wysimark
         editor={editor}
-        onChange={(value) => value.getMarkdown() !== event.description && updateEvent([ "update", [ "description", value.getMarkdown() ] ])}
       />
       <Paper sx={{ display: "flex", flexDirection: "column", gap: "1em", my: "1em", mx: "1em", p: "1.5em" }} elevation={3}>
         {eventLinks.map((thisLink, index) => (
@@ -236,7 +315,7 @@ export const EventEditor = (
               label="Link Text"
               value={thisLink?.text ?? ""}
               fullWidth
-              onChange={({ target: { value } }) => updateEvent([ "update", [ "link", eventLinks.slice(0, index).concat({ text: value, url: thisLink?.url ?? "" }).concat(eventLinks.slice(index + 1)) ] ])}
+              onChange={({ target: { value } }) => updateEvent([ "update", [ "highlightedLinks", eventLinks.slice(0, index).concat({ text: value, url: thisLink?.url ?? "" }).concat(eventLinks.slice(index + 1)) ] ])}
             />
             <TextFieldBase
               required
@@ -244,10 +323,10 @@ export const EventEditor = (
               label="Link URL"
               value={thisLink?.url ?? ""}
               fullWidth
-              onChange={({ target: { value } }) => updateEvent([ "update", [ "link", eventLinks.slice(0, index).concat({ text: thisLink?.text ?? "", url: value }).concat(eventLinks.slice(index + 1)) ] ])}
+              onChange={({ target: { value } }) => updateEvent([ "update", [ "highlightedLinks", eventLinks.slice(0, index).concat({ text: thisLink?.text ?? "", url: value }).concat(eventLinks.slice(index + 1)) ] ])}
             />
             <IconButton
-              onClick={() => updateEvent([ "update", [ "link", eventLinks.slice(0, index).concat(eventLinks.slice(index + 1)) ] ])}
+              onClick={() => updateEvent([ "update", [ "highlightedLinks", eventLinks.slice(0, index).concat(eventLinks.slice(index + 1)) ] ])}
             >
               <Delete />
             </IconButton>
@@ -255,7 +334,7 @@ export const EventEditor = (
           </Paper>
         ))}
         <Button
-          onClick={() => updateEvent([ "update", [ "link", [ ...eventLinks, { url: "", text: "" } ] ] ])}
+          onClick={() => updateEvent([ "update", [ "highlightedLinks", [ ...eventLinks, { url: "", text: "" } ] ] ])}
           variant="outlined"
           color="secondary"
         >
@@ -277,11 +356,11 @@ export const EventEditor = (
                 modeRef={imageSelectModeRef}
                 onChange={(image) => {
                   if (image == null) {
-                    updateEvent( [ "update", [ "image", eventImages.slice(0, index).concat(null).concat(eventImages.slice(index + 1)) ] ] );
+                    updateEvent( [ "update", [ "images", eventImages.slice(0, index).concat(null).concat(eventImages.slice(index + 1)) ] ] );
                   } else {
                     normalizeImage(image, fbStorage)
                       .then((normalizedImage) => {
-                        updateEvent([ "update", [ "image", eventImages.slice(0, index).concat(normalizedImage).concat(eventImages.slice(index + 1)) ] ] );
+                        updateEvent([ "update", [ "images", eventImages.slice(0, index).concat(normalizedImage).concat(eventImages.slice(index + 1)) ] ] );
                       })
                       .catch((error) => {
                         console.error(error);
@@ -293,7 +372,7 @@ export const EventEditor = (
                 initialValue={initialValue}
               />
               <IconButton
-                onClick={() => updateEvent([ "update", [ "image", eventImages.slice(0, index).concat(eventImages.slice(index + 1)) ] ])}
+                onClick={() => updateEvent([ "update", [ "images", eventImages.slice(0, index).concat(eventImages.slice(index + 1)) ] ])}
               >
                 <Delete />
               </IconButton>
@@ -302,8 +381,8 @@ export const EventEditor = (
         })}
         <Button
           onClick={() => {
-            const newImages: (FirestoreImage | null)[] = [ ...eventImages, null ];
-            updateEvent([ "update", [ "image", newImages ] ]);
+            const newImages: (FirestoreImageJson | null)[] = [ ...eventImages, null ];
+            updateEvent([ "update", [ "images", newImages ] ]);
           }}
           variant="outlined"
           color="secondary"
@@ -330,7 +409,7 @@ export const EventEditor = (
             type="submit"
             variant="contained"
             color="primary"
-            disabled={disabled || Object.keys(eventReducer[1]).length > 0 ||event.title == null || event.description == null}
+            disabled={disabled || Object.keys(eventReducer[1]).length > 0 || event.name == null || event.shortDescription == null || event.description == null}
             sx={{ mt: 2 }}
           >
             Save

@@ -1,3 +1,4 @@
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface FirestoreTeamInfo {
   name: string;
   teamClass?: "public" | "committee";
@@ -11,6 +12,7 @@ export interface FirestoreTeamInfo {
   individualTotals?: Record<string, number>;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isFirestoreTeamInfo(
   data: unknown
 ): data is FirestoreTeamInfo {

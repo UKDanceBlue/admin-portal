@@ -2,6 +2,7 @@ import { DocumentData, DocumentReference } from "firebase/firestore";
 
 import { isDocumentReference } from "./firebaseTypes";
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface FirestoreUser {
   attributes: Record<string, string>;
   email: string;
@@ -12,6 +13,7 @@ export interface FirestoreUser {
   pastNotifications?: DocumentReference[] | null;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isFirestoreUser(documentData?: DocumentData): documentData is FirestoreUser {
   if (documentData == null) {
     return false;

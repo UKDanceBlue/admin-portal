@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface FirestoreNotification {
   body: string;
   data?: Record<string, unknown>;
@@ -8,6 +9,7 @@ export interface FirestoreNotification {
   title: string;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isFirestoreNotification(notification?: object): notification is FirestoreNotification {
   if (notification == null) {
     return false;

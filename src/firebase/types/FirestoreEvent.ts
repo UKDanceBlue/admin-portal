@@ -2,10 +2,12 @@ import { Timestamp } from "firebase/firestore";
 import { FirebaseStorage } from "firebase/storage";
 import { DateTime, Interval } from "luxon";
 
-import { DownloadableImage, FirestoreImage, GenericFirestoreDocument, isFirestoreImage, parseFirestoreImage } from ".";
+import { DownloadableImage, FirestoreImage, isFirestoreImage, parseFirestoreImage } from ".";
 
-export interface RawFirestoreEvent extends GenericFirestoreDocument {
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
+export interface RawFirestoreEvent {
   title: string;
+  shortDescription?: string;
   description: string;
   image?: FirestoreImage | FirestoreImage[];
   address?: string;
@@ -20,8 +22,10 @@ export interface RawFirestoreEvent extends GenericFirestoreDocument {
   }[];
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export interface ParsedFirestoreEvent {
   title: string;
+  shortDescription?: string;
   description: string;
   image?: DownloadableImage | DownloadableImage[];
   address?: string;
@@ -35,6 +39,7 @@ export interface ParsedFirestoreEvent {
   }[];
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function validateLink(link: unknown): link is {
   text: string;
   url: string;
@@ -69,19 +74,24 @@ export function validateLink(link: unknown): link is {
   return true;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isRawFirestoreEvent(documentData?: object): documentData is RawFirestoreEvent {
   if (documentData == null) {
     return false;
   }
 
   const {
-    title, description, image, address, startTime, endTime, link
+    title, description, shortDescription, image, address, startTime, endTime, link
   } = documentData as Partial<RawFirestoreEvent>;
 
   // Check that all required fields are present and of the correct type
   if (title == null) {
     return false;
   } else if (typeof title !== "string") {
+    return false;
+  }
+
+  if (shortDescription != null && typeof shortDescription !== "string") {
     return false;
   }
 
@@ -124,6 +134,7 @@ export function isRawFirestoreEvent(documentData?: object): documentData is RawF
   return true;
 }
 
+/** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export const parseFirestoreEvent = async (event: RawFirestoreEvent, storage: FirebaseStorage): Promise<ParsedFirestoreEvent> => ({
   title: event.title,
   description: event.description,

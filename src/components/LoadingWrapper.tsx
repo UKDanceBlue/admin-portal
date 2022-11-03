@@ -1,5 +1,5 @@
 import { Box, CircularProgress } from "@mui/material";
-import { ReactNode, createContext, useCallback, useContext, useId, useReducer } from "react";
+import { ReactNode, createContext, useCallback, useContext, useEffect, useId, useReducer } from "react";
 
 const LoadingContext = createContext<[Partial<Record<string, boolean>>, (state: boolean, id: string) => void]>([ {}, () => {} ]);
 
@@ -24,7 +24,7 @@ export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
         (
           Object.values(loadingReasons).some((val) => val)
         ) && (
-          <Box style={{ position: "fixed", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Box style={{ position: "fixed", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: Number.MAX_SAFE_INTEGER }}>
             <CircularProgress size="5vw" />
           </Box>
         )
@@ -38,10 +38,17 @@ export const useLoading = (customId?: string): [boolean, (state: boolean) => voi
   const autoId = useId();
   const loadingId = customId ?? autoId;
 
-  const [ loadingReasons, setLoadingReasons ] = useContext(LoadingContext);
+  const [ loadingReasons, setLoading ] = useContext(LoadingContext);
+
+
+  useEffect(() => {
+    return () => {
+      setLoading(false, loadingId);
+    };
+  }, [ loadingId, setLoading ]);
 
   const isLoading = loadingReasons[loadingId] ?? false;
-  const setIsLoading = useCallback((state: boolean) => setLoadingReasons(state, loadingId), [ loadingId, setLoadingReasons ]);
+  const setIsLoading = useCallback((state: boolean) => setLoading(state, loadingId), [ loadingId, setLoading ]);
 
   return [
     isLoading, setIsLoading, loadingReasons

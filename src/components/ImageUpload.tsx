@@ -3,9 +3,14 @@ import { Box } from "@mui/system";
 import { ChangeEvent, useState } from "react";
 
 const ImageUpload = ({
-  onUploaded, disabled = false,
-}: {onUploaded?: (file: File | null, imageData: {width: number, height: number}) => void, disabled?: boolean}) => {
-  const [ previewedImage, setPreviewedImage ] = useState<any>(null);
+  onUploaded, disabled = false, initialPreview
+}: {onUploaded?: (file: File | null, imageData: {width: number, height: number}) => void, disabled?: boolean, initialPreview?: HTMLImageElement}) => {
+  const [ previewedImage, setPreviewedImage ] = useState<HTMLImageElement | null>(initialPreview ?? null);
+
+  if (previewedImage != null) {
+    previewedImage.height = Math.min(200, previewedImage.height);
+    previewedImage.width = previewedImage.height * (previewedImage.naturalWidth / previewedImage.naturalHeight);
+  }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
@@ -37,8 +42,6 @@ const ImageUpload = ({
       {previewedImage && (
         <div style={{ paddingLeft: "5em", paddingRight: "5em" }}>
           <div dangerouslySetInnerHTML={{ __html: previewedImage.outerHTML }}/>
-          <br />
-          <button onClick={() => setPreviewedImage(null)}>Remove</button>
         </div>
       )}
     </Box>

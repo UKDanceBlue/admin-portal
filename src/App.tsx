@@ -17,6 +17,16 @@ export default function App() {
       <Paper elevation={3} sx={{ px: "0.5em", py: "5vh", mx: "auto", maxWidth: "xl" }}>
         <Routes>
           <Route path={routeDefinitions["/"].pathFragment} element={routeDefinitions["/"].element} />
+          <Route path={routeDefinitions["new-event"].pathFragment} element={
+            <SecuredParent requiredClaims={routeDefinitions["new-event"].requiredClaims}>
+              {routeDefinitions["new-event"].element}
+            </SecuredParent>
+          } />
+          <Route path={routeDefinitions["event-editor"].pathFragment} element={
+            <SecuredParent requiredClaims={routeDefinitions["event-editor"].requiredClaims}>
+              {routeDefinitions["event-editor"].element}
+            </SecuredParent>
+          } />
           <Route path={routeDefinitions["event-manager"].pathFragment} element={
             <SecuredParent requiredClaims={routeDefinitions["event-manager"].requiredClaims}>
               {routeDefinitions["event-manager"].element}

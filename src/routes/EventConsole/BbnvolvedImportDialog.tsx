@@ -103,7 +103,6 @@ export const BbnvolvedImportDialog = ({
                       }
                     ];
                     if (fullEvent.address?.onlineLocation) {
-                      alert(JSON.stringify(fullEvent.address.onlineLocation));
                       links.push({
                         url: fullEvent.address?.onlineLocation,
                         text: fullEvent.address?.provider ?? "Online Event Url"

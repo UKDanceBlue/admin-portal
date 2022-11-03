@@ -1,5 +1,6 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
+import { FirestoreDocumentJson, MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import deepEquals from "deep-equal";
 import { CollectionReference, GeoPoint, Timestamp, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
@@ -19,7 +20,7 @@ const DataGridFirebaseErrorOverlay = ({
   );
 };
 
-function FirestoreCollectionDataGrid<DocumentType extends Partial<Record<string, unknown>>>({
+function FirestoreCollectionDataGrid<DocumentType extends MaybeWithFirestoreMetadata<FirestoreDocumentJson>>({
   columns,
   firestoreCollectionRef,
   dataGridProps,

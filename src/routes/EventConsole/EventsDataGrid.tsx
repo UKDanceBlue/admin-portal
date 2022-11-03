@@ -1,5 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material";
 import { GridActionsCellItem, GridColumns } from "@mui/x-data-grid";
+import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { Firestore, collection, deleteDoc, doc } from "firebase/firestore";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,50 +9,32 @@ import { useFirestore } from "reactfire";
 
 import { routeDefinitions } from "..";
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
-import { RawFirestoreEvent } from "../../firebase/types/FirestoreEvent";
+import { makeConverter } from "../../firebase/Converter";
 
-const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<RawFirestoreEvent & {id: string}> => [
+const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<MaybeWithFirestoreMetadata<FirestoreEventJson> & {id: string}> => [
   {
-    field: "title",
-    headerName: "Title",
+    field: "name",
+    headerName: "Event Name",
     flex: 1
   },
   {
-    field: "startTime",
+    field: "interval.start",
     headerName: "Start Time",
     type: "dateTime",
-    valueGetter: ({ row }) => row.startTime?.toDate(),
+    valueGetter: ({ row }) => row.interval?.start?.toDate(),
     flex: 1
   },
   {
-    field: "endTime",
+    field: "interval.end",
     headerName: "End Time",
     type: "dateTime",
-    valueGetter: ({ value }) => value?.toDate(),
+    valueGetter: ({ row }) => row.interval?.end?.toDate(),
     flex: 1
   },
   {
     field: "address",
     headerName: "Address",
     flex: 2
-  },
-  {
-    field: "link",
-    headerName: "Link",
-    renderCell: ({ value }) => {
-      if (value == null) {
-        return null;
-      } else if (Array.isArray(value)) {
-        return (
-          <div>
-            {value.map((link, index) => (<a key={index} href={link.url} target="_blank" rel="noreferrer">{link.text}</a>))}
-          </div>
-        );
-      } else {
-        return (<a href={value.url} target="_blank" rel="noreferrer">{value.text}</a>);
-      }
-    },
-    flex: 1.8
   },
   {
     field: "actions",
@@ -81,17 +65,17 @@ const EventsDataGrid = () => {
   const firestore = useFirestore();
   const navigate = useNavigate();
 
-  const columns = useMemo(() => getColumns(firestore, navigate), [ firestore, navigate ]) as GridColumns<Partial<Record<string, unknown>> & {id: string}>;
+  const columns = useMemo(() => getColumns(firestore, navigate), [ firestore, navigate ]);
 
   return (
     <div style={{ minHeight: "60vh", display: "flex" }}>
       <div style={{ flex: 1, padding: "1em" }}>
         <FirestoreCollectionDataGrid
-          firestoreCollectionRef={collection(firestore, "events")}
+          firestoreCollectionRef={collection(firestore, "events").withConverter(makeConverter(FirestoreEvent))}
           columns={columns}
           dataGridProps={{ getRowHeight: () => "auto" }}
           enablePopover
-          defaultSortField="startTime"
+          defaultSortField="interval.start"
         />
       </div>
     </div>

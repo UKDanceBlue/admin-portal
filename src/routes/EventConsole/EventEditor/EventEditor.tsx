@@ -2,7 +2,8 @@ import { Delete } from "@mui/icons-material";
 import { Button, IconButton, Paper, TextField as TextFieldBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { FirestoreEvent, FirestoreEventJson, FirestoreImageJson } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent, FirestoreEventJson, FirestoreImageJson, FirestoreMetadata } from "@ukdanceblue/db-app-common";
+import { hasFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
 import { useFormReducer } from "@ukdanceblue/db-app-common/dist/util/formReducer";
 import { Wysimark, useEditor } from "@wysimark/react";
 import { Timestamp } from "firebase/firestore";
@@ -159,8 +160,18 @@ export const EventEditor = (
       onSubmit={(e) => {
         e.preventDefault();
 
+        const existingMetadata: FirestoreMetadata = hasFirestoreMetadata(event) ? event.__meta : {};
+        existingMetadata.schemaVersion = 1;
+
+        // Set the schema version and grab the markdown
+        const completeEvent: FirestoreEventJson = {
+          ...event,
+          __meta: existingMetadata,
+          description: editor.getMarkdown()
+        };
+
         // Need to remove any nulls from the event's image array before we try to save it
-        onEventSaved?.(filterNullImages({ ...event, description: editor.getMarkdown() }));
+        onEventSaved?.(filterNullImages(completeEvent));
       }}
       onReset={resetMe ? () => {
         if (confirm("Are you sure you want to reset?")) {

@@ -13,7 +13,7 @@ import { useStorage } from "reactfire";
 
 import ImageSelect, { ImageSelectModeRef } from "../../../components/ImageSelect";
 
-type FirestoreEventJsonWithNullableImage = Omit<FirestoreEventJson, "images"> & {
+type FirestoreEventJsonWithNullableImage = FirestoreEventJson & {
   images?: (FirestoreImageJson | null)[];
 };
 
@@ -130,8 +130,8 @@ export const EventEditor = (
       if (action[0] === "update" && action[1][0] === "description") {
         // We ignore description to let slate handle it's own state, the value is extracted in the onSubmit method
         return;
-      } else if (action[0] === "update" && action[1][1] === "" && action[1][0] !== "name") {
-        return updateEventBase([ "update", [ action[1][0], undefined ] ]);
+      } else if (action[0] === "update" && action[1][1] === "" && action[1][0] !== "name" && action[1][0] !== "shortDescription" && action[1][0] !== "description") {
+        return updateEventBase([ "remove-field", action[1][0] ]);
       } else {
         return updateEventBase(action);
       }
@@ -139,7 +139,7 @@ export const EventEditor = (
     [updateEventBase]
   );
 
-  const eventImages = Array.isArray(event.images)
+  const eventImages: (FirestoreImageJson | null)[] = Array.isArray(event.images)
     ? event.images
     : (
       event.images == null
@@ -160,13 +160,7 @@ export const EventEditor = (
         e.preventDefault();
 
         // Need to remove any nulls from the event's image array before we try to save it
-        onEventSaved?.(filterNullImages(Object.fromEntries(Object.entries({ ...event, description: editor.getMarkdown() }).filter((([ key, value ]) => {
-          if (key === "name" || key === "description" || key === "shortDescription") {
-            return true;
-          } else {
-            return value !== undefined;
-          }
-        }))) as FirestoreEventJsonWithNullableImage));
+        onEventSaved?.(filterNullImages({ ...event, description: editor.getMarkdown() }));
       }}
       onReset={resetMe ? () => {
         if (confirm("Are you sure you want to reset?")) {
@@ -243,7 +237,7 @@ export const EventEditor = (
                 ]
               ]);
             } else {
-              updateEvent([ "update", [ "interval", undefined ] ]);
+              updateEvent([ "remove-field", "interval" ]);
             }
           }}
         />
@@ -295,7 +289,7 @@ export const EventEditor = (
                 ]
               ]);
             } else {
-              updateEvent([ "update", [ "interval", undefined ] ]);
+              updateEvent([ "remove-field", "interval" ]);
             }
           }}
         />

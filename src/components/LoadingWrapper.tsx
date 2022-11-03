@@ -24,7 +24,7 @@ export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
         (
           Object.values(loadingReasons).some((val) => val)
         ) && (
-          <Box style={{ position: "fixed", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Box style={{ position: "fixed", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", zIndex: Number.MAX_SAFE_INTEGER }}>
             <CircularProgress size="5vw" />
           </Box>
         )

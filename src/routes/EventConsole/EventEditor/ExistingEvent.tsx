@@ -1,6 +1,6 @@
 import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
 import { Firestore, collection, doc, setDoc } from "firebase/firestore";
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useReducer } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFirestore, useFirestoreDocDataOnce } from "reactfire";
 
@@ -29,14 +29,7 @@ export const ExistingEvent = () => {
 
   const {
     data, error, status
-  } = useFirestoreDocDataOnce<FirestoreEventJson>(getEventDoc(firestore, eventId));
-  const parsedData = useMemo(() => {
-    if (status === "success" && data != null) {
-      return FirestoreEvent.fromJson(data);
-    } else {
-      return undefined;
-    }
-  }, [ data, status ]);
+  } = useFirestoreDocDataOnce(getEventDoc(firestore, eventId));
 
   const [ key, resetEditor ] = useReducer((key) => key + 1, 0);
 
@@ -65,7 +58,7 @@ export const ExistingEvent = () => {
             disabled={isLoading}
             key={key}
             resetMe={resetEditor}
-            initialData={parsedData}
+            initialData={data}
           />
         )}
       </div>

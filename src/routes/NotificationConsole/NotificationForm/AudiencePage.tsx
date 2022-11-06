@@ -165,7 +165,7 @@ const AudiencePage = ({
           if (Array.isArray(attributeValues)) {
             return (
               <FormControl key={attributeName} sx={{ width: "90%", mt: "1rem" }} disabled={sendToAll}>
-                <InputLabel id={`select-${attributeName}-label`}>{knownAttributes[attributeName]._name ?? attributeName}</InputLabel>
+                <InputLabel id={`select-${attributeName}-label`}>{knownAttributes[attributeName]?._name ?? attributeName}</InputLabel>
                 <Select
                   labelId={`select-${attributeName}-label`}
                   id={`select-${attributeName}`}

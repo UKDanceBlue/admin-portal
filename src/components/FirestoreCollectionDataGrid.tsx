@@ -1,6 +1,7 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
 import { FirestoreDocumentJson, MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { AllowedFirestoreTypes } from "@ukdanceblue/db-app-common/dist/shims/Firestore";
 import deepEquals from "deep-equal";
 import { CollectionReference, GeoPoint, Timestamp, doc, orderBy, query, setDoc } from "firebase/firestore";
 import { MouseEvent, useCallback, useState } from "react";
@@ -65,14 +66,15 @@ function FirestoreCollectionDataGrid<DocumentType extends MaybeWithFirestoreMeta
   }, []);
 
   const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
-    const field = event.currentTarget.dataset.field!;
-    const id = event.currentTarget.parentElement!.dataset.id!;
+    const field = event.currentTarget.dataset?.field;
+    const id = event.currentTarget.parentElement?.dataset?.id;
     const row = data.find((r) => r.id === id);
     if (row == null) {
       setPopoverAnchorEl(null);
       setPopoverText(null);
     }
-    const value = row?.[field as keyof typeof row];
+    // @ts-expect-error We don't necessarily know the type of the field, so we just say it could be whatever
+    const value = row?.[field] as AllowedFirestoreTypes;
     if (value != null) {
       if (value instanceof Timestamp) {
         setPopoverAnchorEl(event.currentTarget);

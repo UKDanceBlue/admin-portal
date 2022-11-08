@@ -9,21 +9,21 @@ export interface FirestoreOpportunityInfo {
 
 /** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isFirestoreOpportunityInfo(
-  data: any
+  data: unknown
 ): data is FirestoreOpportunityInfo {
   if (data == null) {
     return false;
   }
 
-  if (typeof data.name !== "string") {
+  if (typeof (data as FirestoreOpportunityInfo).name !== "string") {
     return false;
   }
 
-  if (!(data.date instanceof Timestamp)) {
+  if (!((data as FirestoreOpportunityInfo).date instanceof Timestamp)) {
     return false;
   }
 
-  if (typeof data.totalPoints !== "number") {
+  if (typeof (data as FirestoreOpportunityInfo).totalPoints !== "number") {
     return false;
   }
 

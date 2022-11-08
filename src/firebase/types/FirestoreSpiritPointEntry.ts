@@ -9,29 +9,29 @@ export interface SpiritPointEntry {
 
 /** @deprecated Use types from @ukdanceblue/db-app-common instead */
 export function isSpiritPointEntry(
-  data: any
+  data: unknown
 ): data is SpiritPointEntry {
   if (data == null) {
     return false;
   }
 
-  if (typeof data.points !== "number") {
+  if (typeof (data as SpiritPointEntry).points !== "number") {
     return false;
   }
 
-  if (typeof data.teamId !== "string") {
+  if (typeof (data as SpiritPointEntry).teamId !== "string") {
     return false;
   }
 
-  if (typeof data.opportunityId !== "string") {
+  if (typeof (data as SpiritPointEntry).opportunityId !== "string") {
     return false;
   }
 
-  if (typeof data.linkblue !== "string") {
+  if (typeof (data as SpiritPointEntry).linkblue !== "string") {
     return false;
   }
 
-  if (data.displayName != null && typeof data.displayName !== "string") {
+  if ((data as SpiritPointEntry).displayName != null && typeof (data as SpiritPointEntry).displayName !== "string") {
     return false;
   }
 

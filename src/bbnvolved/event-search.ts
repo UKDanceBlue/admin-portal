@@ -5,12 +5,12 @@ export interface ListedEvent {
   id?: string;
   institutionId?: number;
   organizationId?: number;
-  organizationIds?: any[];
+  organizationIds?: unknown[];
   branchId?: number;
-  branchIds?: any[];
+  branchIds?: unknown[];
   organizationName?: string;
   organizationProfilePicture?: string;
-  organizationNames?: any[];
+  organizationNames?: unknown[];
   name?: string;
   description?: string;
   location?: string;
@@ -20,7 +20,7 @@ export interface ListedEvent {
   theme?: string;
   categoryIds?: string[];
   categoryNames?: string[];
-  benefitNames?: any[];
+  benefitNames?: unknown[];
   visibility?: string;
   status?: string;
   latitude?: string;

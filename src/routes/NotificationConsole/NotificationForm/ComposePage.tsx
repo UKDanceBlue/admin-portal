@@ -21,15 +21,15 @@ const ComposePage = ({
     const validNotificationPayload: NotificationFormPendingState["notificationPayload"] = {};
 
     if ((notificationPayload?.url?.length ?? 0) > 0) {
-      // @ts-expect-error
+      // @ts-expect-error - This is a valid property
       validNotificationPayload.url = notificationPayload.url;
     }
     if (notificationPayload?.textPopup != null && (notificationPayload.textPopup.title?.length ?? 0) > 0 && (notificationPayload.textPopup.message?.length ?? 0) > 0) {
       validNotificationPayload.textPopup = notificationPayload.textPopup;
     }
-    // @ts-expect-error
+    // @ts-expect-error - This is a valid property
     if ((notificationPayload?.webviewSource?.uri?.length ?? 0) > 0) {
-      // @ts-expect-error
+      // @ts-expect-error - This is a valid property
       validNotificationPayload.webviewSource = notificationPayload.webviewSource;
     }
 
@@ -164,6 +164,7 @@ const ComposePage = ({
               <TextField
                 sx={{ width: "100%", mt: "1rem" }}
                 label="Url"
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 value={(notificationPayload?.webviewPopup as any)?.uri ?? ""} // THIS COULD CAUSE TYPE ERRORS
                 onChange={(event) => {
                   setNotificationPayload({

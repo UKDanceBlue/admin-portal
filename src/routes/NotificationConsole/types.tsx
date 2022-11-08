@@ -36,7 +36,7 @@ export type NotificationPayload = {
      * Additional HTTP headers to send with the request.
      * NOTE: On Android, this can only be used with GET requests.
      */
-    headers?: Object;
+    headers?: unknown;
     /**
      * The HTTP body to send with the request. This must be a valid
      * UTF-8 string, and will be sent exactly as specified, with no

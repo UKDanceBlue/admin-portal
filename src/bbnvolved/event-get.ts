@@ -15,7 +15,7 @@ export interface SpecifiedEvent {
     endsOn?: string;
     address?: Address;
     theme?: string;
-    benefits?: any[];
+    benefits?: unknown[];
     categories?: Category[];
     state?: State;
     visibility?: string;

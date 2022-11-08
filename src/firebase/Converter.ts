@@ -1,5 +1,6 @@
 import { FirestoreMetadata } from "@ukdanceblue/db-app-common";
 import { FirestoreDocumentJson, FirestoreDocumentModel, FirestoreDocumentModelInstance, MaybeWithFirestoreMetadata, WithFirestoreMetadata, hasFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { BasicTimestamp } from "@ukdanceblue/db-app-common/dist/shims/Firestore";
 import { FieldValue, FirestoreDataConverter, serverTimestamp } from "firebase/firestore";
 
 type EntriesType<T, E extends keyof T = keyof T> = [E, T[E]][];
@@ -23,7 +24,7 @@ function updateMetadata<T extends(WithFirestoreMetadata<FirestoreDocumentJson> |
     if (existingMetadata.createdAt != null) {
       newMetadata.createdAt = existingMetadata.createdAt;
     }
-    newMetadata.modifiedAt = serverTimestamp() as any;
+    newMetadata.modifiedAt = serverTimestamp() as BasicTimestamp;
 
     const newObj: T = { ...modelObject, __meta: newMetadata };
     return newObj;
@@ -72,7 +73,7 @@ export function makeConverter<T extends FirestoreDocumentJson, I extends Firesto
   };
 
   return {
-    toFirestore: toFirestore as any,
+    toFirestore,
     fromFirestore
   };
 }

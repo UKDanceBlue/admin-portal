@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 import { ReactNode, createContext, useCallback, useContext, useEffect, useId, useReducer } from "react";
 
-const LoadingContext = createContext<[Partial<Record<string, boolean>>, (state: boolean, id: string) => void]>([ {}, () => {} ]);
+const LoadingContext = createContext<[Partial<Record<string, boolean>>, (state: boolean, id: string) => void]>([ {}, () => undefined ]);
 
 export const LoadingWrapper = ({ children }: { children: ReactNode }) => {
   const [ loadingReasons, updateLoadingReasons ] = useReducer(

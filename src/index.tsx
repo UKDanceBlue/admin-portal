@@ -20,8 +20,8 @@ const container = document.querySelector("#root");
 // and it doesn't support CORS. This is a temporary solution until we can get a
 // proper API endpoint from BBNvolved (probably never).
 declare global {
-  function jsonpEventsSearchCallback(data: any): void;
-  function jsonpEventGetCallback(data: any): void;
+  function jsonpEventsSearchCallback(data: {value: ListedEvent[]}): void;
+  function jsonpEventGetCallback(data: SpecifiedEvent): void;
   // eslint-disable-next-line no-var
   var jsonpSearchEvents: ListedEvent[];
   // eslint-disable-next-line no-var

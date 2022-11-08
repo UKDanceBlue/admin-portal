@@ -86,8 +86,10 @@ const PointEntriesDataGrid = () => {
                   <IconButton
                     key={`${rowData.row.id }-delete`}
                     onClick={() => {
+                      // @ts-expect-error - displayName is a valid field
                       const displayedName = (((rowData.row["displayName"] as string)?.length ?? 0) === 0)
                         ? "this person"
+                        // @ts-expect-error - displayName is a valid field
                         : rowData.row["displayName"];
 
                       if (confirm(`Are you sure you want to delete the entry for ${displayedName}?`)) {

@@ -46,6 +46,7 @@ const SpiritTeamDataGrid = () => {
 
   const spiritTeamsCollectionRef = collection(firestore, "spirit/teams/documents");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const membersDialogDescriptionElementRef = useRef<any>(null);
   useEffect(() => {
     if (membersDialogOpen) {

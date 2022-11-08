@@ -72,7 +72,7 @@ function FirestoreCollectionDataGrid<DocumentType extends MaybeWithFirestoreMeta
       setPopoverAnchorEl(null);
       setPopoverText(null);
     }
-    const value = row?.[field];
+    const value = row?.[field as keyof typeof row];
     if (value != null) {
       if (value instanceof Timestamp) {
         setPopoverAnchorEl(event.currentTarget);

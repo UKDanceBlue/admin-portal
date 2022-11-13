@@ -45,10 +45,14 @@ const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigat
       <GridActionsCellItem
         key={0}
         icon={<Delete />}
-        onClick={() => deleteDoc(doc(firestore, `events/${rowData.id}`)).catch((e) => {
-          console.error(e);
-          alert(`Error deleting event: ${e.message}`);
-        })}
+        onClick={() => {
+          if (confirm("Are you sure you want to delete this event?")) {
+            deleteDoc(doc(firestore, `events/${rowData.id}`)).catch((e) => {
+              console.error(e);
+              alert(`Error deleting event: ${e.message}`);
+            });
+          }
+        }}
         label="Delete"
       />,
       <GridActionsCellItem

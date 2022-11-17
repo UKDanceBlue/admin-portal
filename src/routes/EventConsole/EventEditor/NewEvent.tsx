@@ -1,6 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent, FirestoreEventJsonV1 } from "@ukdanceblue/db-app-common";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { useReducer, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +22,9 @@ export const NewEvent = () => {
 
   const [ isLoading, setIsLoading ] = useLoading();
   const [ isBbnvolvedDialogOpen, setIsBbnvolvedDialogOpen ] = useState(false);
-  const [ filledEvent, setFilledEvent ] = useState<FirestoreEventJson | undefined>();
+  const [ filledEvent, setFilledEvent ] = useState<FirestoreEventJsonV1 | undefined>();
 
-  const saveEvent = async (event: FirestoreEventJson) => {
+  const saveEvent = async (event: FirestoreEventJsonV1) => {
     setIsLoading(true);
     await setDoc(doc(collection(firestore, "events").withConverter(makeConverter(FirestoreEvent)), v4()), event);
     setIsLoading(false);
@@ -58,7 +58,7 @@ export const NewEvent = () => {
       <BbnvolvedImportDialog
         open={isBbnvolvedDialogOpen}
         onClose={() => setIsBbnvolvedDialogOpen(false)}
-        setFilledEvent={(newEvent: FirestoreEventJson) => {
+        setFilledEvent={(newEvent: FirestoreEventJsonV1) => {
           setFilledEvent(newEvent);
           resetEditor();
         }} />

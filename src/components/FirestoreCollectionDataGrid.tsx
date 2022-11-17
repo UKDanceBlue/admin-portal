@@ -1,6 +1,6 @@
 import { Alert, AlertColor, Popover, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColumns, GridRowModel } from "@mui/x-data-grid";
-import { FirestoreDocumentJson, MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { FirestoreDocumentJson, MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common";
 import { AllowedFirestoreTypes } from "@ukdanceblue/db-app-common/dist/shims/Firestore";
 import deepEquals from "deep-equal";
 import { CollectionReference, GeoPoint, Timestamp, doc, orderBy, query, setDoc } from "firebase/firestore";

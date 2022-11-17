@@ -1,5 +1,4 @@
-import { FirestoreMetadata } from "@ukdanceblue/db-app-common";
-import { FirestoreDocumentJson, FirestoreDocumentModel, FirestoreDocumentModelInstance, MaybeWithFirestoreMetadata, WithFirestoreMetadata, hasFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { FirestoreDocumentJson, FirestoreDocumentModel, FirestoreDocumentModelInstance, FirestoreMetadata, MaybeWithFirestoreMetadata, WithFirestoreMetadata, hasFirestoreMetadata } from "@ukdanceblue/db-app-common";
 import { BasicTimestamp } from "@ukdanceblue/db-app-common/dist/shims/Firestore";
 import { FieldValue, FirestoreDataConverter, serverTimestamp } from "firebase/firestore";
 

@@ -1,5 +1,5 @@
 import { Box, Button, Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { FirestoreEventJsonV1 } from "@ukdanceblue/db-app-common";
 import { Timestamp } from "firebase/firestore";
 import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
@@ -22,7 +22,7 @@ function htmlToMarkdown(html: string): string {
 */
 export const BbnvolvedImportDialog = ({
   open, setFilledEvent, onClose,
-}: {open:boolean, setFilledEvent?: (event: FirestoreEventJson) => void, onClose: () => void}) => {
+}: {open:boolean, setFilledEvent?: (event: FirestoreEventJsonV1) => void, onClose: () => void}) => {
   const loaded = useRef(false);
   const [ , setIsLoading ] = useLoading();
   const [ events, setEvents ] = useState<ListedEvent[]>([]);
@@ -76,7 +76,7 @@ export const BbnvolvedImportDialog = ({
                     fakeDomeElement.innerHTML = fullEvent.description;
                     const shortDescription = fakeDomeElement.textContent?.substring(0, 100);
 
-                    const createdEvent: FirestoreEventJson = {
+                    const createdEvent: FirestoreEventJsonV1 = {
                       name: fullEvent.name,
                       shortDescription: shortDescription ?? "",
                       description: htmlToMarkdown(fullEvent.description),

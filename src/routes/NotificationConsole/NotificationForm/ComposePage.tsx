@@ -27,10 +27,10 @@ const ComposePage = ({
     if (notificationPayload?.textPopup != null && (notificationPayload.textPopup.title?.length ?? 0) > 0 && (notificationPayload.textPopup.message?.length ?? 0) > 0) {
       validNotificationPayload.textPopup = notificationPayload.textPopup;
     }
-    // @ts-expect-error - This is a valid property
-    if ((notificationPayload?.webviewSource?.uri?.length ?? 0) > 0) {
+    if ((notificationPayload?.webviewPopup
       // @ts-expect-error - This is a valid property
-      validNotificationPayload.webviewSource = notificationPayload.webviewSource;
+      ?.uri?.length ?? 0) > 0) {
+      validNotificationPayload.webviewPopup = notificationPayload?.webviewPopup;
     }
 
     handlePageUpdated({

@@ -1,4 +1,4 @@
-import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
+import { FirestoreEvent, FirestoreEventJsonV1 } from "@ukdanceblue/db-app-common";
 import { Firestore, collection, doc, setDoc } from "firebase/firestore";
 import { useEffect, useReducer } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -41,7 +41,7 @@ export const ExistingEvent = () => {
     }
   }, [ error, navigate ]);
 
-  const saveEvent = async (event: FirestoreEventJson) => {
+  const saveEvent = async (event: FirestoreEventJsonV1) => {
     setIsLoading(true);
     await setDoc(getEventDoc(firestore, eventId), event);
     setIsLoading(false);
@@ -58,7 +58,7 @@ export const ExistingEvent = () => {
             disabled={isLoading}
             key={key}
             resetMe={resetEditor}
-            initialData={data}
+            initialData={data as FirestoreEventJsonV1}
           />
         )}
       </div>

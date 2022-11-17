@@ -1,7 +1,6 @@
 import { Delete, Edit } from "@mui/icons-material";
 import { GridActionsCellItem, GridColumns } from "@mui/x-data-grid";
-import { FirestoreEvent, FirestoreEventJson } from "@ukdanceblue/db-app-common";
-import { MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { FirestoreEvent, FirestoreEventJsonV1, MaybeWithFirestoreMetadata } from "@ukdanceblue/db-app-common";
 import { Firestore, collection, deleteDoc, doc } from "firebase/firestore";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ import { routeDefinitions } from "..";
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 import { makeConverter } from "../../firebase/Converter";
 
-const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<MaybeWithFirestoreMetadata<FirestoreEventJson> & {id: string}> => [
+const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<MaybeWithFirestoreMetadata<FirestoreEventJsonV1> & {id: string}> => [
   {
     field: "name",
     headerName: "Event Name",

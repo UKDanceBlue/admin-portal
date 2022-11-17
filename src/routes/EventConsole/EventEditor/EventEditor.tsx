@@ -2,8 +2,7 @@ import { Delete } from "@mui/icons-material";
 import { Button, IconButton, Paper, TextField as TextFieldBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { FirestoreEvent, FirestoreEventJson, FirestoreImageJsonV1 as FirestoreImageJson, FirestoreMetadata } from "@ukdanceblue/db-app-common";
-import { MaybeWithFirestoreMetadata, WithFirestoreMetadata, hasFirestoreMetadata } from "@ukdanceblue/db-app-common/dist/firestore/internal";
+import { FirestoreEvent, FirestoreEventJsonV1, FirestoreImageJsonV1 as FirestoreImageJson, FirestoreMetadata, MaybeWithFirestoreMetadata, WithFirestoreMetadata, hasFirestoreMetadata } from "@ukdanceblue/db-app-common";
 import { useFormReducer } from "@ukdanceblue/db-app-common/dist/util/formReducer";
 import { Wysimark, useEditor } from "@wysimark/react";
 import { Timestamp } from "firebase/firestore";
@@ -14,20 +13,20 @@ import { useStorage } from "reactfire";
 
 import ImageSelect, { ImageSelectModeRef } from "../../../components/ImageSelect";
 
-type FirestoreEventJsonWithNullableImage = Omit<FirestoreEventJson, "images"> & {
+type FirestoreEventJsonV1WithNullableImage = Omit<FirestoreEventJsonV1, "images"> & {
   images?: (FirestoreImageJson | null)[];
 };
 
-function filterNullImages(event: WithFirestoreMetadata<FirestoreEventJsonWithNullableImage>): WithFirestoreMetadata<FirestoreEventJson>;
-function filterNullImages(event: FirestoreEventJsonWithNullableImage): FirestoreEventJson;
-function filterNullImages(event: MaybeWithFirestoreMetadata<FirestoreEventJsonWithNullableImage>): MaybeWithFirestoreMetadata<FirestoreEventJson> {
+function filterNullImages(event: WithFirestoreMetadata<FirestoreEventJsonV1WithNullableImage>): WithFirestoreMetadata<FirestoreEventJsonV1>;
+function filterNullImages(event: FirestoreEventJsonV1WithNullableImage): FirestoreEventJsonV1;
+function filterNullImages(event: MaybeWithFirestoreMetadata<FirestoreEventJsonV1WithNullableImage>): MaybeWithFirestoreMetadata<FirestoreEventJsonV1> {
   return {
     ...event,
     images: event.images == null ? [] : (event.images.filter((image) => image != null) as NonNullable<(typeof event.images)[number]>[]),
   };
 }
 
-const FormTextField = (props: Parameters<typeof TextFieldBase>[0] & {eventReducer: ReturnType<typeof useFormReducer<FirestoreEventJsonWithNullableImage>>} & {name: keyof FirestoreEventJson}) => {
+const FormTextField = (props: Parameters<typeof TextFieldBase>[0] & {eventReducer: ReturnType<typeof useFormReducer<FirestoreEventJsonV1WithNullableImage>>} & {name: keyof FirestoreEventJsonV1}) => {
   if (props.name == null) {
     throw new Error("FormTextField requires a name prop");
   }
@@ -109,8 +108,8 @@ export const EventEditor = (
     initialData, onEventSaved, disabled = false, resetMe
   }:
   {
-    initialData?: FirestoreEventJson;
-    onEventSaved?: (event: FirestoreEventJson) => void;
+    initialData?: FirestoreEventJsonV1;
+    onEventSaved?: (event: FirestoreEventJsonV1) => void;
     disabled?: boolean;
     resetMe?: () => void;
   }
@@ -122,7 +121,7 @@ export const EventEditor = (
 
   const editor = useEditor({ initialMarkdown: initialData?.description ?? "" }, [initialData?.description]);
 
-  const eventReducer = useFormReducer<FirestoreEventJsonWithNullableImage>(initialData ?? { name: "", shortDescription: "", description: "" }, (event) => {
+  const eventReducer = useFormReducer<FirestoreEventJsonV1WithNullableImage>(initialData ?? { name: "", shortDescription: "", description: "" }, (event) => {
     return FirestoreEvent.whatIsWrongWithThisJson(event) ?? {};
   });
 
@@ -166,7 +165,7 @@ export const EventEditor = (
         existingMetadata.schemaVersion = 1;
 
         // Set the schema version and grab the markdown
-        const completeEvent: WithFirestoreMetadata<FirestoreEventJsonWithNullableImage> = {
+        const completeEvent: WithFirestoreMetadata<FirestoreEventJsonV1WithNullableImage> = {
           ...event,
           __meta: existingMetadata,
           description: editor.getMarkdown()

@@ -14,6 +14,7 @@ import PropTypes from "prop-types";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { useFirestore, useFirestoreDocData } from "reactfire";
 
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import FirestoreCollectionDataGrid from "../../../components/FirestoreCollectionDataGrid";
 import { SpiritTeamsRootDoc } from "../../../firebase/types/SpiritTeamsRootDoc";
 
@@ -63,114 +64,116 @@ const SpiritTeamDataGrid = () => {
   }, []);
 
   return (
-    <>
-      <FirestoreCollectionDataGrid
-        columns={[
-          {
-            field: "name",
-            headerName: "Name",
-            flex: 2.5,
-            editable: true,
-          },
-          {
-            field: "teamClass",
-            headerName: "Visibility",
-            flex: 1,
-            editable: true,
-            type: "singleSelect",
-            valueOptions: [ "public", "committee" ],
-          },
-          {
-            field: "networkForGoodId",
-            headerName: "Network For Good ID",
-            flex: 1.75,
-            editable: true,
-            type: "number",
-          },
-          {
-            field: "totalPoints",
-            headerName: "Total Spirit Points",
-            flex: 1.75,
-            type: "number",
-          },
-          {
-            field: "actions",
-            headerName: "Actions",
-            flex: 1,
-            editable: false,
-            type: "actions",
-            getActions: (params: GridRowParams) => [
-              <GridActionsCellItem
-                key={0}
-                icon={<People />}
-                disabled={!params.row["memberNames"] || Object.keys(params.row["memberNames"]).length === 0}
-                onClick={() => showTeamMembersDialog(params.row["memberNames"])}
-                label="Members"
-              />,
-              <GridActionsCellItem
-                key={1}
-                icon={<TableRows />}
-                onClick={() => window.location.assign(`/spirit-points/spirit-teams/${params.row["id"]}`)}
-                label="Details"
-              />,
-              <GridActionsCellItem
-                key={2}
-                icon={<Delete />}
-                onClick={() => {
-                  const displayedName = ((params.row["name"]?.length ?? 0) === 0)
-                    ? "this team"
-                    : params.row["name"];
+    <ErrorBoundary>
+      <>
+        <FirestoreCollectionDataGrid
+          columns={[
+            {
+              field: "name",
+              headerName: "Name",
+              flex: 2.5,
+              editable: true,
+            },
+            {
+              field: "teamClass",
+              headerName: "Visibility",
+              flex: 1,
+              editable: true,
+              type: "singleSelect",
+              valueOptions: [ "public", "committee" ],
+            },
+            {
+              field: "networkForGoodId",
+              headerName: "Network For Good ID",
+              flex: 1.75,
+              editable: true,
+              type: "number",
+            },
+            {
+              field: "totalPoints",
+              headerName: "Total Spirit Points",
+              flex: 1.75,
+              type: "number",
+            },
+            {
+              field: "actions",
+              headerName: "Actions",
+              flex: 1,
+              editable: false,
+              type: "actions",
+              getActions: (params: GridRowParams) => [
+                <GridActionsCellItem
+                  key={0}
+                  icon={<People />}
+                  disabled={!params.row["memberNames"] || Object.keys(params.row["memberNames"]).length === 0}
+                  onClick={() => showTeamMembersDialog(params.row["memberNames"])}
+                  label="Members"
+                />,
+                <GridActionsCellItem
+                  key={1}
+                  icon={<TableRows />}
+                  onClick={() => window.location.assign(`/spirit-points/spirit-teams/${params.row["id"]}`)}
+                  label="Details"
+                />,
+                <GridActionsCellItem
+                  key={2}
+                  icon={<Delete />}
+                  onClick={() => {
+                    const displayedName = ((params.row["name"]?.length ?? 0) === 0)
+                      ? "this team"
+                      : params.row["name"];
 
-                  if (confirm(`Are you sure you want to delete ${displayedName}?`)) {
-                    deleteDoc(doc(spiritTeamsCollectionRef, params.row["id"])).catch((error) => {
-                      console.error("Error removing document: ", error);
-                      alert(`Error removing document: ${ error}`);
-                    });
-                  }
-                }}
-                label="Delete"
-              />,
-              <GridActionsCellItem
-                key={3}
-                onClick={() => {
-                  navigator.clipboard.writeText(params.row.id);
-                }}
-                label="Copy ID"
-                title="Copy ID"
-                icon={<Numbers />}
-              />,
-            ],
-          },
-        ]}
-        firestoreCollectionRef={spiritTeamsCollectionRef}
-        defaultSortField="name"
-        documentCount={Object.keys(spiritTeamInfoDocData?.data?.basicInfo ?? {}).length}
-        initialPageSize={100}
-      />
-      <Dialog
-        open={membersDialogOpen}
-        onClose={() => setMembersDialogOpen(false)}
-        scroll={"paper"}
-        aria-labelledby="scroll-dialog-title"
-        aria-describedby="scroll-dialog-description"
-      >
-        <DialogTitle id="scroll-dialog-title">Team Members</DialogTitle>
-        <DialogContent dividers={true}>
-          <List>
-            {Object.entries(membersDialogContent).map(({
-              0: key, 1: value
-            }) => (
-              <ListItem key={key}>
-                <ListItemText primary={value as ReactNode} />
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setMembersDialogOpen(false)}>OK</Button>
-        </DialogActions>
-      </Dialog>
-    </>
+                    if (confirm(`Are you sure you want to delete ${displayedName}?`)) {
+                      deleteDoc(doc(spiritTeamsCollectionRef, params.row["id"])).catch((error) => {
+                        console.error("Error removing document: ", error);
+                        alert(`Error removing document: ${ error}`);
+                      });
+                    }
+                  }}
+                  label="Delete"
+                />,
+                <GridActionsCellItem
+                  key={3}
+                  onClick={() => {
+                    navigator.clipboard.writeText(params.row.id);
+                  }}
+                  label="Copy ID"
+                  title="Copy ID"
+                  icon={<Numbers />}
+                />,
+              ],
+            },
+          ]}
+          firestoreCollectionRef={spiritTeamsCollectionRef}
+          defaultSortField="name"
+          documentCount={Object.keys(spiritTeamInfoDocData?.data?.basicInfo ?? {}).length}
+          initialPageSize={100}
+        />
+        <Dialog
+          open={membersDialogOpen}
+          onClose={() => setMembersDialogOpen(false)}
+          scroll={"paper"}
+          aria-labelledby="scroll-dialog-title"
+          aria-describedby="scroll-dialog-description"
+        >
+          <DialogTitle id="scroll-dialog-title">Team Members</DialogTitle>
+          <DialogContent dividers={true}>
+            <List>
+              {Object.entries(membersDialogContent).map(({
+                0: key, 1: value
+              }) => (
+                <ListItem key={key}>
+                  <ListItemText primary={value as ReactNode} />
+                </ListItem>
+              ))}
+            </List>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setMembersDialogOpen(false)}>OK</Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    </ErrorBoundary>
   );
 };
 

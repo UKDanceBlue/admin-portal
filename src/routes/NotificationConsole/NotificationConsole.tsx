@@ -1,6 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 
+import ErrorBoundary from "../../components/ErrorBoundary";
+
 import NotificationForm from "./NotificationForm";
 import NotificationStatus from "./NotificationStatus";
 
@@ -19,8 +21,12 @@ const NotificationConsole = () => {
         un-send, so be sure you have selected the right audience. If you want more info about how to
         use this form send an email to the <a href="mailto:app@danceblue.org">app coordinator</a>.
       </Typography>
-      <NotificationForm handlePushSent={setNotificationTickets} />
-      <NotificationStatus notificationTickets={notificationTickets} />
+      <ErrorBoundary>
+        <NotificationForm handlePushSent={setNotificationTickets} />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <NotificationStatus notificationTickets={notificationTickets} />
+      </ErrorBoundary>
     </Box>
   );
 };

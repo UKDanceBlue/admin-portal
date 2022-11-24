@@ -10,6 +10,7 @@ import { FirebaseAppProvider } from "reactfire";
 import App from "./App";
 import { SpecifiedEvent } from "./bbnvolved/event-get";
 import { ListedEvent } from "./bbnvolved/event-search";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { LoadingWrapper } from "./components/LoadingWrapper";
 import { ReactFireProvider, firebaseConfig } from "./firebase/firebaseApp";
 import theme from "./theme";
@@ -41,22 +42,24 @@ if (container) {
   const root = createRoot(container);
 
   root.render(
-    <StrictMode>
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <FirebaseAppProvider firebaseConfig={firebaseConfig}>
-            <LocalizationProvider dateAdapter={AdapterLuxon} >
-              <ReactFireProvider>
-                <LoadingWrapper>
-                  <CssBaseline />
-                  <App />
-                </LoadingWrapper>
-              </ReactFireProvider>
-            </LocalizationProvider>
-          </FirebaseAppProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </StrictMode>
+    <ErrorBoundary>
+      <StrictMode>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <FirebaseAppProvider firebaseConfig={firebaseConfig}>
+              <LocalizationProvider dateAdapter={AdapterLuxon} >
+                <ReactFireProvider>
+                  <LoadingWrapper>
+                    <CssBaseline />
+                    <App />
+                  </LoadingWrapper>
+                </ReactFireProvider>
+              </LocalizationProvider>
+            </FirebaseAppProvider>
+          </ThemeProvider>
+        </BrowserRouter>
+      </StrictMode>
+    </ErrorBoundary>
   );
 } else {
   throw new Error("Root element not found");

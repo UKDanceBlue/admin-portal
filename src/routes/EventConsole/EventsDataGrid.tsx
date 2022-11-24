@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useFirestore } from "reactfire";
 
 import { routeDefinitions } from "..";
+import ErrorBoundary from "../../components/ErrorBoundary";
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 import { makeConverter } from "../../firebase/Converter";
 
@@ -73,13 +74,15 @@ const EventsDataGrid = () => {
   return (
     <div style={{ minHeight: "60vh", display: "flex" }}>
       <div style={{ flex: 1, padding: "1em" }}>
-        <FirestoreCollectionDataGrid
-          firestoreCollectionRef={collection(firestore, "events").withConverter(makeConverter(FirestoreEvent))}
-          columns={columns}
-          dataGridProps={{ getRowHeight: () => "auto" }}
-          enablePopover
-          defaultSortField="interval.start"
-        />
+        <ErrorBoundary>
+          <FirestoreCollectionDataGrid
+            firestoreCollectionRef={collection(firestore, "events").withConverter(makeConverter(FirestoreEvent))}
+            columns={columns}
+            dataGridProps={{ getRowHeight: () => "auto" }}
+            enablePopover
+            defaultSortField="interval.start"
+          />
+        </ErrorBoundary>
       </div>
     </div>
   );

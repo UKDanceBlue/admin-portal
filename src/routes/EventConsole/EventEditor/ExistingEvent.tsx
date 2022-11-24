@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useFirestore, useFirestoreDocDataOnce } from "reactfire";
 
 import { routeDefinitions } from "../..";
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import { useLoading } from "../../../components/LoadingWrapper";
 import { makeConverter } from "../../../firebase/Converter";
 
@@ -53,13 +54,15 @@ export const ExistingEvent = () => {
       <div style={{ flex: 1, padding: "1em" }}>
         {status === "loading" && <div>Loading...</div>}
         {status === "success" && (
-          <EventEditor
-            onEventSaved={saveEvent}
-            disabled={isLoading}
-            key={key}
-            resetMe={resetEditor}
-            initialData={data as FirestoreEventJsonV1}
-          />
+          <ErrorBoundary>
+            <EventEditor
+              onEventSaved={saveEvent}
+              disabled={isLoading}
+              key={key}
+              resetMe={resetEditor}
+              initialData={data as FirestoreEventJsonV1}
+            />
+          </ErrorBoundary>
         )}
       </div>
     </div>

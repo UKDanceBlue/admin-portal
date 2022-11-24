@@ -7,6 +7,7 @@ import { useReducer } from "react";
 import { useFirestore } from "reactfire";
 import { v4 as uuidV4 } from "uuid";
 
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import { useLoading } from "../../../components/LoadingWrapper";
 import type { FirestoreOpportunityInfo } from "../../../firebase/types/FirestoreSpiritOpportunityInfo";
 
@@ -23,7 +24,9 @@ const OpportunityConsole = () => {
       <h1>Spirit Opportunities</h1>
       <div style={{ minHeight: "60vh", display: "flex" }}>
         <div style={{ flex: 1, padding: "1em" }}>
-          <OpportunityDataGrid />
+          <ErrorBoundary>
+            <OpportunityDataGrid />
+          </ErrorBoundary>
         </div>
       </div>
       <Box sx={{ flex: 1, flexDirection: "column", mx: "1em" }}>

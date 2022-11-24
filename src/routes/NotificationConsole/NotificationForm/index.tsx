@@ -9,6 +9,7 @@ import { ReactNode, useCallback, useMemo, useState } from "react";
 import { useFunctions } from "reactfire";
 
 import { SendPushNotificationReturnType } from "..";
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import { useLoading } from "../../../components/LoadingWrapper";
 import { GenericFirestoreDocument } from "../../../firebase/types";
 import { Notification, NotificationPayload } from "../types";
@@ -142,7 +143,9 @@ const NotificationForm = ({ handlePushSent }: {
         </>
       ) : (
         <>
-          {getCurrentPage()}
+          <ErrorBoundary>
+            {getCurrentPage()}
+          </ErrorBoundary>
           <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
             <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{ mr: 1 }}>
               Back

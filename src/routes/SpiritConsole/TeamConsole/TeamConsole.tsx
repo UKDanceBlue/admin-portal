@@ -3,6 +3,7 @@ import { collection, doc } from "firebase/firestore";
 import { useParams } from "react-router-dom";
 import { useFirestore, useFirestoreDoc } from "reactfire";
 
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import { FirestoreTeamInfo } from "../../../firebase/types/FirestoreTeamInfo";
 
 import PointEntriesDataGrid from "./PointEntriesDataGrid";
@@ -27,9 +28,13 @@ const TeamConsole = () => {
       <Typography variant="h6" textAlign="center">Team Visibility (who can see it): {teamClass ?? "[UNKNOWN]"}</Typography>
       <Typography variant="body2" textAlign="center">Until I get editing working here, the above values (well most of them) are editable from the list of all teams (just double click)</Typography>
       <Typography variant="h2" textAlign="center">Members</Typography>
-      <TeamMembersDataGrid teamObservable={team} />
+      <ErrorBoundary>
+        <TeamMembersDataGrid teamObservable={team} />
+      </ErrorBoundary>
       <Typography variant="h2" textAlign="center">Point Entries</Typography>
-      <PointEntriesDataGrid />
+      <ErrorBoundary>
+        <PointEntriesDataGrid />
+      </ErrorBoundary>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { useFirestore } from "reactfire";
 import { v4 } from "uuid";
 
 import { routeDefinitions } from "../..";
+import ErrorBoundary from "../../../components/ErrorBoundary";
 import { useLoading } from "../../../components/LoadingWrapper";
 import { makeConverter } from "../../../firebase/Converter";
 import { BbnvolvedImportDialog } from "../BbnvolvedImportDialog";
@@ -44,24 +45,28 @@ export const NewEvent = () => {
             Autofill From BBNvolved
           </Button>
         </Box>
-        <EventEditor
-          onEventSaved={saveEvent}
-          key={key}
-          resetMe={() => {
-            setFilledEvent(undefined);
-            resetEditor();
-          }}
-          disabled={isLoading}
-          initialData={filledEvent}
-        />
+        <ErrorBoundary>
+          <EventEditor
+            onEventSaved={saveEvent}
+            key={key}
+            resetMe={() => {
+              setFilledEvent(undefined);
+              resetEditor();
+            }}
+            disabled={isLoading}
+            initialData={filledEvent}
+          />
+        </ErrorBoundary>
       </Box>
-      <BbnvolvedImportDialog
-        open={isBbnvolvedDialogOpen}
-        onClose={() => setIsBbnvolvedDialogOpen(false)}
-        setFilledEvent={(newEvent: FirestoreEventJsonV1) => {
-          setFilledEvent(newEvent);
-          resetEditor();
-        }} />
+      <ErrorBoundary>
+        <BbnvolvedImportDialog
+          open={isBbnvolvedDialogOpen}
+          onClose={() => setIsBbnvolvedDialogOpen(false)}
+          setFilledEvent={(newEvent: FirestoreEventJsonV1) => {
+            setFilledEvent(newEvent);
+            resetEditor();
+          }} />
+      </ErrorBoundary>
     </Box>
   );
 };

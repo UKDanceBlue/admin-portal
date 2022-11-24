@@ -62,8 +62,8 @@ export const NewEvent = () => {
         <BbnvolvedImportDialog
           open={isBbnvolvedDialogOpen}
           onClose={() => setIsBbnvolvedDialogOpen(false)}
-          setFilledEvent={(newEvent: FirestoreEventJsonV1) => {
-            setFilledEvent(newEvent);
+          setFilledEvent={(newEvent: FirestoreEvent) => {
+            setFilledEvent(newEvent.toJson());
             resetEditor();
           }} />
       </ErrorBoundary>

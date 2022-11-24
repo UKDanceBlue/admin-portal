@@ -45,7 +45,7 @@ function processPureJson<T extends FirestoreDocumentJson, I extends FirestoreDoc
   }
 }
 
-export function makeConverter<T extends FirestoreDocumentJson, I extends FirestoreDocumentModelInstance<T> = FirestoreDocumentModelInstance<T>>(model: FirestoreDocumentModel<T, I>): FirestoreDataConverter<MaybeWithFirestoreMetadata<T>> {
+export function makeConverter<T extends FirestoreDocumentJson, I extends FirestoreDocumentModelInstance<T> = FirestoreDocumentModelInstance<T>>(model: FirestoreDocumentModel<T, I>, defaultSchemaVersion?: number): FirestoreDataConverter<MaybeWithFirestoreMetadata<T>> {
   const toFirestore = (modelObject: MaybeWithFirestoreMetadata<T>) => {
     // We can only check types if there is not FieldValue magic going on
     if (Object.values(modelObject).every((v) => !(v instanceof FieldValue))) {
@@ -65,7 +65,7 @@ export function makeConverter<T extends FirestoreDocumentJson, I extends Firesto
   const fromFirestore: FirestoreDataConverter<MaybeWithFirestoreMetadata<T>>["fromFirestore"] = (snapshot, options) => {
     const data = snapshot.data(options);
     if (model.isValidJson(data)) {
-      return model.fromJson(data).toJson();
+      return model.fromJson(data, defaultSchemaVersion == null ? undefined : { schemaVersion: defaultSchemaVersion }).toJson();
     } else {
       throw new Error("Invalid data");
     }

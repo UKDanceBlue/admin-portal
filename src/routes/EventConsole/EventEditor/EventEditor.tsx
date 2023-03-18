@@ -161,6 +161,28 @@ export const EventEditor = (
       onSubmit={(e) => {
         e.preventDefault();
 
+        // Check that each interval is valid
+        const errors = event.intervals?.map((interval) => {
+          if (interval.start == null || interval.end == null) {
+            return "Interval must have a start and end time";
+          } else if (interval.start > interval.end) {
+            return "Interval start time must be before the end time";
+          } else {
+            return null;
+          }
+        }).filter((err) => err != null);
+
+        if (errors != null && errors.length > 0) {
+          alert(errors.join("\n"));
+          return;
+        }
+
+        // Check the overall interval
+        if (event.interval?.start != null && event.interval?.end != null && event.interval?.start > event.interval?.end) {
+          alert("Event start time must be before the end time");
+          return;
+        }
+
         const existingMetadata: FirestoreMetadata = hasFirestoreMetadata(event) ? event.__meta : {};
         existingMetadata.schemaVersion = 1;
 
@@ -212,24 +234,11 @@ export const EventEditor = (
           onChange={(value) => {
             const currentInterval = event.interval;
             if (value != null && currentInterval != null) {
-              if ((currentInterval?.start?.toMillis() ?? now.toMillis()) < value.toMillis()) {
-                const newInterval = {
-                  start: Timestamp.fromDate(value.toJSDate()),
-                  end: currentInterval.end
-                };
-                updateEvent([ "update", [ "interval", newInterval ] ]);
-              } else {
-                alert("Start time must be before end time");
-
-                updateEvent([
-                  "update", [
-                    "interval", {
-                      start: currentInterval.start,
-                      end: currentInterval.end
-                    }
-                  ]
-                ]);
-              }
+              const newInterval = {
+                start: Timestamp.fromDate(value.toJSDate()),
+                end: currentInterval.end
+              };
+              updateEvent([ "update", [ "interval", newInterval ] ]);
             } else if (currentInterval != null) {
               updateEvent([
                 "update", [
@@ -264,24 +273,11 @@ export const EventEditor = (
           onChange={(value) => {
             const currentInterval = event.interval;
             if (value != null && currentInterval != null) {
-              if ((currentInterval?.end?.toMillis() ?? now.toMillis()) < value.toMillis()) {
-                const newInterval = {
-                  end: Timestamp.fromDate(value.toJSDate()),
-                  start: currentInterval.start
-                };
-                updateEvent([ "update", [ "interval", newInterval ] ]);
-              } else {
-                alert("end time must be before start time");
-
-                updateEvent([
-                  "update", [
-                    "interval", {
-                      end: currentInterval.end,
-                      start: currentInterval.start
-                    }
-                  ]
-                ]);
-              }
+              const newInterval = {
+                end: Timestamp.fromDate(value.toJSDate()),
+                start: currentInterval.start
+              };
+              updateEvent([ "update", [ "interval", newInterval ] ]);
             } else if (currentInterval != null) {
               updateEvent([
                 "update", [

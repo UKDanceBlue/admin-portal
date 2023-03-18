@@ -30,11 +30,11 @@ function FirestoreCollectionDataGrid<DocumentType extends MaybeWithFirestoreMeta
   documentCount,
   initialPageSize = 25,
 }: {
-  columns: GridColumns<GridRowModel<DocumentType & {id: string}>>;
-  firestoreCollectionRef: CollectionReference;
-  dataGridProps?: Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>;
+  columns: Readonly<GridColumns<GridRowModel<DocumentType & {id: string}>>>;
+  firestoreCollectionRef: Readonly<CollectionReference>;
+  dataGridProps?: Readonly<Partial<Parameters<typeof DataGrid<GridRowModel<DocumentType & {id: string}>>>[0]>>;
   enablePopover?: boolean;
-  defaultSortField: typeof columns[number]["field"];
+  defaultSortField: Readonly<GridColumns<GridRowModel<DocumentType & {id: string}>>>[number]["field"];
   documentCount?: number;
   initialPageSize?: number;
 }) {

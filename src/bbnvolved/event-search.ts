@@ -64,7 +64,7 @@ function htmlToMarkdown(html: string): string {
   return turndownService.turndown(html);
 }
 
-async function specifiedEventToFirestoreEvent(fullEvent: import("/home/tagho/Source/admin-portal/src/bbnvolved/event-get").SpecifiedEvent, storage: FirebaseStorage): Promise<FirestoreEvent> {
+async function specifiedEventToFirestoreEvent(fullEvent: import("./event-get").SpecifiedEvent, storage: FirebaseStorage): Promise<FirestoreEvent> {
   if (!fullEvent.name || !fullEvent.description) {
     alert("Something went wrong. Please try again later.");
     console.error("One of setFilledEvent, fullEvent.name, or fullEvent.description was falsy in BbnvolvedImportDialog");

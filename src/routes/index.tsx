@@ -4,8 +4,9 @@ import EventConsole from "./EventConsole";
 import { ExistingEvent } from "./EventConsole/EventEditor/ExistingEvent";
 import { NewEvent } from "./EventConsole/EventEditor/NewEvent";
 import Home from "./Home";
-// import MarathonConsole from "./MarathonConsole";
-// import MoraleConsole from "./MoraleConsole";
+import MarathonConsole from "./MarathonConsole";
+import { MarathonHourConsole } from "./MarathonConsole/MarathonHourConsole";
+import MoraleConsole from "./MoraleConsole";
 import NotificationConsole from "./NotificationConsole";
 import SpiritConsole, { OpportunityConsole } from "./SpiritConsole";
 import TeamConsole from "./SpiritConsole/TeamConsole";
@@ -112,17 +113,40 @@ const routeDefinitions = {
     ] as const,
     element: <TeamConsole />,
   },
-  // "morale-console": {
-  //   title: "Morale Point Manager",
-  //   path: "/morale-console",
-  //   pathFragment: "morale-console",
-  //   signInRequired: true
-  //   requiredClaims: [
-  //     { claimKey: "dbRole", claimValues: ["committee"] as const },
-  //     { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
-  //   ] as const,
-  //   element: <MoraleConsole />,
-  // },
+  "marathon": {
+    title: "Marathon Manager",
+    showInMenu: true,
+    path: "/marathon",
+    pathFragment: "marathon",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <MarathonConsole />,
+  },
+  "marathon-hour": {
+    title: "Marathon Hour Editor",
+    pathFragment: "marathon/:hourNumber",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <MarathonHourConsole />,
+  },
+  "morale-console": {
+    title: "Morale Point Editor",
+    showInMenu: true,
+    path: "/marathon/morale",
+    pathFragment: "marathon/morale",
+    signInRequired: true,
+    requiredClaims: [
+      { claimKey: "dbRole", claimValues: ["committee"] as const },
+      { claimKey: "committeeRank", claimValues: [ "coordinator", "chair" ] as const },
+    ] as const,
+    element: <MoraleConsole />,
+  },
   "notification-console": {
     title: "Send Notification",
     showInMenu: true,

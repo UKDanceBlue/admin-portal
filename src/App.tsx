@@ -54,6 +54,21 @@ export default function App() {
                 {routeDefinitions["notification-console"].element}
               </SecuredParent>
             } />
+            <Route path={routeDefinitions["marathon"].pathFragment} element={
+              <SecuredParent requiredClaims={routeDefinitions["marathon"].requiredClaims}>
+                {routeDefinitions["marathon"].element}
+              </SecuredParent>
+            } />
+            <Route path={routeDefinitions["marathon-hour"].pathFragment} element={
+              <SecuredParent requiredClaims={routeDefinitions["marathon-hour"].requiredClaims}>
+                {routeDefinitions["marathon-hour"].element}
+              </SecuredParent>
+            } />
+            <Route path={routeDefinitions["morale-console"].pathFragment} element={
+              <SecuredParent requiredClaims={routeDefinitions["morale-console"].requiredClaims}>
+                {routeDefinitions["morale-console"].element}
+              </SecuredParent>
+            } />
           </Routes>
         </Paper>
       </ErrorBoundary>

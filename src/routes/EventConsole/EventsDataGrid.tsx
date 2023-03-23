@@ -11,7 +11,16 @@ import ErrorBoundary from "../../components/ErrorBoundary";
 import FirestoreCollectionDataGrid from "../../components/FirestoreCollectionDataGrid";
 import { makeConverter } from "../../firebase/Converter";
 
-const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): GridColumns<MaybeWithFirestoreMetadata<FirestoreEventJsonV1> & {id: string}> => [
+const dateValueGetter = ({ row }: { row: MaybeWithFirestoreMetadata<FirestoreEventJsonV1> }): Date => row.interval?.start?.toDate() ?? new Date(0);
+const dateValueFormatter = ({ value }: { value?: Date }): string => {
+  if (value == null || value.getTime() === 0) {
+    return "N/A";
+  } else {
+    return value.toLocaleString();
+  }
+};
+
+const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigate>): Readonly<GridColumns<MaybeWithFirestoreMetadata<FirestoreEventJsonV1> & {id: string}>> => [
   {
     field: "name",
     headerName: "Event Name",
@@ -21,14 +30,16 @@ const getColumns = (firestore: Firestore, navigate: ReturnType<typeof useNavigat
     field: "interval.start",
     headerName: "Start Time",
     type: "dateTime",
-    valueGetter: ({ row }) => row.interval?.start?.toDate(),
+    valueGetter: dateValueGetter,
+    valueFormatter: dateValueFormatter,
     flex: 1
   },
   {
     field: "interval.end",
     headerName: "End Time",
     type: "dateTime",
-    valueGetter: ({ row }) => row.interval?.end?.toDate(),
+    valueGetter: dateValueGetter,
+    valueFormatter: dateValueFormatter,
     flex: 1
   },
   {

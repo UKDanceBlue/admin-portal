@@ -1,7 +1,4 @@
 {
-  "cSpell.words": [
-    "geocode",
-    "neccicaritly"
-  ],
-  "typescript.tsdk": "node_modules\\typescript\\lib"
+  "cSpell.words": ["geocode", "neccicaritly"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

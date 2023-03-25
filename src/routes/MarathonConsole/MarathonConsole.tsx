@@ -9,7 +9,7 @@ const MarathonConsole = () => {
 
   return (
     <div>
-      <h1>MarathonConsole</h1>
+      <h1>Marathon Console</h1>
       <p>Don&apos;t mind the lack of decor, just click a link to go to the editor</p>
       {
         hours.map((hour) => {

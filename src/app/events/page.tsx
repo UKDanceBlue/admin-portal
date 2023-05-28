@@ -1,3 +1,4 @@
+import CreateEvent from "@/components/CreateEvent";
 import EventList from "@/components/EventList";
 import Image from "next/image";
 export default function EventsPage() {
@@ -6,6 +7,7 @@ export default function EventsPage() {
       <p>Events List</p>
       {/* @ts-expect-error Async Server Component */}
       <EventList />
+      <CreateEvent />
     </main>
   );
 }

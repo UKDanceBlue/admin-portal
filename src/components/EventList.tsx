@@ -7,7 +7,10 @@ async function getData() {
   const client = new ApiClient(
     url,
     (url: string | URL, init?: RequestInit | undefined): Promise<Response> => {
-      return fetch(url, { ...init, cache: "no-cache" });
+      return fetch(url, {
+        ...init,
+        cache: "no-cache",
+      });
     }
   );
   let error: Error | null = null;

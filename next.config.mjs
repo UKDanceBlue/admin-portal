@@ -1,10 +1,13 @@
 /** @type {import('next').NextConfig} */
-export default{
+const config = {
   reactStrictMode: true,
   experimental: {
     appDir: true,
+    serverActions: true,
   },
   typescript: {
     tsconfigPath: "./tsconfig.next.json",
   }
 };
+
+export default config;

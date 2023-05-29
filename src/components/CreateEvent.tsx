@@ -12,6 +12,7 @@ import {
   EventResource,
   PlainEvent,
   formDataToJson,
+  stripNullish,
 } from "@ukdanceblue/db-app-common";
 import Joi from "joi";
 import { useEffect, useState } from "react";
@@ -52,20 +53,20 @@ export default function CreateEvent() {
       start: string;
     };
 
-    const plainEvent: CreateEventBody = {
+    const plainEvent: CreateEventBody = stripNullish({
       title: castData.title,
       images: [],
-      summary: castData.summary ?? null,
-      description: castData.description ?? null,
-      location: castData.location ?? null,
+      summary: castData.summary,
+      description: castData.description,
+      location: castData.location,
       duration: castData.duration
         ? Duration.fromObject({ minutes: parseInt(castData.duration) })
             .normalize()
             .rescale()
             .toISO()
-        : null,
+        : undefined,
       occurrences: [castData.start],
-    };
+    });
 
     try {
       const res = await client.eventApi.createEvent(plainEvent);

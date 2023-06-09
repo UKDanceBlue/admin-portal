@@ -3,16 +3,7 @@ import { Interval, DateTime } from "luxon";
 import EventView from "./EventView";
 
 async function getData() {
-  const url = new URL("http://localhost:3001/api");
-  const client = new ApiClient(
-    url,
-    (url: string | URL, init?: RequestInit | undefined): Promise<Response> => {
-      return fetch(url, {
-        ...init,
-        cache: "no-cache",
-      });
-    }
-  );
+  const client = ApiClient.getApiClient();
   let error: Error | null = null;
   let events: EventResource[] = [];
 

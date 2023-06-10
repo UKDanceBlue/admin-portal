@@ -6,7 +6,7 @@ const config = {
     serverActions: true,
   },
   typescript: {
-    tsconfigPath: "./tsconfig.next.json",
+    tsconfigPath: "./tsconfig.json",
   }
 };
 

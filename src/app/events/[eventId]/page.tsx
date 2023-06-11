@@ -1,5 +1,5 @@
-import EventList from "@/components/EventList";
 import EventView from "@/components/EventView";
+import dbApiClient from "@/lib/apiClient";
 import { ApiClient, EventResource } from "@ukdanceblue/db-app-common";
 
 async function getData(eventId: string): Promise<
@@ -12,18 +12,11 @@ async function getData(eventId: string): Promise<
       error: Error;
     }
 > {
-  const url = new URL("http://localhost:3001/api");
-  const client = new ApiClient(
-    url,
-    (url: string | URL, init?: RequestInit | undefined): Promise<Response> => {
-      return fetch(url, { ...init, cache: "no-cache" });
-    }
-  );
   let error: Error | null = null;
 
   let event: EventResource | undefined = undefined;
   try {
-    const res = await client.eventApi.getEvent(eventId);
+    const res = await dbApiClient.eventApi.getEvent(eventId);
     const resource = res.resource.resource;
     event = resource;
   } catch (e) {

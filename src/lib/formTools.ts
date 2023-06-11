@@ -30,7 +30,7 @@ export function applyValidation(
 
   let friendlyName = element.name;
   if (element.labels && element.labels.length > 0) {
-    friendlyName = element.labels[0].textContent || element.name;
+    friendlyName = element.labels[0]?.textContent || element.name;
   }
 
   const inputListener = () => {
@@ -40,7 +40,7 @@ export function applyValidation(
     if (error) {
       let { message } = error;
       if (error.details.length > 0) {
-        message = error.details[0].message;
+        message ??= error.details[0]?.message ?? "Invalid input";
       }
       if (!message) {
         message = "Invalid input";

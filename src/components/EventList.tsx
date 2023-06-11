@@ -1,14 +1,14 @@
 import { ApiClient, EventResource } from "@ukdanceblue/db-app-common";
 import { Interval, DateTime } from "luxon";
 import EventView from "./EventView";
+import dbApiClient from "@/lib/apiClient";
 
 async function getData() {
-  const client = ApiClient.getApiClient();
   let error: Error | null = null;
   let events: EventResource[] = [];
 
   try {
-    const res = await client.eventApi.getAllEvents();
+    const res = await dbApiClient.eventApi.getAllEvents();
     events = res.resource.resources ?? [];
   } catch (e) {
     if (e instanceof Error) error = e;

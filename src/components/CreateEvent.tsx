@@ -17,6 +17,7 @@ import {
 import Joi from "joi";
 import { useEffect, useState } from "react";
 import { Duration, DateTime } from "luxon";
+import dbApiClient from "@/lib/apiClient";
 
 export default function CreateEvent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,15 +34,6 @@ export default function CreateEvent() {
 
   useJsonFormSubmission("#createEventForm", async (data) => {
     const url = new URL("http://localhost:3001/api");
-    const client = new ApiClient(
-      url,
-      (
-        url: string | URL,
-        init?: RequestInit | undefined
-      ): Promise<Response> => {
-        return fetch(url, { ...init, cache: "no-cache" });
-      }
-    );
     let error: Error | null = null;
 
     const castData = data as {
@@ -69,7 +61,7 @@ export default function CreateEvent() {
     });
 
     try {
-      const res = await client.eventApi.createEvent(plainEvent);
+      const res = await dbApiClient.eventApi.createEvent(plainEvent);
       console.log(JSON.stringify(res, null, 2));
     } catch (e) {
       if (e instanceof Error) error = e;

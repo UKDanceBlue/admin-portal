@@ -2,12 +2,6 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import Image from "next/image";
 import dbWatermark from "../../public/db-watermark.svg";
-import { ApiClient } from "@ukdanceblue/db-app-common";
-
-ApiClient.initializeInstance({
-  fetch: globalThis.fetch,
-  baseUrl: new URL("http://localhost:3001/api"),
-});
 
 const inter = Inter({ subsets: ["latin"] });
 

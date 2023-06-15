@@ -32,7 +32,7 @@ export default function RootLayout({
             <a href="/events">Events</a>
           </div>
         </nav>
-        {children}
+        <div className="block pt-10 pb-6 mx-auto max-w-full">{children}</div>
       </body>
     </html>
   );

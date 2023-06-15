@@ -8,7 +8,7 @@ async function getData() {
   let events: EventResource[] = [];
 
   try {
-    const res = await dbApiClient.eventApi.getAllEvents();
+    const res = await dbApiClient.eventApi.getEvents();
     events = res.resource.resources ?? [];
   } catch (e) {
     if (e instanceof Error) error = e;

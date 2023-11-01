@@ -36,7 +36,7 @@ const routeDefinitions = {
   },
   "event-manager": {
     title: "Event Manager",
-    showInMenu: true,
+    showInMenu: false,
     path: "/event-manager",
     pathFragment: "event-manager",
     signInRequired: true,
@@ -113,9 +113,9 @@ const routeDefinitions = {
     ] as const,
     element: <TeamConsole />,
   },
-  "marathon": {
+  marathon: {
     title: "Marathon Manager",
-    showInMenu: true,
+    showInMenu: false,
     path: "/marathon",
     pathFragment: "marathon",
     signInRequired: true,
@@ -137,7 +137,7 @@ const routeDefinitions = {
   },
   "morale-console": {
     title: "Morale Point Editor",
-    showInMenu: true,
+    showInMenu: false,
     path: "/marathon/morale",
     pathFragment: "marathon/morale",
     signInRequired: true,
@@ -149,7 +149,7 @@ const routeDefinitions = {
   },
   "notification-console": {
     title: "Send Notification",
-    showInMenu: true,
+    showInMenu: false,
     path: "/notification-console",
     pathFragment: "notification-console",
     signInRequired: true,
